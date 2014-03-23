@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
-rm CommonCppWithStreams.tokens CommonCppWithStreamsLexer.java CommonCppWithStreamsParser.java *.class
+rm -f CommonCppWithStreams.tokens CommonCppWithStreamsLexer.java CommonCppWithStreamsParser.java *.class
 antlr3 CommonCppWithStreams.g
 CLASSPATH=/usr/share/java/antlr3.jar javac CommonCppWithStreamsCompiler.java CommonCppWithStreamsLexer.java CommonCppWithStreamsParser.java
