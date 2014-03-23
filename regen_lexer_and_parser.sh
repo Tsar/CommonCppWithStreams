@@ -1,3 +1,3 @@
 #!/bin/bash
-rm CommonCppWithStreams.tokens CommonCppWithStreamsLexer.c CommonCppWithStreamsLexer.h CommonCppWithStreamsParser.c CommonCppWithStreamsParser.h
+rm CommonCppWithStreams.tokens CommonCppWithStreamsLexer.java CommonCppWithStreamsParser.java
 antlr3 CommonCppWithStreams.g
