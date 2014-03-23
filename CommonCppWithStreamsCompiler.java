@@ -12,9 +12,11 @@ public class CommonCppWithStreamsCompiler {
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
                 CommonCppWithStreamsParser parser = new CommonCppWithStreamsParser(tokens);
                 parser.s();
+                /*
                 PrintWriter out = new PrintWriter(fileName + ".res");
                 out.print(parser.getCode());
                 out.close();
+                */
             } catch (Exception e) {
                 e.printStackTrace();
             }
