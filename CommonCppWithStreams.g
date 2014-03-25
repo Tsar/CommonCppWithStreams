@@ -1,9 +1,5 @@
 grammar CommonCppWithStreams;
 
-options {
-  backtrack=true;
-}
-
 @header {
 }
 
