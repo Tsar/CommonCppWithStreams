@@ -1,5 +1,9 @@
 grammar CommonCppWithStreams;
 
+options {
+  backtrack=true;
+}
+
 @header {
 }
 
@@ -15,8 +19,7 @@ function_impl : function_def_ codescope;
 codescope     : SCOPE_START codeline* SCOPE_END;
 codeline      : variables_def | expr SEMICOLON | RETURN expr SEMICOLON;
 function_call : NAME LB (expr (COMMA expr)*)? RB;
-//expr          : LB expr RB | NUMBER | NAME | function_call;
-expr          : NUMBER | NAME;
+expr          : LB expr RB | NUMBER | NAME | function_call;
 
 SCOPE_START   : '{';
 SCOPE_END     : '}';
