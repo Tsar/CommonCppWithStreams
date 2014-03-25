@@ -6,7 +6,7 @@ grammar CommonCppWithStreams;
 @members {
 }
 
-s             : (variables_def | function_def)*;
+s             : (variables_def | function_def)* EOF;
 variables_def : TYPE NAME (EQ expr)? (COMMA NAME (EQ expr)?)* SEMICOLON;
 function_def  : TYPE NAME LB (((TYPE NAME (COMMA TYPE NAME)*) | (TYPE NAME EQ expr)) (COMMA TYPE NAME EQ expr)*)? RB (SEMICOLON | codescope);
 
