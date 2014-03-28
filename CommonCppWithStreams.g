@@ -12,7 +12,7 @@ variables_def : type NAME ('=' expr)? (',' NAME ('=' expr)?)* ';';
 function_def  : type NAME '(' (((type NAME (',' type NAME)*) | (type NAME '=' expr)) (',' type NAME '=' expr)*)? ')' (';' | codescope);
 
 codescope     : '{' codeline* '}';
-codeline      : variables_def | expr ';' | RETURN expr ';' | for_ | while_ | if_ | codescope | ';';
+codeline      : variables_def | expr ';' | RETURN expr ';' | for_ | while_ | if_ | BREAK ';' | CONTINUE ';' | codescope | ';';
 for_          : FOR '(' expr? ';' expr? ';' expr? ')' codeline;
 while_        : WHILE '(' expr ')' codeline | DO codeline WHILE '(' expr ')' ';';
 if_           : IF '(' expr ')' codeline (options {greedy=true;} : ELSE codeline)?;
@@ -37,6 +37,8 @@ IF            : 'if';
 ELSE          : 'else';
 WHILE         : 'while';
 DO            : 'do';
+BREAK         : 'break';
+CONTINUE      : 'continue';
 RETURN        : 'return';
 TYPE_MODIFIER : 'signed' | 'unsigned' | 'long' | 'short';
 TYPE          : 'int' | 'char' | 'bool' | 'void';
