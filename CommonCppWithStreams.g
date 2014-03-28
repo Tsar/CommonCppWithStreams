@@ -12,7 +12,9 @@ variables_def : type NAME ('=' expr)? (',' NAME ('=' expr)?)* ';';
 function_def  : type NAME '(' (((type NAME (',' type NAME)*) | (type NAME '=' expr)) (',' type NAME '=' expr)*)? ')' (';' | codescope);
 
 codescope     : '{' codeline* '}';
-codeline      : variables_def | expr ';' | RETURN expr ';';
+codeline      : variables_def | expr ';' | RETURN expr ';' | while_;
+//if_           : IF '(' expr ')' (codeline | codescope | ';') (ELSE (codeline | codescope | ';'))?;
+while_        : WHILE '(' expr ')' (codeline | codescope | ';') | DO codescope WHILE '(' expr ')' ';';
 function_call : NAME '(' (expr (',' expr)*)? ')';
 //expr          : expr2 (',' expr2)*;
 expr          : expr3 ('=' expr3 | ('*=' | '/=' | '%=' | '+=' | '-=' | '>>=' | '<<=' | '&=' | '^=' | '|=') expr3 | '?' expr3 ':' expr3)*;
@@ -30,6 +32,10 @@ expr13        : ('++' | '--' | '!' | '~' | '+' | '-')? expr14;
 expr14        : expr15 ('++' | '--')?;
 expr15        : '(' expr ')' | NAME | NUMBER | function_call;
 
+IF            : 'if';
+ELSE          : 'else';
+WHILE         : 'while';
+DO            : 'do';
 RETURN        : 'return';
 TYPE_MODIFIER : 'signed' | 'unsigned' | 'long' | 'short';
 TYPE          : 'int' | 'char' | 'bool' | 'void';
