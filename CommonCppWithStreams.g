@@ -12,9 +12,9 @@ variables_def : type NAME ('=' expr)? (',' NAME ('=' expr)?)* ';';
 function_def  : type NAME '(' (((type NAME (',' type NAME)*) | (type NAME '=' expr)) (',' type NAME '=' expr)*)? ')' (';' | codescope);
 
 codescope     : '{' codeline* '}';
-codeline      : variables_def | expr ';' | RETURN expr ';' | while_;
-//if_           : IF '(' expr ')' (codeline | codescope | ';') (ELSE (codeline | codescope | ';'))?;
-while_        : WHILE '(' expr ')' (codeline | codescope | ';') | DO codescope WHILE '(' expr ')' ';';
+codeline      : variables_def | expr ';' | RETURN expr ';' | while_ | if_ | codescope | ';';
+if_           : IF '(' expr ')' codeline (options {greedy=true;} : ELSE codeline)?;
+while_        : WHILE '(' expr ')' codeline | DO codeline WHILE '(' expr ')' ';';
 function_call : NAME '(' (expr (',' expr)*)? ')';
 //expr          : expr2 (',' expr2)*;
 expr          : expr3 ('=' expr3 | ('*=' | '/=' | '%=' | '+=' | '-=' | '>>=' | '<<=' | '&=' | '^=' | '|=') expr3 | '?' expr3 ':' expr3)*;
