@@ -1,9 +1,5 @@
 grammar CommonCppWithStreams;
 
-options {
-  backtrack = true;
-}
-
 @header {
 }
 
@@ -18,8 +14,8 @@ function_def  : type NAME LB (((type NAME (COMMA type NAME)*) | (type NAME EQ ex
 codescope     : SCOPE_START codeline* SCOPE_END;
 codeline      : variables_def | expr SEMICOLON | RETURN expr SEMICOLON;
 function_call : NAME LB (expr (COMMA expr)*)? RB;
-expr          : expr2 (',' expr2)*;
-expr2         : expr3 (EQ expr3 | COMP_ASSIGN expr3 | '?' expr3 ':' expr3)*;
+//expr          : expr2 (COMMA expr2)*;
+expr         : NAME (EQ expr3 | COMP_ASSIGN expr3)* | expr3 '?' expr3 ':' expr3;
 expr3         : expr4 ('||' expr4)*;
 expr4         : expr5 ('&&' expr5)*;
 expr5         : expr6 ('|' expr6)*;
@@ -30,8 +26,9 @@ expr9         : expr10 (COMPARISON_OP expr10)*;
 expr10        : expr11 ('<<' expr11 | '>>' expr11)*;
 expr11        : expr12 ('+' expr12 | '-' expr12)*;
 expr12        : expr13 ('*' expr13 | '/' expr13 | '%' expr13)*;
-expr13        : PREFIX_OP expr14;
-expr14        : LB expr RB | expr '++' | expr '--' | NAME | NUMBER | function_call;
+//expr13        : PREFIX_OP? expr14;
+//expr14        : LB expr RB | expr '++' | expr '--' | NAME | NUMBER | function_call;
+expr13        : LB expr RB | NAME | NUMBER | function_call;
 
 SCOPE_START   : '{';
 SCOPE_END     : '}';
