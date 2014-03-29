@@ -29,7 +29,7 @@ expr10        : expr11 (('+' | '-') expr11)*;
 expr11        : expr12 (('*' | '/' | '%') expr12)*;
 expr12        : ('++' | '--' | '!' | '~' | '+' | '-')? expr13;
 expr13        : expr14 ('++' | '--')?;
-expr14        : '(' expr ')' | NAME | NUMBER | function_call;
+expr14        : '(' expr ')' | NAME | NUMBER | BOOL_VALUE | function_call;
 
 FOR           : 'for';
 IF            : 'if';
@@ -40,9 +40,9 @@ BREAK         : 'break';
 CONTINUE      : 'continue';
 RETURN        : 'return';
 TYPE          : 'int' | 'bool' | 'void';
+BOOL_VALUE    : 'false' | 'true';
 NUMBER        : ('0'..'9')+;
 NAME          : ('A'..'Z' | 'a'..'z' | '_') ('A'..'Z' | 'a'..'z' | '_' | '0'..'9')*;
 WS            : (' ' | '\t' | '\r' | '\n') {$channel=HIDDEN;};
 
-// добавить bool
 // для stream'ов сделать функцию наподобие FileStream('file'), чтобы их создавать
