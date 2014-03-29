@@ -7,17 +7,16 @@ grammar CommonCppWithStreams;
 }
 
 s             : (variables_def | function_def)* EOF;
-type          : TYPE_MODIFIER* TYPE | TYPE_MODIFIER+;
-variables_def : type NAME ('=' expr)? (',' NAME ('=' expr)?)* ';';
-function_def  : type NAME '(' (((type NAME (',' type NAME)*) | (type NAME '=' expr)) (',' type NAME '=' expr)*)? ')' (';' | codescope);
+variables_def : TYPE NAME ('=' expr)? (',' NAME ('=' expr)?)* ';';
+function_def  : TYPE NAME '(' (((TYPE NAME (',' TYPE NAME)*) | (TYPE NAME '=' expr)) (',' TYPE NAME '=' expr)*)? ')' (';' | block);
 
-codescope     : '{' codeline* '}';
-codeline      : variables_def | expr ';' | RETURN expr ';' | for_ | while_ | if_ | BREAK ';' | CONTINUE ';' | codescope | ';';
-for_          : FOR '(' expr? ';' expr? ';' expr? ')' codeline;
-while_        : WHILE '(' expr ')' codeline | DO codeline WHILE '(' expr ')' ';';
-if_           : IF '(' expr ')' codeline (options {greedy=true;} : ELSE codeline)?;
+block         : '{' statement* '}';
+statement     : variables_def | expr ';' | RETURN expr? ';' | for_ | while_ | if_ | BREAK ';' | CONTINUE ';' | block | ';';
+for_          : FOR '(' expr? ';' expr? ';' expr? ')' statement;
+while_        : WHILE '(' expr ')' statement | DO statement WHILE '(' expr ')' ';';
+if_           : IF '(' expr ')' statement (options {greedy=true;} : ELSE statement)?;
 function_call : NAME '(' (expr (',' expr)*)? ')';
-expr          : expr2 (('=' | '*=' | '/=' | '%=' | '+=' | '-=' | '>>=' | '<<=' | '&=' | '^=' | '|=') expr2 | '?' expr2 ':' expr2)*;
+expr          : expr2 (('=' | '*=' | '/=' | '%=' | '+=' | '-=' | '>>=' | '<<=' | '&=' | '^=' | '|=') expr2)*;
 expr2         : expr3 ('||' expr3)*;
 expr3         : expr4 ('&&' expr4)*;
 expr4         : expr5 ('|' expr5)*;
@@ -40,8 +39,9 @@ DO            : 'do';
 BREAK         : 'break';
 CONTINUE      : 'continue';
 RETURN        : 'return';
-TYPE_MODIFIER : 'signed' | 'unsigned' | 'long' | 'short';
-TYPE          : 'int' | 'char' | 'bool' | 'void';
+TYPE          : 'int' | 'bool' | 'void';
 NUMBER        : ('0'..'9')+;
 NAME          : ('A'..'Z' | 'a'..'z' | '_') ('A'..'Z' | 'a'..'z' | '_' | '0'..'9')*;
 WS            : (' ' | '\t' | '\r' | '\n') {$channel=HIDDEN;};
+
+//добавить bool
