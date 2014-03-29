@@ -8,7 +8,7 @@ grammar CommonCppWithStreams;
 
 s             : (variables_def | function_def)* EOF;
 variables_def : TYPE NAME ('=' expr)? (',' NAME ('=' expr)?)* ';';
-function_def  : TYPE NAME '(' (((TYPE NAME (',' TYPE NAME)*) | (TYPE NAME '=' expr)) (',' TYPE NAME '=' expr)*)? ')' (';' | block);
+function_def  : TYPE NAME '(' (((TYPE NAME (',' TYPE NAME)*) | (TYPE NAME '=' expr)) (',' TYPE NAME '=' expr)*)? ')' block;
 
 block         : '{' statement* '}';
 statement     : variables_def | expr ';' | RETURN expr? ';' | for_ | while_ | if_ | BREAK ';' | CONTINUE ';' | block | ';';
@@ -44,4 +44,5 @@ NUMBER        : ('0'..'9')+;
 NAME          : ('A'..'Z' | 'a'..'z' | '_') ('A'..'Z' | 'a'..'z' | '_' | '0'..'9')*;
 WS            : (' ' | '\t' | '\r' | '\n') {$channel=HIDDEN;};
 
-//добавить bool
+// добавить bool
+// для stream'ов сделать функцию наподобие FileStream('file'), чтобы их создавать
