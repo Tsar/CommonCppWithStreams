@@ -1,5 +1,9 @@
 grammar CommonCppWithStreams;
 
+options {
+    backtrack = true;
+}
+
 @header {
 }
 
@@ -35,7 +39,7 @@ expr13        : expr14 ('++' | '--')?;
 expr14        : '(' expr ')' | NAME | NUMBER | BOOL_VALUE | stream_func | stream_f_func | function_call;
 
 stream_read   : NAME ('>>' NAME)+;
-stream_write  : NAME ('<<' expr)+;
+stream_write  : NAME ('<<' expr14)+;
 
 FOR           : 'for';
 IF            : 'if';
