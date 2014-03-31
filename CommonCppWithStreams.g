@@ -38,8 +38,8 @@ expr12        : ('++' | '--' | '!' | '~' | '+' | '-')? expr13;
 expr13        : expr14 ('++' | '--')?;
 expr14        : '(' expr ')' | NAME | NUMBER | BOOL_VALUE | stream_func | stream_f_func | function_call;
 
-stream_read   : NAME ('>>' NAME)+;
-stream_write  : NAME ('<<' expr14)+;
+stream_read   : NAME ('>>' NAME)+ ';';
+stream_write  : NAME ('<<' expr)+ ';';
 
 FOR           : 'for';
 IF            : 'if';
