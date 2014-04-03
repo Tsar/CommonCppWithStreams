@@ -63,7 +63,7 @@ public DataType getFunctionType(String typeStr) {
 s             : {init();} (variables_def | function_def)* EOF {finish();};
 
 variables_def : TYPE n1=NAME ('=' expr {symbolTable.declareVariable($n1.text, $TYPE.text, true);} | {symbolTable.declareVariable($n1.text, $TYPE.text, false);}) (',' n2=NAME ('=' expr {symbolTable.declareVariable($n2.text, $TYPE.text, true);} | {symbolTable.declareVariable($n2.text, $TYPE.text, false);}))* ';';
-function_def  : ft=TYPE fn=NAME '(' {fa = new FuncArgs(this);} (((t1=TYPE n1=NAME {fa.add($n1.text, $t1.text);} (',' t2=TYPE n2=NAME {fa.add($n2.text, $t2.text);})*) | (t3=TYPE n3=NAME '=' expr {fa.add($n3.text, $t3.text);})) (',' t4=TYPE n4=NAME '=' expr {fa.add($n4.text, $t4.text);})*)? ')' {symbolTable.declareFunction($fn.text, $ft.text, fa);} block;
+function_def  : ft=TYPE fn=NAME '(' {fa = new FuncArgs(this);} (((t1=TYPE n1=NAME {fa.add($n1.text, $t1.text, false);} (',' t2=TYPE n2=NAME {fa.add($n2.text, $t2.text, false);})*) | (t3=TYPE n3=NAME '=' expr {fa.add($n3.text, $t3.text, true);})) (',' t4=TYPE n4=NAME '=' expr {fa.add($n4.text, $t4.text, true);})*)? ')' {symbolTable.declareFunction($fn.text, $ft.text, fa);} block;
 
 block         : '{' statement* '}';
 statement     : variables_def | expr ';' | RETURN expr? ';' | for_ | while_ | if_ | stream_read | stream_write | BREAK ';' | CONTINUE ';' | block | ';';

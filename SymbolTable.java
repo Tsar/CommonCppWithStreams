@@ -10,31 +10,12 @@ public class SymbolTable {
         symbolTable = new HashMap<String, Symbol>();
         _debug_symbolList = new ArrayList<String>();
     }
-    
-    private String _debug_typeToText(DataType type) {
-    	if (type == null) {
-    		return "<null>";
-    	}
-    	switch (type) {
-    	case INT_FUNCTION:
-    		return "intF";
-    	case BOOL_FUNCTION:
-    		return "boolF";
-    	case VOID_FUNCTION:
-    		return "voidF";
-    	case INT_VARIABLE:
-    		return "intV";
-    	case BOOL_VARIABLE:
-    		return "boolV";
-    	}
-    	return "<???>";
-    }
 
     public void _debug_output() {
     	System.out.println("=== SYMBOL TABLE ===");
-    	for (String name : _debug_symbolList) {
-    		System.out.format("%s\t| %s\t| %s\n", name, _debug_typeToText(symbolTable.get(name).type), symbolTable.get(name).initialized ? "true" : "false");
-    	}
+        for (String name : _debug_symbolList) {
+            symbolTable.get(name)._debug_printMe();
+        }
     }
 
     public void declareVariable(String name, String typeStr, boolean initialized) {
