@@ -12,6 +12,7 @@ options {
 private boolean compiledOK;
 private List<String> compilationErrors;
 private SymbolTable symbolTable;
+private FuncArgs fa;
 
 private void init() {
     compiledOK = true;
@@ -27,13 +28,13 @@ public void addCompilationError(String message) {
 private void finish() {
     if (!compiledOK) {
         for (String ce : compilationErrors) {
-            System.out.println(ce);
+            System.out.println("ERROR: " + ce);
         }
     }
     symbolTable._debug_output();
 }
 
-private DataType getVariableType(String typeStr) {
+public DataType getVariableType(String typeStr) {
     if (typeStr.equals("int")) {
         return DataType.INT_VARIABLE;
     } else if (typeStr.equals("bool")) {
@@ -44,12 +45,25 @@ private DataType getVariableType(String typeStr) {
     }
 }
 
+public DataType getFunctionType(String typeStr) {
+    if (typeStr.equals("int")) {
+        return DataType.INT_FUNCTION;
+    } else if (typeStr.equals("bool")) {
+        return DataType.BOOL_FUNCTION;
+    } else if (typeStr.equals("void")) {
+        return DataType.VOID_FUNCTION;
+    } else {
+        addCompilationError("Function can not have type '" + typeStr + "'");
+        return null;
+    }
+}
+
 }
 
 s             : {init();} (variables_def | function_def)* EOF {finish();};
 
-variables_def : TYPE n1=NAME ('=' expr {symbolTable.declareVariable($n1.text, getVariableType($TYPE.text), true);} | {symbolTable.declareVariable($n1.text, getVariableType($TYPE.text), false);}) (',' n2=NAME ('=' expr {symbolTable.declareVariable($n2.text, getVariableType($TYPE.text), true);} | {symbolTable.declareVariable($n2.text, getVariableType($TYPE.text), false);}))* ';';
-function_def  : TYPE NAME '(' (((TYPE NAME (',' TYPE NAME)*) | (TYPE NAME '=' expr)) (',' TYPE NAME '=' expr)*)? ')' block;
+variables_def : TYPE n1=NAME ('=' expr {symbolTable.declareVariable($n1.text, $TYPE.text, true);} | {symbolTable.declareVariable($n1.text, $TYPE.text, false);}) (',' n2=NAME ('=' expr {symbolTable.declareVariable($n2.text, $TYPE.text, true);} | {symbolTable.declareVariable($n2.text, $TYPE.text, false);}))* ';';
+function_def  : ft=TYPE fn=NAME '(' {fa = new FuncArgs(this);} (((t1=TYPE n1=NAME {fa.add($n1.text, $t1.text);} (',' t2=TYPE n2=NAME {fa.add($n2.text, $t2.text);})*) | (t3=TYPE n3=NAME '=' expr {fa.add($n3.text, $t3.text);})) (',' t4=TYPE n4=NAME '=' expr {fa.add($n4.text, $t4.text);})*)? ')' {symbolTable.declareFunction($fn.text, $ft.text, fa);} block;
 
 block         : '{' statement* '}';
 statement     : variables_def | expr ';' | RETURN expr? ';' | for_ | while_ | if_ | stream_read | stream_write | BREAK ';' | CONTINUE ';' | block | ';';

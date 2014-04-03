@@ -2,4 +2,4 @@
 set -e
 rm -f CommonCppWithStreams.tokens CommonCppWithStreamsLexer* CommonCppWithStreamsParser*
 antlr3 CommonCppWithStreams.g
-CLASSPATH=/usr/share/java/antlr3.jar javac CommonCppWithStreamsCompiler.java CommonCppWithStreamsLexer.java CommonCppWithStreamsParser.java DataType.java Symbol.java SymbolTable.java
+CLASSPATH=/usr/share/java/antlr3.jar javac CommonCppWithStreamsCompiler.java CommonCppWithStreamsLexer.java CommonCppWithStreamsParser.java DataType.java Symbol.java SymbolTable.java FuncArg.java FuncArgs.java

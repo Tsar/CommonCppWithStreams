@@ -37,11 +37,21 @@ public class SymbolTable {
     	}
     }
 
-    public void declareVariable(String name, DataType type, boolean initialized) {
+    public void declareVariable(String name, String typeStr, boolean initialized) {
+        DataType type = parser.getVariableType(typeStr);
         if (symbolTable.containsKey(name)) {
-            parser.addCompilationError("Variable '" + name + "' already declared in current scope");
+            parser.addCompilationError("Identifier '" + name + "' is already used");
         }
         symbolTable.put(name, new Symbol(name, type, initialized));
+        _debug_symbolList.add(name);
+    }
+
+    public void declareFunction(String name, String typeStr, FuncArgs funcArgs) {
+        DataType type = parser.getFunctionType(typeStr);
+        if (symbolTable.containsKey(name)) {
+            parser.addCompilationError("Identifier '" + name + "' is already used");
+        }
+        symbolTable.put(name, new Symbol(name, type, funcArgs));
         _debug_symbolList.add(name);
     }
 }
