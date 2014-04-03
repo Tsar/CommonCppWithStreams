@@ -8,10 +8,47 @@ options {
 }
 
 @members {
+
+private boolean compiledOK;
+private List<String> compilationErrors;
+private SymbolTable symbolTable;
+
+private void init() {
+    compiledOK = true;
+    compilationErrors = new ArrayList<String>();
+    symbolTable = new SymbolTable(this);
 }
 
-s             : (variables_def | function_def)* EOF;
-variables_def : TYPE NAME ('=' expr)? (',' NAME ('=' expr)?)* ';';
+public void addCompilationError(String message) {
+    compiledOK = false;
+    compilationErrors.add(message);
+}
+
+private void finish() {
+    if (!compiledOK) {
+        for (String ce : compilationErrors) {
+            System.out.println(ce);
+        }
+    }
+    symbolTable._debug_output();
+}
+
+private DataType getVariableType(String typeStr) {
+    if (typeStr.equals("int")) {
+        return DataType.INT_VARIABLE;
+    } else if (typeStr.equals("bool")) {
+        return DataType.BOOL_VARIABLE;
+    } else {
+        addCompilationError("Variable can not have type '" + typeStr + "'");
+        return null;
+    }
+}
+
+}
+
+s             : {init();} (variables_def | function_def)* EOF {finish();};
+
+variables_def : TYPE n1=NAME ('=' expr {symbolTable.declareVariable($n1.text, getVariableType($TYPE.text), true);} | {symbolTable.declareVariable($n1.text, getVariableType($TYPE.text), false);}) (',' n2=NAME ('=' expr {symbolTable.declareVariable($n2.text, getVariableType($TYPE.text), true);} | {symbolTable.declareVariable($n2.text, getVariableType($TYPE.text), false);}))* ';';
 function_def  : TYPE NAME '(' (((TYPE NAME (',' TYPE NAME)*) | (TYPE NAME '=' expr)) (',' TYPE NAME '=' expr)*)? ')' block;
 
 block         : '{' statement* '}';
