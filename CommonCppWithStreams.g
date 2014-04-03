@@ -9,43 +9,61 @@ options {
 
 @members {
 
+private static class CompilationError {
+    private int lineNumber;
+    private String message;
+
+    public CompilationError(int lineNumber, String message) {
+        this.lineNumber = lineNumber;
+        this.message = message;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+}
+
 private boolean compiledOK;
-private List<String> compilationErrors;
+private List<CompilationError> compilationErrors;
 private SymbolTable symbolTable;
 private FuncArgs fa;
 
 private void init() {
     compiledOK = true;
-    compilationErrors = new ArrayList<String>();
+    compilationErrors = new ArrayList<CompilationError>();
     symbolTable = new SymbolTable(this);
 }
 
-public void addCompilationError(String message) {
+public void addCompilationError(int lineNumber, String message) {
     compiledOK = false;
-    compilationErrors.add(message);
+    compilationErrors.add(new CompilationError(lineNumber, message));
 }
 
 private void finish() {
     if (!compiledOK) {
-        for (String ce : compilationErrors) {
-            System.out.println("ERROR: " + ce);
+        for (CompilationError ce : compilationErrors) {
+            System.out.format("error at line \%d: \%s\n", ce.getLineNumber(), ce.getMessage());
         }
     }
     symbolTable._debug_output();
 }
 
-public DataType getVariableType(String typeStr) {
+public DataType getVariableType(String typeStr, int lineNumber) {
     if (typeStr.equals("int")) {
         return DataType.INT_VARIABLE;
     } else if (typeStr.equals("bool")) {
         return DataType.BOOL_VARIABLE;
     } else {
-        addCompilationError("Variable can not have type '" + typeStr + "'");
+        addCompilationError(lineNumber, "Variable can not have type '" + typeStr + "'");
         return null;
     }
 }
 
-public DataType getFunctionType(String typeStr) {
+public DataType getFunctionType(String typeStr, int lineNumber) {
     if (typeStr.equals("int")) {
         return DataType.INT_FUNCTION;
     } else if (typeStr.equals("bool")) {
@@ -53,7 +71,7 @@ public DataType getFunctionType(String typeStr) {
     } else if (typeStr.equals("void")) {
         return DataType.VOID_FUNCTION;
     } else {
-        addCompilationError("Function can not have type '" + typeStr + "'");
+        addCompilationError(lineNumber, "Function can not have type '" + typeStr + "'");
         return null;
     }
 }
@@ -62,8 +80,8 @@ public DataType getFunctionType(String typeStr) {
 
 s             : {init();} (variables_def | function_def)* EOF {finish();};
 
-variables_def : TYPE n1=NAME ('=' expr {symbolTable.declareVariable($n1.text, $TYPE.text, true);} | {symbolTable.declareVariable($n1.text, $TYPE.text, false);}) (',' n2=NAME ('=' expr {symbolTable.declareVariable($n2.text, $TYPE.text, true);} | {symbolTable.declareVariable($n2.text, $TYPE.text, false);}))* ';';
-function_def  : ft=TYPE fn=NAME '(' {fa = new FuncArgs(this);} (((t1=TYPE n1=NAME {fa.add($n1.text, $t1.text, false);} (',' t2=TYPE n2=NAME {fa.add($n2.text, $t2.text, false);})*) | (t3=TYPE n3=NAME '=' expr {fa.add($n3.text, $t3.text, true);})) (',' t4=TYPE n4=NAME '=' expr {fa.add($n4.text, $t4.text, true);})*)? ')' {symbolTable.declareFunction($fn.text, $ft.text, fa);} block;
+variables_def : TYPE n1=NAME ('=' expr {symbolTable.declareVariable($n1.text, $TYPE.text, true, $n1.getLine());} | {symbolTable.declareVariable($n1.text, $TYPE.text, false, $n1.getLine());}) (',' n2=NAME ('=' expr {symbolTable.declareVariable($n2.text, $TYPE.text, true, $n2.getLine());} | {symbolTable.declareVariable($n2.text, $TYPE.text, false, $n2.getLine());}))* ';';
+function_def  : ft=TYPE fn=NAME '(' {fa = new FuncArgs(this);} (((t1=TYPE n1=NAME {fa.add($n1.text, $t1.text, false, $n1.getLine());} (',' t2=TYPE n2=NAME {fa.add($n2.text, $t2.text, false, $n2.getLine());})*) | (t3=TYPE n3=NAME '=' expr {fa.add($n3.text, $t3.text, true, $n3.getLine());})) (',' t4=TYPE n4=NAME '=' expr {fa.add($n4.text, $t4.text, true, $n4.getLine());})*)? ')' {symbolTable.declareFunction($fn.text, $ft.text, fa, $fn.getLine());} block;
 
 block         : '{' statement* '}';
 statement     : variables_def | expr ';' | RETURN expr? ';' | for_ | while_ | if_ | stream_read | stream_write | BREAK ';' | CONTINUE ';' | block | ';';

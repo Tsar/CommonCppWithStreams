@@ -9,7 +9,7 @@ public class FuncArgs {
         arguments = new ArrayList<FuncArg>();
     }
 
-    public void add(String name, String typeStr, boolean hasDefaultValue) {
-        arguments.add(new FuncArg(name, parser.getVariableType(typeStr), hasDefaultValue));
+    public void add(String name, String typeStr, boolean hasDefaultValue, int lineNumber) {
+        arguments.add(new FuncArg(name, parser.getVariableType(typeStr, lineNumber), hasDefaultValue));
     }
 }

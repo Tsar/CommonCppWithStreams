@@ -18,19 +18,19 @@ public class SymbolTable {
         }
     }
 
-    public void declareVariable(String name, String typeStr, boolean initialized) {
-        DataType type = parser.getVariableType(typeStr);
+    public void declareVariable(String name, String typeStr, boolean initialized, int lineNumber) {
+        DataType type = parser.getVariableType(typeStr, lineNumber);
         if (symbolTable.containsKey(name)) {
-            parser.addCompilationError("Identifier '" + name + "' is already used");
+            parser.addCompilationError(lineNumber, "Identifier '" + name + "' is already used");
         }
         symbolTable.put(name, new Symbol(name, type, initialized));
         _debug_symbolList.add(name);
     }
 
-    public void declareFunction(String name, String typeStr, FuncArgs funcArgs) {
-        DataType type = parser.getFunctionType(typeStr);
+    public void declareFunction(String name, String typeStr, FuncArgs funcArgs, int lineNumber) {
+        DataType type = parser.getFunctionType(typeStr, lineNumber);
         if (symbolTable.containsKey(name)) {
-            parser.addCompilationError("Identifier '" + name + "' is already used");
+            parser.addCompilationError(lineNumber, "Identifier '" + name + "' is already used");
         }
         symbolTable.put(name, new Symbol(name, type, funcArgs));
         _debug_symbolList.add(name);
