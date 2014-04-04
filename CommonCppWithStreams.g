@@ -7,8 +7,10 @@ options {
 
 tokens {
     BLOCK;
+    VAR_DEF;
     FUNCTION;
-    ARGUMENTS;
+    ARG;
+    ARGS;
     CALL;
     DOWHILE;
     FOR_INIT;
@@ -16,6 +18,8 @@ tokens {
     FOR_ACT;
     POSTFIX_PP;
     POSTFIX_MM;
+    STREAM_READ;
+    STREAM_WRITE;
 }
 
 @header {
@@ -94,21 +98,28 @@ public DataType getFunctionType(String typeStr, int lineNumber) {
 
 s             : (variables_def | function_def)* EOF!;
 
-variables_def : TYPE n1=NAME ('=' expr)? (',' n2=NAME ('=' expr)?)* ';';
-function_args : (((t1=TYPE n1=NAME (',' t2=TYPE n2=NAME)*) | (t3=TYPE n3=NAME '=' expr)) (',' t4=TYPE n4=NAME '=' expr)*)? -> ^(ARGUMENTS ^(NAME TYPE)*);
-function_def  : ft=TYPE fn=NAME '(' function_args ')' block -> ^(FUNCTION ^(NAME TYPE) function_args block);
+variable_def  : NAME '=' expr -> NAME expr | NAME;
+variables_def : TYPE variable_def (',' variable_def)* ';' -> ^(VAR_DEF TYPE variable_def)+;
+
+func_arg_nodv : TYPE NAME -> ^(ARG TYPE NAME);
+func_arg_dv   : TYPE NAME '=' expr -> ^(ARG TYPE NAME expr);
+function_args : (((func_arg_nodv (',' func_arg_nodv)*) | func_arg_dv) (',' func_arg_dv)*)? -> ^(ARGS func_arg_nodv* func_arg_dv*);
+function_def  : TYPE NAME '(' function_args ')' block -> ^(FUNCTION TYPE NAME function_args block);
 
 block         : '{' statement* '}' -> ^(BLOCK statement*);
-statement     : variables_def | expr ';'! | RETURN^ expr? ';'! | for_ | while_ | if_ | stream_read | stream_write | BREAK ';' | CONTINUE ';' | block | ';' -> BLOCK;
+statement     : variables_def | stream_read | stream_write | expr ';'! | RETURN^ expr? ';'! | for_ | while_ | if_ | BREAK ';'! | CONTINUE ';'! | block | ';' -> BLOCK;
 for_init      : expr? -> ^(FOR_INIT expr?);
 for_cond      : expr? -> ^(FOR_COND expr?);
 for_act       : expr? -> ^(FOR_ACT expr?);
 for_          : FOR^ '('! for_init ';'! for_cond ';'! for_act ')'! statement;
 while_        : WHILE^ '('! expr ')'! statement | DO statement WHILE '(' expr ')' ';' -> ^(DOWHILE expr statement);
 if_           : IF^ '('! expr ')'! statement (options {greedy=true;} : ELSE! statement)?;
-function_call : NAME '(' (expr (',' expr)*)? ')' -> ^(CALL NAME ^(ARGUMENTS expr*));
-stream_func   : STREAM_FUNC '(' ')';
-stream_f_func : STREAM_F_FUNC '(' FILE_NAME_STR ')';
+function_call : NAME '(' (expr (',' expr)*)? ')' -> ^(CALL NAME ^(ARGS expr*));
+stream_func   : STREAM_FUNC '('! ')'!;
+stream_f_func : STREAM_F_FUNC^ '('! FILE_NAME_STR ')'!;
+
+stream_read   : NAME ('>>' NAME)+ ';' -> ^(STREAM_READ ^(NAME NAME+));
+stream_write  : NAME ('<<' expr10)+ ';' -> ^(STREAM_WRITE ^(NAME expr10+));
 
 expr          : expr2 (('=' | '*=' | '/=' | '%=' | '+=' | '-=' | '>>=' | '<<=' | '&=' | '^=' | '|=')^ expr2)*;
 expr2         : expr3 ('||'^ expr3)*;
@@ -125,9 +136,6 @@ expr12        : ('++' | '--' | '!' | '~' | '+' | '-')^ expr13 | expr13;
 expr13        : expr14 '++' -> ^(POSTFIX_PP expr14) | expr14 '--' -> ^(POSTFIX_MM expr14) | expr14;
 expr14        : '('! expr ')'! | NAME | NUMBER | BOOL_VALUE | stream_func | stream_f_func | function_call;
 
-stream_read   : NAME ('>>' NAME)+ ';';
-stream_write  : NAME ('<<' expr)+ ';';
-
 FOR           : 'for';
 IF            : 'if';
 ELSE          : 'else';
@@ -136,7 +144,7 @@ DO            : 'do';
 BREAK         : 'break';
 CONTINUE      : 'continue';
 RETURN        : 'return';
-TYPE          : 'int' | 'bool' | 'void';
+TYPE          : 'int' | 'bool' | 'void' | 'Stream';
 BOOL_VALUE    : 'false' | 'true';
 STREAM_FUNC   : 'InputStream' | 'OutputStream';
 STREAM_F_FUNC : 'InputFileStream' | 'OutputFileStream' | 'InputBinaryFileStream' | 'OutputBinaryFileStream';
