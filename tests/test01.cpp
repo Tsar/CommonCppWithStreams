@@ -40,3 +40,5 @@ int main() {
     x >> a >> b >> c >> d;
     y << a + b << b << c << (b << c);
 }
+
+int abc = ++ ++ a;

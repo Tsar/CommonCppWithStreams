@@ -121,7 +121,7 @@ stream_f_func : STREAM_F_FUNC^ '('! FILE_NAME_STR ')'!;
 stream_read   : NAME ('>>' NAME)+ ';' -> ^(STREAM_READ ^(NAME NAME+));
 stream_write  : NAME ('<<' expr10)+ ';' -> ^(STREAM_WRITE ^(NAME expr10+));
 
-expr          : expr2 (('=' | '*=' | '/=' | '%=' | '+=' | '-=' | '>>=' | '<<=' | '&=' | '^=' | '|=')^ expr2)*;
+expr          : expr2 (('=' | '*=' | '/=' | '%=' | '+=' | '-=' | '>>=' | '<<=' | '&=' | '^=' | '|=')^ expr)*;
 expr2         : expr3 ('||'^ expr3)*;
 expr3         : expr4 ('&&'^ expr4)*;
 expr4         : expr5 ('|'^ expr5)*;
@@ -132,7 +132,7 @@ expr8         : expr9 (('<=' | '>=' | '<' | '>')^ expr9)*;
 expr9         : expr10 (('<<' | '>>')^ expr10)*;
 expr10        : expr11 (('+' | '-')^ expr11)*;
 expr11        : expr12 (('*' | '/' | '%')^ expr12)*;
-expr12        : ('++' | '--' | '!' | '~' | '+' | '-')^ expr13 | expr13;
+expr12        : ('++' | '--' | '!' | '~' | '+' | '-')^ expr12 | expr13;
 expr13        : expr14 '++' -> ^(POSTFIX_PP expr14) | expr14 '--' -> ^(POSTFIX_MM expr14) | expr14;
 expr14        : '('! expr ')'! | NAME | NUMBER | BOOL_VALUE | stream_func | stream_f_func | function_call;
 
