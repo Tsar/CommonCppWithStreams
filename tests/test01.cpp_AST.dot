@@ -1,0 +1,369 @@
+digraph {
+
+	ordering=out;
+	ranksep=.4;
+	bgcolor="lightgrey"; node [shape=box, fixedsize=false, fontsize=12, fontname="Helvetica-bold", fontcolor="blue"
+		width=.25, height=.25, color="black", fillcolor="white", style="filled, solid, bold"];
+	edge [arrowsize=.5, color="black", style="bold"]
+
+  n0 [label=""];
+  n1 [label="VAR_DEF"];
+  n1 [label="VAR_DEF"];
+  n2 [label="int"];
+  n3 [label="a"];
+  n4 [label="+"];
+  n4 [label="+"];
+  n5 [label="+"];
+  n5 [label="+"];
+  n6 [label="3"];
+  n7 [label="5"];
+  n8 [label="7"];
+  n9 [label="VAR_DEF"];
+  n9 [label="VAR_DEF"];
+  n10 [label="int"];
+  n11 [label="b"];
+  n12 [label="VAR_DEF"];
+  n12 [label="VAR_DEF"];
+  n13 [label="int"];
+  n14 [label="c"];
+  n15 [label="+="];
+  n15 [label="+="];
+  n16 [label="a"];
+  n17 [label="+="];
+  n17 [label="+="];
+  n18 [label="b"];
+  n19 [label="7"];
+  n20 [label="VAR_DEF"];
+  n20 [label="VAR_DEF"];
+  n21 [label="int"];
+  n22 [label="b"];
+  n23 [label="+"];
+  n23 [label="+"];
+  n24 [label="2"];
+  n25 [label="*"];
+  n25 [label="*"];
+  n26 [label="2"];
+  n27 [label="2"];
+  n28 [label="VAR_DEF"];
+  n28 [label="VAR_DEF"];
+  n29 [label="int"];
+  n30 [label="b2"];
+  n31 [label="*"];
+  n31 [label="*"];
+  n32 [label="+"];
+  n32 [label="+"];
+  n33 [label="2"];
+  n34 [label="2"];
+  n35 [label="2"];
+  n36 [label="FUNCTION"];
+  n36 [label="FUNCTION"];
+  n37 [label="void"];
+  n38 [label="f"];
+  n39 [label="ARGS"];
+  n39 [label="ARGS"];
+  n40 [label="ARG"];
+  n40 [label="ARG"];
+  n41 [label="int"];
+  n42 [label="x"];
+  n43 [label="ARG"];
+  n43 [label="ARG"];
+  n44 [label="int"];
+  n45 [label="y"];
+  n46 [label="ARG"];
+  n46 [label="ARG"];
+  n47 [label="bool"];
+  n48 [label="z"];
+  n49 [label="ARG"];
+  n49 [label="ARG"];
+  n50 [label="bool"];
+  n51 [label="q"];
+  n52 [label="true"];
+  n53 [label="ARG"];
+  n53 [label="ARG"];
+  n54 [label="int"];
+  n55 [label="x"];
+  n56 [label="<<"];
+  n56 [label="<<"];
+  n57 [label="*"];
+  n57 [label="*"];
+  n58 [label="*"];
+  n58 [label="*"];
+  n59 [label="7"];
+  n60 [label="6"];
+  n61 [label="9"];
+  n62 [label="4"];
+  n63 [label="BLOCK"];
+  n63 [label="BLOCK"];
+  n64 [label="return"];
+  n65 [label="FUNCTION"];
+  n65 [label="FUNCTION"];
+  n66 [label="int"];
+  n67 [label="main"];
+  n68 [label="ARGS"];
+  n69 [label="BLOCK"];
+  n69 [label="BLOCK"];
+  n70 [label="while"];
+  n70 [label="while"];
+  n71 [label="=="];
+  n71 [label="=="];
+  n72 [label="c"];
+  n73 [label="2"];
+  n74 [label="BLOCK"];
+  n74 [label="BLOCK"];
+  n75 [label="CALL"];
+  n75 [label="CALL"];
+  n76 [label="print"];
+  n77 [label="ARGS"];
+  n77 [label="ARGS"];
+  n78 [label="45"];
+  n79 [label="54"];
+  n80 [label="false"];
+  n81 [label="*"];
+  n81 [label="*"];
+  n82 [label="12"];
+  n83 [label="12"];
+  n84 [label="c"];
+  n85 [label="DOWHILE"];
+  n85 [label="DOWHILE"];
+  n86 [label="=="];
+  n86 [label="=="];
+  n87 [label="c"];
+  n88 [label="2"];
+  n89 [label="BLOCK"];
+  n89 [label="BLOCK"];
+  n90 [label="CALL"];
+  n90 [label="CALL"];
+  n91 [label="print"];
+  n92 [label="ARGS"];
+  n92 [label="ARGS"];
+  n93 [label="25"];
+  n94 [label="for"];
+  n94 [label="for"];
+  n95 [label="FOR_INIT"];
+  n96 [label="FOR_COND"];
+  n96 [label="FOR_COND"];
+  n97 [label="=="];
+  n97 [label="=="];
+  n98 [label="7"];
+  n99 [label="9"];
+  n100 [label="FOR_ACT"];
+  n100 [label="FOR_ACT"];
+  n101 [label="POSTFIX_PP"];
+  n101 [label="POSTFIX_PP"];
+  n102 [label="i"];
+  n103 [label="BLOCK"];
+  n104 [label="VAR_DEF"];
+  n104 [label="VAR_DEF"];
+  n105 [label="int"];
+  n106 [label="d"];
+  n107 [label="if"];
+  n107 [label="if"];
+  n108 [label="=="];
+  n108 [label="=="];
+  n109 [label="a"];
+  n110 [label="3"];
+  n111 [label="return"];
+  n111 [label="return"];
+  n112 [label="2"];
+  n113 [label="BLOCK"];
+  n113 [label="BLOCK"];
+  n114 [label="return"];
+  n114 [label="return"];
+  n115 [label="9"];
+  n116 [label="VAR_DEF"];
+  n116 [label="VAR_DEF"];
+  n117 [label="Stream"];
+  n118 [label="x"];
+  n119 [label="InputStream"];
+  n120 [label="VAR_DEF"];
+  n120 [label="VAR_DEF"];
+  n121 [label="Stream"];
+  n122 [label="y"];
+  n123 [label="="];
+  n123 [label="="];
+  n124 [label="y"];
+  n125 [label="OutputFileStream"];
+  n125 [label="OutputFileStream"];
+  n126 [label="\"out.txt\""];
+  n127 [label="STREAM_READ"];
+  n127 [label="STREAM_READ"];
+  n128 [label="x"];
+  n128 [label="x"];
+  n129 [label="a"];
+  n130 [label="b"];
+  n131 [label="c"];
+  n132 [label="d"];
+  n133 [label="STREAM_WRITE"];
+  n133 [label="STREAM_WRITE"];
+  n134 [label="y"];
+  n134 [label="y"];
+  n135 [label="+"];
+  n135 [label="+"];
+  n136 [label="a"];
+  n137 [label="b"];
+  n138 [label="b"];
+  n139 [label="c"];
+  n140 [label="<<"];
+  n140 [label="<<"];
+  n141 [label="b"];
+  n142 [label="c"];
+  n143 [label="VAR_DEF"];
+  n143 [label="VAR_DEF"];
+  n144 [label="int"];
+  n145 [label="abc"];
+  n146 [label="++"];
+  n146 [label="++"];
+  n147 [label="++"];
+  n147 [label="++"];
+  n148 [label="a"];
+
+  n0 -> n1 // "" -> "VAR_DEF"
+  n1 -> n2 // "VAR_DEF" -> "int"
+  n1 -> n3 // "VAR_DEF" -> "a"
+  n1 -> n4 // "VAR_DEF" -> "+"
+  n4 -> n5 // "+" -> "+"
+  n5 -> n6 // "+" -> "3"
+  n5 -> n7 // "+" -> "5"
+  n4 -> n8 // "+" -> "7"
+  n0 -> n9 // "" -> "VAR_DEF"
+  n9 -> n10 // "VAR_DEF" -> "int"
+  n9 -> n11 // "VAR_DEF" -> "b"
+  n0 -> n12 // "" -> "VAR_DEF"
+  n12 -> n13 // "VAR_DEF" -> "int"
+  n12 -> n14 // "VAR_DEF" -> "c"
+  n12 -> n15 // "VAR_DEF" -> "+="
+  n15 -> n16 // "+=" -> "a"
+  n15 -> n17 // "+=" -> "+="
+  n17 -> n18 // "+=" -> "b"
+  n17 -> n19 // "+=" -> "7"
+  n0 -> n20 // "" -> "VAR_DEF"
+  n20 -> n21 // "VAR_DEF" -> "int"
+  n20 -> n22 // "VAR_DEF" -> "b"
+  n20 -> n23 // "VAR_DEF" -> "+"
+  n23 -> n24 // "+" -> "2"
+  n23 -> n25 // "+" -> "*"
+  n25 -> n26 // "*" -> "2"
+  n25 -> n27 // "*" -> "2"
+  n0 -> n28 // "" -> "VAR_DEF"
+  n28 -> n29 // "VAR_DEF" -> "int"
+  n28 -> n30 // "VAR_DEF" -> "b2"
+  n28 -> n31 // "VAR_DEF" -> "*"
+  n31 -> n32 // "*" -> "+"
+  n32 -> n33 // "+" -> "2"
+  n32 -> n34 // "+" -> "2"
+  n31 -> n35 // "*" -> "2"
+  n0 -> n36 // "" -> "FUNCTION"
+  n36 -> n37 // "FUNCTION" -> "void"
+  n36 -> n38 // "FUNCTION" -> "f"
+  n36 -> n39 // "FUNCTION" -> "ARGS"
+  n39 -> n40 // "ARGS" -> "ARG"
+  n40 -> n41 // "ARG" -> "int"
+  n40 -> n42 // "ARG" -> "x"
+  n39 -> n43 // "ARGS" -> "ARG"
+  n43 -> n44 // "ARG" -> "int"
+  n43 -> n45 // "ARG" -> "y"
+  n39 -> n46 // "ARGS" -> "ARG"
+  n46 -> n47 // "ARG" -> "bool"
+  n46 -> n48 // "ARG" -> "z"
+  n39 -> n49 // "ARGS" -> "ARG"
+  n49 -> n50 // "ARG" -> "bool"
+  n49 -> n51 // "ARG" -> "q"
+  n49 -> n52 // "ARG" -> "true"
+  n39 -> n53 // "ARGS" -> "ARG"
+  n53 -> n54 // "ARG" -> "int"
+  n53 -> n55 // "ARG" -> "x"
+  n53 -> n56 // "ARG" -> "<<"
+  n56 -> n57 // "<<" -> "*"
+  n57 -> n58 // "*" -> "*"
+  n58 -> n59 // "*" -> "7"
+  n58 -> n60 // "*" -> "6"
+  n57 -> n61 // "*" -> "9"
+  n56 -> n62 // "<<" -> "4"
+  n36 -> n63 // "FUNCTION" -> "BLOCK"
+  n63 -> n64 // "BLOCK" -> "return"
+  n0 -> n65 // "" -> "FUNCTION"
+  n65 -> n66 // "FUNCTION" -> "int"
+  n65 -> n67 // "FUNCTION" -> "main"
+  n65 -> n68 // "FUNCTION" -> "ARGS"
+  n65 -> n69 // "FUNCTION" -> "BLOCK"
+  n69 -> n70 // "BLOCK" -> "while"
+  n70 -> n71 // "while" -> "=="
+  n71 -> n72 // "==" -> "c"
+  n71 -> n73 // "==" -> "2"
+  n70 -> n74 // "while" -> "BLOCK"
+  n74 -> n75 // "BLOCK" -> "CALL"
+  n75 -> n76 // "CALL" -> "print"
+  n75 -> n77 // "CALL" -> "ARGS"
+  n77 -> n78 // "ARGS" -> "45"
+  n77 -> n79 // "ARGS" -> "54"
+  n77 -> n80 // "ARGS" -> "false"
+  n77 -> n81 // "ARGS" -> "*"
+  n81 -> n82 // "*" -> "12"
+  n81 -> n83 // "*" -> "12"
+  n77 -> n84 // "ARGS" -> "c"
+  n69 -> n85 // "BLOCK" -> "DOWHILE"
+  n85 -> n86 // "DOWHILE" -> "=="
+  n86 -> n87 // "==" -> "c"
+  n86 -> n88 // "==" -> "2"
+  n85 -> n89 // "DOWHILE" -> "BLOCK"
+  n89 -> n90 // "BLOCK" -> "CALL"
+  n90 -> n91 // "CALL" -> "print"
+  n90 -> n92 // "CALL" -> "ARGS"
+  n92 -> n93 // "ARGS" -> "25"
+  n69 -> n94 // "BLOCK" -> "for"
+  n94 -> n95 // "for" -> "FOR_INIT"
+  n94 -> n96 // "for" -> "FOR_COND"
+  n96 -> n97 // "FOR_COND" -> "=="
+  n97 -> n98 // "==" -> "7"
+  n97 -> n99 // "==" -> "9"
+  n94 -> n100 // "for" -> "FOR_ACT"
+  n100 -> n101 // "FOR_ACT" -> "POSTFIX_PP"
+  n101 -> n102 // "POSTFIX_PP" -> "i"
+  n94 -> n103 // "for" -> "BLOCK"
+  n69 -> n104 // "BLOCK" -> "VAR_DEF"
+  n104 -> n105 // "VAR_DEF" -> "int"
+  n104 -> n106 // "VAR_DEF" -> "d"
+  n69 -> n107 // "BLOCK" -> "if"
+  n107 -> n108 // "if" -> "=="
+  n108 -> n109 // "==" -> "a"
+  n108 -> n110 // "==" -> "3"
+  n107 -> n111 // "if" -> "return"
+  n111 -> n112 // "return" -> "2"
+  n107 -> n113 // "if" -> "BLOCK"
+  n113 -> n114 // "BLOCK" -> "return"
+  n114 -> n115 // "return" -> "9"
+  n69 -> n116 // "BLOCK" -> "VAR_DEF"
+  n116 -> n117 // "VAR_DEF" -> "Stream"
+  n116 -> n118 // "VAR_DEF" -> "x"
+  n116 -> n119 // "VAR_DEF" -> "InputStream"
+  n69 -> n120 // "BLOCK" -> "VAR_DEF"
+  n120 -> n121 // "VAR_DEF" -> "Stream"
+  n120 -> n122 // "VAR_DEF" -> "y"
+  n69 -> n123 // "BLOCK" -> "="
+  n123 -> n124 // "=" -> "y"
+  n123 -> n125 // "=" -> "OutputFileStream"
+  n125 -> n126 // "OutputFileStream" -> "\"out.txt\""
+  n69 -> n127 // "BLOCK" -> "STREAM_READ"
+  n127 -> n128 // "STREAM_READ" -> "x"
+  n128 -> n129 // "x" -> "a"
+  n128 -> n130 // "x" -> "b"
+  n128 -> n131 // "x" -> "c"
+  n128 -> n132 // "x" -> "d"
+  n69 -> n133 // "BLOCK" -> "STREAM_WRITE"
+  n133 -> n134 // "STREAM_WRITE" -> "y"
+  n134 -> n135 // "y" -> "+"
+  n135 -> n136 // "+" -> "a"
+  n135 -> n137 // "+" -> "b"
+  n134 -> n138 // "y" -> "b"
+  n134 -> n139 // "y" -> "c"
+  n134 -> n140 // "y" -> "<<"
+  n140 -> n141 // "<<" -> "b"
+  n140 -> n142 // "<<" -> "c"
+  n0 -> n143 // "" -> "VAR_DEF"
+  n143 -> n144 // "VAR_DEF" -> "int"
+  n143 -> n145 // "VAR_DEF" -> "abc"
+  n143 -> n146 // "VAR_DEF" -> "++"
+  n146 -> n147 // "++" -> "++"
+  n147 -> n148 // "++" -> "a"
+
+}

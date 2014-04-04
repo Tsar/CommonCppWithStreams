@@ -1,0 +1,38 @@
+digraph {
+
+	ordering=out;
+	ranksep=.4;
+	bgcolor="lightgrey"; node [shape=box, fixedsize=false, fontsize=12, fontname="Helvetica-bold", fontcolor="blue"
+		width=.25, height=.25, color="black", fillcolor="white", style="filled, solid, bold"];
+	edge [arrowsize=.5, color="black", style="bold"]
+
+  n0 [label="FUNCTION"];
+  n1 [label="int"];
+  n2 [label="main"];
+  n3 [label="ARGS"];
+  n4 [label="BLOCK"];
+  n4 [label="BLOCK"];
+  n5 [label="VAR_DEF"];
+  n5 [label="VAR_DEF"];
+  n6 [label="int"];
+  n7 [label="i"];
+  n8 [label="0"];
+  n9 [label="++"];
+  n9 [label="++"];
+  n10 [label="++"];
+  n10 [label="++"];
+  n11 [label="i"];
+
+  n0 -> n1 // "FUNCTION" -> "int"
+  n0 -> n2 // "FUNCTION" -> "main"
+  n0 -> n3 // "FUNCTION" -> "ARGS"
+  n0 -> n4 // "FUNCTION" -> "BLOCK"
+  n4 -> n5 // "BLOCK" -> "VAR_DEF"
+  n5 -> n6 // "VAR_DEF" -> "int"
+  n5 -> n7 // "VAR_DEF" -> "i"
+  n5 -> n8 // "VAR_DEF" -> "0"
+  n4 -> n9 // "BLOCK" -> "++"
+  n9 -> n10 // "++" -> "++"
+  n10 -> n11 // "++" -> "i"
+
+}
