@@ -3,12 +3,14 @@ public class Symbol {
     public DataType type;
     public boolean initialized;
     public FuncArgs funcArgs;
+    public int blockId;
 
-    public Symbol(String name, DataType type, boolean initialized) {
+    public Symbol(String name, DataType type, boolean initialized, int blockId) {
         this.name = name;
         this.type = type;
         this.initialized = initialized;
         this.funcArgs = null;
+        this.blockId = blockId;
     }
 
     public Symbol(String name, DataType type, FuncArgs funcArgs) {
@@ -16,6 +18,18 @@ public class Symbol {
         this.type = type;
         this.initialized = false;
         this.funcArgs = funcArgs;
+    }
+    
+    public boolean isVariable() {
+    	return type == DataType.INT_VARIABLE || type == DataType.BOOL_VARIABLE;
+    }
+    
+    public boolean isFunction() {
+    	return type == DataType.INT_FUNCTION || type == DataType.BOOL_FUNCTION || type == DataType.VOID_FUNCTION;
+    }
+    
+    public boolean isStream() {
+    	return type == DataType.INPUT_STREAM || type == DataType.OUTPUT_STREAM;
     }
     
     private String _debug_typeToText(DataType type) {

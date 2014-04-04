@@ -1,12 +1,10 @@
-int f(bool abc, int x = 3) {
-    return 8;
-}
-
-bool f;
+int a = 3 + 5;
 
 int main() {
-    int a = 3;
-    int b, c = 4;
-    void x;
-    return 0;
+    while (2 == 2) {
+        print(45);
+    }
+    if (a == 3) {
+        return 2;
+    }
 }

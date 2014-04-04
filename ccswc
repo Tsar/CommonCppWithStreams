@@ -1,2 +1,2 @@
 #!/bin/bash
-CLASSPATH="/usr/share/java/antlr3.jar:." java CommonCppWithStreamsCompiler $@
+CLASSPATH="/usr/share/java/antlr3.jar:/usr/share/java/stringtemplate.jar:." java Compiler $@
