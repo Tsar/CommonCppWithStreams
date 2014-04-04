@@ -86,18 +86,18 @@ public DataType getFunctionType(String typeStr, int lineNumber) {
 
 }
 
-s             : {init();} (variables_def | function_def)* EOF! {finish();};
+s             : (variables_def | function_def)* EOF!;
 
-variables_def : TYPE n1=NAME ('=' expr {symbolTable.declareVariable($n1.text, $TYPE.text, true, $n1.getLine());} | {symbolTable.declareVariable($n1.text, $TYPE.text, false, $n1.getLine());}) (',' n2=NAME ('=' expr {symbolTable.declareVariable($n2.text, $TYPE.text, true, $n2.getLine());} | {symbolTable.declareVariable($n2.text, $TYPE.text, false, $n2.getLine());}))* ';';
-function_args : {fa = new FuncArgs(this);} (((t1=TYPE n1=NAME {fa.add($n1.text, $t1.text, false, $n1.getLine());} (',' t2=TYPE n2=NAME {fa.add($n2.text, $t2.text, false, $n2.getLine());})*) | (t3=TYPE n3=NAME '=' expr {fa.add($n3.text, $t3.text, true, $n3.getLine());})) (',' t4=TYPE n4=NAME '=' expr {fa.add($n4.text, $t4.text, true, $n4.getLine());})*)? -> ^(ARGUMENTS ^(NAME TYPE)*);
-function_def  : ft=TYPE fn=NAME '(' function_args ')' {symbolTable.declareFunction($fn.text, $ft.text, fa, $fn.getLine());} block -> ^(FUNCTION ^(NAME TYPE) function_args block);
+variables_def : TYPE n1=NAME ('=' expr)? (',' n2=NAME ('=' expr)?)* ';';
+function_args : (((t1=TYPE n1=NAME (',' t2=TYPE n2=NAME)*) | (t3=TYPE n3=NAME '=' expr)) (',' t4=TYPE n4=NAME '=' expr)*)? -> ^(ARGUMENTS ^(NAME TYPE)*);
+function_def  : ft=TYPE fn=NAME '(' function_args ')' block -> ^(FUNCTION ^(NAME TYPE) function_args block);
 
-block         : '{' {symbolTable.blockStarted();} statement* '}' {symbolTable.blockFinished();} -> ^(BLOCK statement*);
+block         : '{' statement* '}' -> ^(BLOCK statement*);
 statement     : variables_def | expr ';'! | RETURN^ expr? ';'! | for_ | while_ | if_ | stream_read | stream_write | BREAK ';' | CONTINUE ';' | block | ';';
 for_          : FOR^ '(' expr? ';' expr? ';' expr? ')' statement;
 while_        : WHILE^ '('! expr ')'! statement | DO statement WHILE '(' expr ')' ';';
 if_           : IF^ '('! expr ')'! statement (options {greedy=true;} : ELSE! statement)?;
-function_call : NAME '(' (expr (',' expr)*)? ')' {symbolTable.checkFunctionCall($NAME.text, $NAME.getLine());} -> ^(CALL NAME ^(ARGUMENTS expr*));
+function_call : NAME '(' (expr (',' expr)*)? ')' -> ^(CALL NAME ^(ARGUMENTS expr*));
 stream_func   : STREAM_FUNC '(' ')';
 stream_f_func : STREAM_F_FUNC '(' FILE_NAME_STR ')';
 
@@ -114,7 +114,7 @@ expr10        : expr11 (('+' | '-')^ expr11)*;
 expr11        : expr12 (('*' | '/' | '%')^ expr12)*;
 expr12        : ('++' | '--' | '!' | '~' | '+' | '-')? expr13;
 expr13        : expr14 ('++' | '--')?;
-expr14        : '(' expr ')' | NAME {symbolTable.checkVariableDeclared($NAME.text, $NAME.getLine());} | NUMBER | BOOL_VALUE | stream_func | stream_f_func | function_call;
+expr14        : '(' expr ')' | NAME | NUMBER | BOOL_VALUE | stream_func | stream_f_func | function_call;
 
 stream_read   : NAME ('>>' NAME)+ ';';
 stream_write  : NAME ('<<' expr)+ ';';
