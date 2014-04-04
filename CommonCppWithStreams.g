@@ -142,5 +142,6 @@ STREAM_FUNC   : 'InputStream' | 'OutputStream';
 STREAM_F_FUNC : 'InputFileStream' | 'OutputFileStream' | 'InputBinaryFileStream' | 'OutputBinaryFileStream';
 NUMBER        : ('0'..'9')+;
 NAME          : ('A'..'Z' | 'a'..'z' | '_') ('A'..'Z' | 'a'..'z' | '_' | '0'..'9')*;
-FILE_NAME_STR : '".*?"';
+FILE_NAME_STR : '"' ~('"')* '"';
+COMMENT       : (('//' ~('\r' | '\n')*) | ('/*' .* '*/')) {$channel=HIDDEN;};
 WS            : (' ' | '\t' | '\r' | '\n') {$channel=HIDDEN;};
