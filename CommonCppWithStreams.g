@@ -10,6 +10,12 @@ tokens {
     FUNCTION;
     ARGUMENTS;
     CALL;
+    DOWHILE;
+    FOR_INIT;
+    FOR_COND;
+    FOR_ACT;
+    POSTFIX_PP;
+    POSTFIX_MM;
 }
 
 @header {
@@ -93,9 +99,12 @@ function_args : (((t1=TYPE n1=NAME (',' t2=TYPE n2=NAME)*) | (t3=TYPE n3=NAME '=
 function_def  : ft=TYPE fn=NAME '(' function_args ')' block -> ^(FUNCTION ^(NAME TYPE) function_args block);
 
 block         : '{' statement* '}' -> ^(BLOCK statement*);
-statement     : variables_def | expr ';'! | RETURN^ expr? ';'! | for_ | while_ | if_ | stream_read | stream_write | BREAK ';' | CONTINUE ';' | block | ';';
-for_          : FOR^ '(' expr? ';' expr? ';' expr? ')' statement;
-while_        : WHILE^ '('! expr ')'! statement | DO statement WHILE '(' expr ')' ';';
+statement     : variables_def | expr ';'! | RETURN^ expr? ';'! | for_ | while_ | if_ | stream_read | stream_write | BREAK ';' | CONTINUE ';' | block | ';' -> BLOCK;
+for_init      : expr? -> ^(FOR_INIT expr?);
+for_cond      : expr? -> ^(FOR_COND expr?);
+for_act       : expr? -> ^(FOR_ACT expr?);
+for_          : FOR^ '('! for_init ';'! for_cond ';'! for_act ')'! statement;
+while_        : WHILE^ '('! expr ')'! statement | DO statement WHILE '(' expr ')' ';' -> ^(DOWHILE expr statement);
 if_           : IF^ '('! expr ')'! statement (options {greedy=true;} : ELSE! statement)?;
 function_call : NAME '(' (expr (',' expr)*)? ')' -> ^(CALL NAME ^(ARGUMENTS expr*));
 stream_func   : STREAM_FUNC '(' ')';
@@ -112,9 +121,9 @@ expr8         : expr9 (('<=' | '>=' | '<' | '>')^ expr9)*;
 expr9         : expr10 (('<<' | '>>')^ expr10)*;
 expr10        : expr11 (('+' | '-')^ expr11)*;
 expr11        : expr12 (('*' | '/' | '%')^ expr12)*;
-expr12        : ('++' | '--' | '!' | '~' | '+' | '-')? expr13;
-expr13        : expr14 ('++' | '--')?;
-expr14        : '(' expr ')' | NAME | NUMBER | BOOL_VALUE | stream_func | stream_f_func | function_call;
+expr12        : ('++' | '--' | '!' | '~' | '+' | '-')^ expr13 | expr13;
+expr13        : expr14 '++' -> ^(POSTFIX_PP expr14) | expr14 '--' -> ^(POSTFIX_MM expr14) | expr14;
+expr14        : '('! expr ')'! | NAME | NUMBER | BOOL_VALUE | stream_func | stream_f_func | function_call;
 
 stream_read   : NAME ('>>' NAME)+ ';';
 stream_write  : NAME ('<<' expr)+ ';';
