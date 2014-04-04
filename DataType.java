@@ -3,5 +3,7 @@ public enum DataType {
     BOOL_FUNCTION,
     VOID_FUNCTION,
     INT_VARIABLE,
-    BOOL_VARIABLE
+    BOOL_VARIABLE,
+    INPUT_STREAM,
+    OUTPUT_STREAM
 }

@@ -33,6 +33,10 @@ public class Symbol {
             return "intV";
         case BOOL_VARIABLE:
             return "boolV";
+        case INPUT_STREAM:
+            return "inputStream";
+        case OUTPUT_STREAM:
+            return "outputStream";
         }
         return "<???>";
     }
