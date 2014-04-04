@@ -25,7 +25,7 @@ int main() {
     
     //for (i = 0; i < 15; ++i) {}
     
-    //for (; 7 == 9; i++);
+    for (; 7 == 9; i++);
     
     int d;
     if (a == 3)
