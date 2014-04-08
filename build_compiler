@@ -2,8 +2,8 @@
 # This script generates 'ccswc.jar'
 
 set -e
-rm -f CommonCppWithStreams.tokens CommonCppWithStreamsLexer* CommonCppWithStreamsParser* ccswc.jar
+rm -f CommonCppWithStreams.tokens CommonCppWithStreamsLexer* CommonCppWithStreamsParser* ccswc.jar *.class
 antlr3 CommonCppWithStreams.g
 CLASSPATH=/usr/share/java/antlr3.jar:/usr/share/java/stringtemplate.jar javac Compiler.java CommonCppWithStreamsLexer.java CommonCppWithStreamsParser.java
 jar cvmf MANIFEST.MF ccswc.jar -C ./ *.class
-#rm -f CommonCppWithStreams.tokens CommonCppWithStreamsLexer*.class CommonCppWithStreamsParser*.class
+#rm -f CommonCppWithStreams.tokens CommonCppWithStreamsLexer* CommonCppWithStreamsParser* *.class
