@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar ccswc.jar $@
+java -ea -jar ccswc.jar $@

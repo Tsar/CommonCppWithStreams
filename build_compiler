@@ -6,4 +6,4 @@ rm -f CommonCppWithStreams.tokens CommonCppWithStreamsLexer* CommonCppWithStream
 antlr3 CommonCppWithStreams.g
 CLASSPATH=/usr/share/java/antlr3.jar:/usr/share/java/stringtemplate.jar javac Compiler.java CommonCppWithStreamsLexer.java CommonCppWithStreamsParser.java
 jar cvmf MANIFEST.MF ccswc.jar -C ./ *.class
-rm -f CommonCppWithStreams.tokens CommonCppWithStreamsLexer* CommonCppWithStreamsParser*
+#rm -f CommonCppWithStreams.tokens CommonCppWithStreamsLexer*.class CommonCppWithStreamsParser*.class
