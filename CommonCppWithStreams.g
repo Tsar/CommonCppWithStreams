@@ -22,11 +22,8 @@ tokens {
     STREAM_WRITE;
 }
 
-@header {
-}
-
-@members {
-}
+@header        {package gen;}
+@lexer::header {package gen;}
 
 s             : (variables_def | function_def)* EOF!;
 

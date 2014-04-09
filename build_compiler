@@ -2,10 +2,10 @@
 # This script generates 'ccswc.jar'
 
 set -e
-rm -rf bin gen
+rm -rf bin src/gen
 rm -f ccswc.jar
-antlr3 CommonCppWithStreams.g -o gen
+antlr3 CommonCppWithStreams.g -o src/gen
 mkdir bin
-CLASSPATH=/usr/share/java/antlr3.jar:/usr/share/java/stringtemplate.jar javac -d bin Compiler.java gen/CommonCppWithStreamsLexer.java gen/CommonCppWithStreamsParser.java
+CLASSPATH=/usr/share/java/antlr3.jar:/usr/share/java/stringtemplate.jar javac -d bin src/Compiler.java src/gen/CommonCppWithStreamsLexer.java src/gen/CommonCppWithStreamsParser.java
 cd bin
-jar cvmf ../MANIFEST.MF ../ccswc.jar -C ./ *.class
+jar cvmf ../MANIFEST.MF ../ccswc.jar -C ./ *.class gen/*.class
