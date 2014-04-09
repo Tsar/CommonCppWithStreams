@@ -1,4 +1,3 @@
-/CommonCppWithStreams.tokens
-/CommonCppWithStreamsLexer.java
-/CommonCppWithStreamsParser.java
-/*.class
+/bin/
+/gen/
+/ccswc.jar
