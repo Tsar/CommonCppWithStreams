@@ -6,6 +6,6 @@ rm -rf bin src/gen
 rm -f ccswc.jar
 antlr3 CommonCppWithStreams.g -o src/gen
 mkdir bin
-CLASSPATH=/usr/share/java/antlr3.jar:/usr/share/java/stringtemplate.jar javac -d bin src/Compiler.java src/gen/CommonCppWithStreamsLexer.java src/gen/CommonCppWithStreamsParser.java
+CLASSPATH=/usr/share/java/antlr3.jar:/usr/share/java/stringtemplate.jar javac -d bin src/Compiler.java src/components/*.java src/gen/*.java
 cd bin
-jar cvmf ../MANIFEST.MF ../ccswc.jar -C ./ *.class gen/*.class
+jar cvmf ../MANIFEST.MF ../ccswc.jar -C ./ *.class components/*.class gen/*.class

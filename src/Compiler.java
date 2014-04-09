@@ -2,6 +2,8 @@ import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
 
+import components.Program;
+
 import java.io.*;
 
 import gen.*;
@@ -45,23 +47,11 @@ public class Compiler {
 
                 // Save AST graph to file
                 saveASTToFile(tree, fileName + "_AST.dot", fileName + "_AST.ps");
-
-                for (int i = 0; i < tree.getChildCount(); ++i) {
-                	CommonTree child = (CommonTree)tree.getChild(i);
-                	if (child.getType() == CommonCppWithStreamsLexer.VAR_DEF) {
-                		assert(child.getChildCount() == 2 || child.getChildCount() == 3);
-                		assert(child.getChild(0).getType() == CommonCppWithStreamsLexer.TYPE);
-            			assert(child.getChild(1).getType() == CommonCppWithStreamsLexer.NAME);
-            			//
-                		if (child.getChildCount() == 3) {
-                			//
-                		}
-                	} else if (child.getType() == CommonCppWithStreamsLexer.FUNCTION) {
-                		//
-                	} else {
-                		assert(false);
-                	}
-                }
+                
+                Program p = new Program(tree);
+                
+                // TODO:
+                // p.outputAsmCode();
             } catch (Exception e) {
                 e.printStackTrace();
             }
