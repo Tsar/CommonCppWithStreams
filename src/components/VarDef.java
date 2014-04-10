@@ -26,9 +26,8 @@ public class VarDef implements CodeProvider {
 		if (defaultValue != null) {
 			w.print(TypeConverter.typeToString(type) + " " + name + " = ");
 			defaultValue.writeCppCode(w);
-			w.println(";");
 		} else {
-			w.println(TypeConverter.typeToString(type) + " " + name + ";");
+			w.print(TypeConverter.typeToString(type) + " " + name);
 		}
 	}
 }

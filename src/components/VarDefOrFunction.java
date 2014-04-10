@@ -37,9 +37,11 @@ public class VarDefOrFunction implements CodeProvider {
 	}
 
 	public void writeCppCode(PrintWriter w) {
-		if (isVarDef())
+		if (isVarDef()) {
 			varDef.writeCppCode(w);
-		else
+			w.println(";");
+		} else {
 			function.writeCppCode(w);
+		}
 	}
 }

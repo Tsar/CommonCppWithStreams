@@ -88,6 +88,7 @@ public class Statement implements CodeProvider {
 		switch (statementType) {
 			case VAR_DEF:
 				varDef.writeCppCode(w);
+				w.println(";");
 				break;
 			case EXPR:
 				expr.writeCppCode(w);
