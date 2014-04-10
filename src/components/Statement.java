@@ -15,6 +15,7 @@ public class Statement implements CodeProvider {
 		RETURN,
 		FOR,
 		WHILE,
+		DOWHILE,
 		IF,
 		BREAK,
 		CONTINUE,
@@ -57,6 +58,10 @@ public class Statement implements CodeProvider {
 				statementType = StatementType.WHILE;
 				// TODO
 				return;
+			case CommonCppWithStreamsLexer.DOWHILE:
+				statementType = StatementType.DOWHILE;
+				// TODO
+				return;
 			case CommonCppWithStreamsLexer.IF:
 				statementType = StatementType.IF;
 				// TODO
@@ -86,6 +91,7 @@ public class Statement implements CodeProvider {
 				break;
 			case EXPR:
 				expr.writeCppCode(w);
+				w.println(";");
 				break;
 			case BLOCK:
 				block.writeCppCode(w);

@@ -329,91 +329,91 @@ public class Expression implements CodeProvider {
 				w.print("(--"); expr1.writeCppCode(w); w.print(")");
 				break;
 			case OP_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" = "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_MULT_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("*="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" *= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_DIV_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("/="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" /= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_MOD_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("%="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" %= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_PLUS_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("+="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" += "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_MINUS_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("-="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" -= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_SHR_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(">>="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" >>= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_SHL_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("<<="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" <<= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_AND_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("&="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" &= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_XOR_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("^="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" ^= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_OR_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("|="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" |= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_OR:
-				w.print("("); expr1.writeCppCode(w); w.print("||"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" || "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_AND:
-				w.print("("); expr1.writeCppCode(w); w.print("&&"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" && "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_BIN_OR:
-				w.print("("); expr1.writeCppCode(w); w.print("|"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" | "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_BIN_XOR:
-				w.print("("); expr1.writeCppCode(w); w.print("^"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" ^ "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_BIN_AND:
-				w.print("("); expr1.writeCppCode(w); w.print("&"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" & "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_EQ_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("=="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" == "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_NOT_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("!="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" != "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_LE_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print("<="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" <= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_GR_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(">="); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" >= "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_LE:
-				w.print("("); expr1.writeCppCode(w); w.print("<"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" < "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_GR:
-				w.print("("); expr1.writeCppCode(w); w.print(">"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" > "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_SHL:
-				w.print("("); expr1.writeCppCode(w); w.print("<<"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" << "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_SHR:
-				w.print("("); expr1.writeCppCode(w); w.print(">>"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" >> "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_PLUS:
-				w.print("("); expr1.writeCppCode(w); w.print("+"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" + "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_MINUS:
-				w.print("("); expr1.writeCppCode(w); w.print("-"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" - "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_MULT:
-				w.print("("); expr1.writeCppCode(w); w.print("*"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" * "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_DIV:
-				w.print("("); expr1.writeCppCode(w); w.print("/"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" / "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_MOD:
-				w.print("("); expr1.writeCppCode(w); w.print("%"); expr2.writeCppCode(w); w.print(")");
+				w.print("("); expr1.writeCppCode(w); w.print(" % "); expr2.writeCppCode(w); w.print(")");
 				break;
 			case OP_UNARY_PLUS:
 				expr1.writeCppCode(w);

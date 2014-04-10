@@ -34,6 +34,8 @@ public class Program implements CodeProvider {
 	}
 
 	public void writeCppCode(PrintWriter w) {
-		w.println("hello world");
+		for (VarDefOrFunction vf : contents) {
+			vf.writeCppCode(w);
+		}
 	}
 }
