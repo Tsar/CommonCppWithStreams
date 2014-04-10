@@ -1,23 +1,16 @@
 package components;
 
 public class TypeHolder {
-	public enum Type {
-		INT,
-		BOOL,
-		VOID,
-		STREAM
-	}
-	
 	private Type type;
 	
 	public TypeHolder(String typeName) {
-		if (typeName == "int") {
+		if (typeName.equals("int")) {
 			type = Type.INT;
-		} else if (typeName == "bool") {
+		} else if (typeName.equals("bool")) {
 			type = Type.BOOL;
-		} else if (typeName == "void") {
+		} else if (typeName.equals("void")) {
 			type = Type.VOID;
-		} else if (typeName == "stream") {
+		} else if (typeName.equals("Stream")) {
 			type = Type.STREAM;
 		} else {
 			assert(false);

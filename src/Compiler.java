@@ -2,6 +2,7 @@ import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
 
+import components.ErrorsCollector;
 import components.Program;
 
 import java.io.*;
@@ -26,7 +27,7 @@ public class Compiler {
         }
 	}
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         if (args.length == 0) {
             System.err.println("Usage: ccswc <cpp-program-source-1> [<cpp-program-source-2> [<cpp-program-source-3> ...]]");
             System.exit(1);
@@ -34,6 +35,8 @@ public class Compiler {
 
         for (String fileName : args) {
             try {
+            	System.out.println("======= Compiling '" + fileName + "' =======");
+            	
                 ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(new File(fileName)));
                 CommonCppWithStreamsLexer lexer = new CommonCppWithStreamsLexer(input);
                 CommonCppWithStreamsParser parser = new CommonCppWithStreamsParser(new CommonTokenStream(lexer));
@@ -47,11 +50,17 @@ public class Compiler {
 
                 // Save AST graph to file
                 saveASTToFile(tree, fileName + "_AST.dot", fileName + "_AST.ps");
-                
-                Program p = new Program(tree);
-                
-                // TODO:
-                // p.outputAsmCode();
+
+                ErrorsCollector ec = new ErrorsCollector();
+
+                Program p = new Program(tree, ec);
+
+                if (ec.getErrorsCount() == 0) {
+                	// TODO:
+                    // p.outputAsmCode();
+                }
+
+                System.out.println("======= " + ec.getErrorsCount() + " errors; " + ec.getWarningsCount() + " warnings =======");
             } catch (Exception e) {
                 e.printStackTrace();
             }
