@@ -1,12 +1,13 @@
 package components;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
-public class Program {
+public class Program implements CodeProvider {
 	private ArrayList<VarDefOrFunction> contents;
 	
 	public Program(Tree tree, ErrorsCollector ec) {
@@ -30,5 +31,9 @@ public class Program {
 	        	}
 	        }
 		}
+	}
+
+	public void writeCppCode(PrintWriter s) {
+		s.println("hello world");
 	}
 }

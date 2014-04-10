@@ -36,7 +36,7 @@ public class Compiler {
         for (String fileName : args) {
             try {
             	System.out.println("======= Compiling '" + fileName + "' =======");
-            	
+
                 ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(new File(fileName)));
                 CommonCppWithStreamsLexer lexer = new CommonCppWithStreamsLexer(input);
                 CommonCppWithStreamsParser parser = new CommonCppWithStreamsParser(new CommonTokenStream(lexer));
@@ -47,17 +47,21 @@ public class Compiler {
                 	System.out.println("======= " + syntaxErrorsCount + " syntax errors =======");
                 	System.exit(2);
                 }
+                
+                String fileNameWE = fileName.replaceFirst("[.][^.]+$", "");  // without extension
 
                 // Save AST graph to file
-                saveASTToFile(tree, fileName + "_AST.dot", fileName + "_AST.ps");
+                saveASTToFile(tree, fileNameWE + ".AST.dot", fileNameWE + ".AST.ps");
 
                 ErrorsCollector ec = new ErrorsCollector();
 
                 Program p = new Program(tree, ec);
 
                 if (ec.getErrorsCount() == 0) {
-                	// TODO:
-                    // p.outputAsmCode();
+                	String outputFileName = fileNameWE + ".gen.cpp";
+                	PrintWriter out = new PrintWriter(outputFileName);
+                    p.writeCppCode(out);
+                    out.close();
                 }
 
                 System.out.println("======= " + ec.getErrorsCount() + " errors; " + ec.getWarningsCount() + " warnings =======");
