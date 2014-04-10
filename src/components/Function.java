@@ -5,7 +5,7 @@ import gen.CommonCppWithStreamsLexer;
 import org.antlr.runtime.tree.Tree;
 
 public class Function {
-	private TypeHolder typeHolder;
+	private Type type;
 	private String name;
 	private ArgumentsDef args;
 	private Block block;
@@ -17,7 +17,7 @@ public class Function {
 		assert(tree.getChild(2).getType() == CommonCppWithStreamsLexer.ARGS);
 		assert(tree.getChild(3).getType() == CommonCppWithStreamsLexer.BLOCK);
 		
-		typeHolder = new TypeHolder(tree.getChild(0).getText());
+		type = TypeConverter.typeFromString(tree.getChild(0).getText());
 		name = tree.getChild(1).getText();
 		args = new ArgumentsDef(tree.getChild(2), ec);
 		block = new Block(tree.getChild(3), ec);

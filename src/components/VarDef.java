@@ -5,7 +5,7 @@ import gen.CommonCppWithStreamsLexer;
 import org.antlr.runtime.tree.Tree;
 
 public class VarDef {
-	private TypeHolder typeHolder;
+	private Type type;
 	private String name;
 	private Expression defaultValue;
 	
@@ -14,8 +14,8 @@ public class VarDef {
 		assert(tree.getChild(0).getType() == CommonCppWithStreamsLexer.TYPE);
 		assert(tree.getChild(1).getType() == CommonCppWithStreamsLexer.NAME);
 
-		typeHolder = new TypeHolder(tree.getChild(0).getText());
-		ec.check(typeHolder.getType() != Type.VOID, tree.getLine(), "variable can not be void");
+		type = TypeConverter.typeFromString(tree.getChild(0).getText());
+		ec.check(type != Type.VOID, tree.getLine(), "variable can not be void");
 		name = tree.getChild(1).getText();
 
 		if (tree.getChildCount() == 3) {
