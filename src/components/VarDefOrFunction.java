@@ -1,6 +1,8 @@
 package components;
 
-public class VarDefOrFunction {
+import java.io.PrintWriter;
+
+public class VarDefOrFunction implements CodeProvider {
 	private VarDef varDef;
 	private Function function;
 
@@ -32,5 +34,12 @@ public class VarDefOrFunction {
 	
 	public Object get() {
 		return isVarDef() ? varDef : function;
+	}
+
+	public void writeCppCode(PrintWriter w) {
+		if (isVarDef())
+			varDef.writeCppCode(w);
+		else
+			function.writeCppCode(w);
 	}
 }

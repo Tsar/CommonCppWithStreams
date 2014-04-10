@@ -1,10 +1,12 @@
 package components;
 
+import java.io.PrintWriter;
+
 import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
-public class Expression {
+public class Expression implements CodeProvider {
 	private enum ExpressionType {
 		NUMBER_VALUE,
 		BOOL_VALUE,
@@ -46,7 +48,15 @@ public class Expression {
 
 		OP_EQ_EQ,       // ==
 		OP_NOT_EQ,      // !=
-		
+
+		OP_LE_EQ,       // <=
+		OP_GR_EQ,       // >=
+		OP_LE,          // <
+		OP_GR,          // >
+
+		OP_SHL,         // <<
+		OP_SHR,         // >>
+
 		OP_PLUS,        // a + b
 		OP_MINUS,       // a - b
 		
@@ -55,7 +65,10 @@ public class Expression {
 		OP_MOD,         // %
 
 		OP_UNARY_PLUS,  // +i
-		OP_UNARY_MINUS  // -i
+		OP_UNARY_MINUS, // -i
+
+		OP_NOT,         // !
+		OP_BIN_NOT      // ~
 	}
 
 	private ExpressionType exprType;
@@ -201,12 +214,18 @@ public class Expression {
 				twoSons(ExpressionType.OP_NOT_EQ, tree, ec);
 
 			} else if (tree.getText().equals("<=")) {
+				twoSons(ExpressionType.OP_LE_EQ, tree, ec);
 			} else if (tree.getText().equals(">=")) {
+				twoSons(ExpressionType.OP_GR_EQ, tree, ec);
 			} else if (tree.getText().equals("<")) {
+				twoSons(ExpressionType.OP_LE, tree, ec);
 			} else if (tree.getText().equals(">")) {
+				twoSons(ExpressionType.OP_GR, tree, ec);
 
 			} else if (tree.getText().equals("<<")) {
+				twoSons(ExpressionType.OP_SHL, tree, ec);
 			} else if (tree.getText().equals(">>")) {
+				twoSons(ExpressionType.OP_SHR, tree, ec);
 
 			} else if (tree.getText().equals("+")) {
 				if (tree.getChildCount() == 1) {
@@ -235,7 +254,9 @@ public class Expression {
 				oneSon(ExpressionType.OP_PREFIX_MM, tree, ec);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as increment operand");
 			} else if (tree.getText().equals("!")) {
+				oneSon(ExpressionType.OP_NOT, tree, ec);
 			} else if (tree.getText().equals("~")) {
+				oneSon(ExpressionType.OP_BIN_NOT, tree, ec);
 
 			} else {
 				assert(false);
@@ -260,5 +281,152 @@ public class Expression {
 				exprType == ExpressionType.OP_AND_EQ ||
 				exprType == ExpressionType.OP_XOR_EQ ||
 				exprType == ExpressionType.OP_OR_EQ;
+	}
+
+	public void writeCppCode(PrintWriter w) {
+		switch (exprType) {
+			case NUMBER_VALUE:
+				w.print(numberValue);
+				break;
+			case BOOL_VALUE:
+				w.print(boolValue ? "true" : "false");
+				break;
+			case VARIABLE:
+				w.print(varName);
+				break;
+			case INPUT_STREAM_FUNC:
+				w.print("InputStream()");
+				break;
+			case OUTPUT_STREAM_FUNC:
+				w.print("OutputStream()");
+				break;
+			case INPUT_FILE_STREAM_FUNC:
+				w.print("InputFileStream(" + fileName + ")");
+				break;
+			case OUTPUT_FILE_STREAM_FUNC:
+				w.print("OutputFileStream(" + fileName + ")");
+				break;
+			case INPUT_BINARY_FILE_STREAM_FUNC:
+				w.print("InputBinaryFileStream(" + fileName + ")");
+				break;
+			case OUTPUT_BINARY_FILE_STREAM_FUNC:
+				w.print("OutputBinaryFileStream(" + fileName + ")");
+				break;
+			case FUNCTION_CALL:
+				funcCall.writeCppCode(w);
+				break;
+
+			case OP_POSTFIX_PP:
+				w.print("("); expr1.writeCppCode(w); w.print("++)");
+				break;
+			case OP_POSTFIX_MM:
+				w.print("("); expr1.writeCppCode(w); w.print("--)");
+				break;
+			case OP_PREFIX_PP:
+				w.print("(++"); expr1.writeCppCode(w); w.print(")");
+				break;
+			case OP_PREFIX_MM:
+				w.print("(--"); expr1.writeCppCode(w); w.print(")");
+				break;
+			case OP_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_MULT_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("*="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_DIV_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("/="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_MOD_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("%="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_PLUS_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("+="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_MINUS_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("-="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_SHR_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print(">>="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_SHL_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("<<="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_AND_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("&="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_XOR_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("^="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_OR_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("|="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_OR:
+				w.print("("); expr1.writeCppCode(w); w.print("||"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_AND:
+				w.print("("); expr1.writeCppCode(w); w.print("&&"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_BIN_OR:
+				w.print("("); expr1.writeCppCode(w); w.print("|"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_BIN_XOR:
+				w.print("("); expr1.writeCppCode(w); w.print("^"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_BIN_AND:
+				w.print("("); expr1.writeCppCode(w); w.print("&"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_EQ_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("=="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_NOT_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("!="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_LE_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print("<="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_GR_EQ:
+				w.print("("); expr1.writeCppCode(w); w.print(">="); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_LE:
+				w.print("("); expr1.writeCppCode(w); w.print("<"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_GR:
+				w.print("("); expr1.writeCppCode(w); w.print(">"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_SHL:
+				w.print("("); expr1.writeCppCode(w); w.print("<<"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_SHR:
+				w.print("("); expr1.writeCppCode(w); w.print(">>"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_PLUS:
+				w.print("("); expr1.writeCppCode(w); w.print("+"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_MINUS:
+				w.print("("); expr1.writeCppCode(w); w.print("-"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_MULT:
+				w.print("("); expr1.writeCppCode(w); w.print("*"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_DIV:
+				w.print("("); expr1.writeCppCode(w); w.print("/"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_MOD:
+				w.print("("); expr1.writeCppCode(w); w.print("%"); expr2.writeCppCode(w); w.print(")");
+				break;
+			case OP_UNARY_PLUS:
+				expr1.writeCppCode(w);
+				break;
+			case OP_UNARY_MINUS:
+				w.print("(-"); expr1.writeCppCode(w); w.print(")");
+				break;
+			case OP_NOT:
+				w.print("(!"); expr1.writeCppCode(w); w.print(")");
+				break;
+			case OP_BIN_NOT:
+				w.print("(~"); expr1.writeCppCode(w); w.print(")");
+				break;
+		}
 	}
 }

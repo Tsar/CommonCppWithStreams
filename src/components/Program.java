@@ -33,7 +33,7 @@ public class Program implements CodeProvider {
 		}
 	}
 
-	public void writeCppCode(PrintWriter s) {
-		s.println("hello world");
+	public void writeCppCode(PrintWriter w) {
+		w.println("hello world");
 	}
 }

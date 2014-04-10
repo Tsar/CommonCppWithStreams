@@ -1,10 +1,12 @@
 package components;
 
+import java.io.PrintWriter;
+
 import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
-public class VarDef {
+public class VarDef implements CodeProvider {
 	private Type type;
 	private String name;
 	private Expression defaultValue;
@@ -14,12 +16,19 @@ public class VarDef {
 		assert(tree.getChild(0).getType() == CommonCppWithStreamsLexer.TYPE);
 		assert(tree.getChild(1).getType() == CommonCppWithStreamsLexer.NAME);
 
-		type = TypeConverter.typeFromString(tree.getChild(0).getText());
+		type = TypeConverter.stringToType(tree.getChild(0).getText());
 		ec.check(type != Type.VOID, tree.getLine(), "variable can not be void");
 		name = tree.getChild(1).getText();
+		defaultValue = (tree.getChildCount() == 3) ? (new Expression(tree.getChild(2), ec)) : null;
+	}
 
-		if (tree.getChildCount() == 3) {
-			defaultValue = new Expression(tree.getChild(2), ec);
+	public void writeCppCode(PrintWriter w) {
+		if (defaultValue != null) {
+			w.print(TypeConverter.typeToString(type) + " " + name + " = ");
+			defaultValue.writeCppCode(w);
+			w.println(";");
+		} else {
+			w.println(TypeConverter.typeToString(type) + " " + name + ";");
 		}
 	}
 }

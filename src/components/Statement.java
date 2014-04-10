@@ -1,10 +1,12 @@
 package components;
 
+import java.io.PrintWriter;
+
 import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
-public class Statement {
+public class Statement implements CodeProvider {
 	private enum StatementType {
 		VAR_DEF,
 		STREAM_READ,
@@ -75,5 +77,19 @@ public class Statement {
 
 		statementType = StatementType.EXPR;
 		expr = new Expression(tree, ec);
+	}
+
+	public void writeCppCode(PrintWriter w) {
+		switch (statementType) {
+			case VAR_DEF:
+				varDef.writeCppCode(w);
+				break;
+			case EXPR:
+				expr.writeCppCode(w);
+				break;
+			case BLOCK:
+				block.writeCppCode(w);
+				break;
+		}
 	}
 }
