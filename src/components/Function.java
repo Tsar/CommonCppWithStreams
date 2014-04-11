@@ -12,7 +12,7 @@ public class Function implements CodeProvider {
 	private ArgumentsDef args;
 	private Block block;
 	
-	public Function(Tree tree, ErrorsCollector ec) {
+	public Function(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		assert(tree.getChildCount() == 4);
 		assert(tree.getChild(0).getType() == CommonCppWithStreamsLexer.TYPE);
 		assert(tree.getChild(1).getType() == CommonCppWithStreamsLexer.NAME);
@@ -21,8 +21,10 @@ public class Function implements CodeProvider {
 		
 		type = TypeConverter.stringToType(tree.getChild(0).getText());
 		name = tree.getChild(1).getText();
-		args = new ArgumentsDef(tree.getChild(2), ec);
-		block = new Block(tree.getChild(3), ec);
+		st.beginBlock();
+		args = new ArgumentsDef(tree.getChild(2), ec, st);
+		block = new Block(tree.getChild(3), ec, st, true);
+		st.endBlock();
 	}
 
 	public void writeCppCode(PrintWriter w) {
@@ -31,5 +33,19 @@ public class Function implements CodeProvider {
 		w.println(") {");
 		block.writeCppCode(w);
 		w.println("}");
+	}
+
+	public void writeAsmCode(PrintWriter w) {
+		w.println("_func_" + name + ":");
+		w.println("    push ebx");
+		w.println("    push ebp");
+		w.println("    push esi");
+		w.println("    push edi");
+		
+		w.println("    pop edi");
+		w.println("    pop esi");
+		w.println("    pop ebp");
+		w.println("    pop ebx");
+		w.println("    ret");
 	}
 }

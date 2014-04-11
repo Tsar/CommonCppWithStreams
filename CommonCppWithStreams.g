@@ -73,7 +73,7 @@ DO            : 'do';
 BREAK         : 'break';
 CONTINUE      : 'continue';
 RETURN        : 'return';
-TYPE          : 'int' | 'bool' | 'void' | 'Stream';
+TYPE          : 'int' | 'bool' | 'void' | 'IStream' | 'OStream';
 BOOL_VALUE    : 'false' | 'true';
 STREAM_FUNC   : 'InputStream' | 'OutputStream';
 STREAM_F_FUNC : 'InputFileStream' | 'OutputFileStream' | 'InputBinaryFileStream' | 'OutputBinaryFileStream';

@@ -28,7 +28,7 @@ public class Statement implements CodeProvider {
 	private Expression expr;
 	private Block block;
 	
-	public Statement(Tree tree, ErrorsCollector ec) {
+	public Statement(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		varDef = null;
 		expr = null;
 		block = null;
@@ -36,7 +36,7 @@ public class Statement implements CodeProvider {
 		switch (tree.getType()) {
 			case CommonCppWithStreamsLexer.VAR_DEF:
 				statementType = StatementType.VAR_DEF;
-				varDef = new VarDef(tree, ec);
+				varDef = new VarDef(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.STREAM_READ:
 				statementType = StatementType.STREAM_READ;
@@ -76,12 +76,12 @@ public class Statement implements CodeProvider {
 				return;
 			case CommonCppWithStreamsLexer.BLOCK:
 				statementType = StatementType.BLOCK;
-				block = new Block(tree, ec);
+				block = new Block(tree, ec, st, false);
 				return;
 		}
 
 		statementType = StatementType.EXPR;
-		expr = new Expression(tree, ec);
+		expr = new Expression(tree, ec, st);
 	}
 
 	public void writeCppCode(PrintWriter w) {
@@ -98,5 +98,8 @@ public class Statement implements CodeProvider {
 				block.writeCppCode(w);
 				break;
 		}
+	}
+
+	public void writeAsmCode(PrintWriter w) {
 	}
 }

@@ -4,5 +4,6 @@ public enum Type {
 	INT,
 	BOOL,
 	VOID,
-	STREAM
+	ISTREAM,
+	OSTREAM
 }

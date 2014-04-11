@@ -8,8 +8,10 @@ public class TypeConverter {
 			return Type.BOOL;
 		} else if (typeName.equals("void")) {
 			return Type.VOID;
-		} else if (typeName.equals("Stream")) {
-			return Type.STREAM;
+		} else if (typeName.equals("IStream")) {
+			return Type.ISTREAM;
+		} else if (typeName.equals("OStream")) {
+			return Type.OSTREAM;
 		} else {
 			assert(false);
 		}
@@ -24,8 +26,10 @@ public class TypeConverter {
 				return "bool";
 			case VOID:
 				return "void";
-			case STREAM:
-				return "Stream";
+			case ISTREAM:
+				return "IStream";
+			case OSTREAM:
+				return "OStream";
 		}
 		return "<undefined-type>";
 	}

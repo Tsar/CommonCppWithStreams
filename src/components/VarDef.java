@@ -11,7 +11,7 @@ public class VarDef implements CodeProvider {
 	private String name;
 	private Expression defaultValue;
 	
-	public VarDef(Tree tree, ErrorsCollector ec) {
+	public VarDef(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		assert(tree.getChildCount() == 2 || tree.getChildCount() == 3);
 		assert(tree.getChild(0).getType() == CommonCppWithStreamsLexer.TYPE);
 		assert(tree.getChild(1).getType() == CommonCppWithStreamsLexer.NAME);
@@ -19,7 +19,13 @@ public class VarDef implements CodeProvider {
 		type = TypeConverter.stringToType(tree.getChild(0).getText());
 		ec.check(type != Type.VOID, tree.getLine(), "variable can not be void");
 		name = tree.getChild(1).getText();
-		defaultValue = (tree.getChildCount() == 3) ? (new Expression(tree.getChild(2), ec)) : null;
+		st.declareVariable(name, type, tree.getLine());
+		defaultValue = (tree.getChildCount() == 3) ? (new Expression(tree.getChild(2), ec, st)) : null;
+		
+		if (defaultValue != null) {
+			ec.check(TypeChecker.canBeAssigned(type, defaultValue.getType()), tree.getLine(), "conversion of '" + TypeConverter.typeToString(type) + "' to '" + TypeConverter.typeToString(defaultValue.getType()) + "' is not possible");
+			st.setVariableInitialized(name);
+		}
 	}
 
 	public void writeCppCode(PrintWriter w) {
@@ -28,6 +34,14 @@ public class VarDef implements CodeProvider {
 			defaultValue.writeCppCode(w);
 		} else {
 			w.print(TypeConverter.typeToString(type) + " " + name);
+		}
+	}
+
+	public void writeAsmCode(PrintWriter w) {
+		if (defaultValue != null) {
+			
+		} else {
+			
 		}
 	}
 }

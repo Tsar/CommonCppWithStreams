@@ -10,7 +10,7 @@ import org.antlr.runtime.tree.Tree;
 public class ArgumentsDef implements CodeProvider {
 	private ArrayList<VarDef> arguments;
 	
-	public ArgumentsDef(Tree tree, ErrorsCollector ec) {
+	public ArgumentsDef(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		assert(tree.getType() == CommonCppWithStreamsLexer.ARGS);
 
 		arguments = new ArrayList<VarDef>();
@@ -19,7 +19,7 @@ public class ArgumentsDef implements CodeProvider {
 			assert(child.getType() == CommonCppWithStreamsLexer.ARG);
 			assert(child.getChildCount() == 2 || child.getChildCount() == 3);
 			
-			arguments.add(new VarDef(child, ec));
+			arguments.add(new VarDef(child, ec, st));
 		}
 	}
 
@@ -29,5 +29,8 @@ public class ArgumentsDef implements CodeProvider {
 			if (i != arguments.size() - 1)
 				w.print(", ");
 		}
+	}
+
+	public void writeAsmCode(PrintWriter w) {
 	}
 }

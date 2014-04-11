@@ -71,7 +71,12 @@ public class Expression implements CodeProvider {
 		OP_BIN_NOT      // ~
 	}
 
+	private ErrorsCollector ec;
+	private SymbolTable st;
+	private Tree tree;
+
 	private ExpressionType exprType;
+	private Type type;
 
 	// if has NO children
 	private int numberValue;
@@ -85,35 +90,45 @@ public class Expression implements CodeProvider {
 	private Expression expr1;
 	private Expression expr2;
 	
-	private void oneSon(ExpressionType exprType, Tree tree, ErrorsCollector ec) {
+	private void oneSon(ExpressionType exprType) {
 		assert(tree.getChildCount() == 1);
 		this.exprType = exprType;
-		expr1 = new Expression(tree.getChild(0), ec);
+		expr1 = new Expression(tree.getChild(0), ec, st);
 	}
 	
-	private void twoSons(ExpressionType exprType, Tree tree, ErrorsCollector ec) {
+	private void twoSons(ExpressionType exprType) {
 		assert(tree.getChildCount() == 2);
 		this.exprType = exprType;
-		expr1 = new Expression(tree.getChild(0), ec);
-		expr2 = new Expression(tree.getChild(1), ec);
+		expr1 = new Expression(tree.getChild(0), ec, st);
+		expr2 = new Expression(tree.getChild(1), ec, st);
 	}
 
-	public Expression(Tree tree, ErrorsCollector ec) {
+	public Expression(Tree tree, ErrorsCollector ec, SymbolTable st) {
+		this.tree = tree;
+		this.ec = ec;
+		this.st = st;
+
 		if (tree.getChildCount() == 0) {
 			if (tree.getType() == CommonCppWithStreamsLexer.NUMBER) {
 				exprType = ExpressionType.NUMBER_VALUE;
+				type = Type.INT;
 				numberValue = Integer.parseInt(tree.getText());
 			} else if (tree.getType() == CommonCppWithStreamsLexer.BOOL_VALUE) {
 				exprType = ExpressionType.BOOL_VALUE;
+				type = Type.BOOL;
 				boolValue = tree.getText().equals("true");
 			} else if (tree.getType() == CommonCppWithStreamsLexer.NAME) {
 				exprType = ExpressionType.VARIABLE;
 				varName = tree.getText();
+				st.referenceVariable(varName);  // if not used in assignment as lvalue
+				type = st.getVariableType(varName);
 			} else if (tree.getType() == CommonCppWithStreamsLexer.STREAM_FUNC) {
 				if (tree.getText().equals("InputStream")) {
 					exprType = ExpressionType.INPUT_STREAM_FUNC;
+					type = Type.ISTREAM;
 				} else if (tree.getText().equals("OutputStream")) {
 					exprType = ExpressionType.OUTPUT_STREAM_FUNC;
+					type = Type.OSTREAM;
 				} else {
 					assert(false);
 				}
@@ -128,135 +143,178 @@ public class Expression implements CodeProvider {
 				fileName = tree.getChild(0).getText();  // TODO: remove ""
 				if (tree.getText().equals("InputFileStream")) {
 					exprType = ExpressionType.INPUT_FILE_STREAM_FUNC;
+					type = Type.ISTREAM;
 				} else if (tree.getText().equals("OutputFileStream")) {
 					exprType = ExpressionType.OUTPUT_FILE_STREAM_FUNC;
+					type = Type.OSTREAM;
 				} else if (tree.getText().equals("InputBinaryFileStream")) {
 					exprType = ExpressionType.INPUT_BINARY_FILE_STREAM_FUNC;
+					type = Type.ISTREAM;
 				} else if (tree.getText().equals("OutputBinaryFileStream")) {
 					exprType = ExpressionType.OUTPUT_BINARY_FILE_STREAM_FUNC;
+					type = Type.OSTREAM;
 				} else {
 					assert(false);
 				}
 			} else if (tree.getType() == CommonCppWithStreamsLexer.CALL) {
 				exprType = ExpressionType.FUNCTION_CALL;
 				funcCall = new FunctionCall(tree, ec);  // TODO: check type (here?)
+				type = funcCall.getFuncType();
 
 			} else if (tree.getType() == CommonCppWithStreamsLexer.POSTFIX_PP) {
-				oneSon(ExpressionType.OP_POSTFIX_PP, tree, ec);
+				oneSon(ExpressionType.OP_POSTFIX_PP);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as increment operand");
+				// TODO: check type here and further
+				type = expr1.getType();
 
 			} else if (tree.getType() == CommonCppWithStreamsLexer.POSTFIX_MM) {
-				oneSon(ExpressionType.OP_POSTFIX_MM, tree, ec);
+				oneSon(ExpressionType.OP_POSTFIX_MM);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as decrement operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("=")) {
-				twoSons(ExpressionType.OP_EQ, tree, ec);
+				twoSons(ExpressionType.OP_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("*=")) {
-				twoSons(ExpressionType.OP_MULT_EQ, tree, ec);
+				twoSons(ExpressionType.OP_MULT_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '*=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("/=")) {
-				twoSons(ExpressionType.OP_DIV_EQ, tree, ec);
+				twoSons(ExpressionType.OP_DIV_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '/=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("%=")) {
-				twoSons(ExpressionType.OP_MOD_EQ, tree, ec);
+				twoSons(ExpressionType.OP_MOD_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '%=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("+=")) {
-				twoSons(ExpressionType.OP_PLUS_EQ, tree, ec);
+				twoSons(ExpressionType.OP_PLUS_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '+=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("-=")) {
-				twoSons(ExpressionType.OP_MINUS_EQ, tree, ec);
+				twoSons(ExpressionType.OP_MINUS_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '-=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals(">>=")) {
-				twoSons(ExpressionType.OP_SHR_EQ, tree, ec);
+				twoSons(ExpressionType.OP_SHR_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '>>=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("<<=")) {
-				twoSons(ExpressionType.OP_SHL_EQ, tree, ec);
+				twoSons(ExpressionType.OP_SHL_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '<<=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("&=")) {
-				twoSons(ExpressionType.OP_AND_EQ, tree, ec);
+				twoSons(ExpressionType.OP_AND_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '&=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("^=")) {
-				twoSons(ExpressionType.OP_XOR_EQ, tree, ec);
+				twoSons(ExpressionType.OP_XOR_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '^=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("|=")) {
-				twoSons(ExpressionType.OP_OR_EQ, tree, ec);
+				twoSons(ExpressionType.OP_OR_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '|=' operand");
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("||")) {
-				twoSons(ExpressionType.OP_OR, tree, ec);
+				twoSons(ExpressionType.OP_OR);
+				type = Type.BOOL;
 
 			} else if (tree.getText().equals("&&")) {
-				twoSons(ExpressionType.OP_AND, tree, ec);
+				twoSons(ExpressionType.OP_AND);
+				type = Type.BOOL;
 
 			} else if (tree.getText().equals("|")) {
-				twoSons(ExpressionType.OP_BIN_OR, tree, ec);
+				twoSons(ExpressionType.OP_BIN_OR);
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("^")) {
-				twoSons(ExpressionType.OP_BIN_XOR, tree, ec);
+				twoSons(ExpressionType.OP_BIN_XOR);
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("&")) {
-				twoSons(ExpressionType.OP_BIN_AND, tree, ec);
+				twoSons(ExpressionType.OP_BIN_AND);
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("==")) {
-				twoSons(ExpressionType.OP_EQ_EQ, tree, ec);
+				twoSons(ExpressionType.OP_EQ_EQ);
+				type = Type.BOOL;
 			} else if (tree.getText().equals("!=")) {
-				twoSons(ExpressionType.OP_NOT_EQ, tree, ec);
+				twoSons(ExpressionType.OP_NOT_EQ);
+				type = Type.BOOL;
 
 			} else if (tree.getText().equals("<=")) {
-				twoSons(ExpressionType.OP_LE_EQ, tree, ec);
+				twoSons(ExpressionType.OP_LE_EQ);
+				type = Type.BOOL;
 			} else if (tree.getText().equals(">=")) {
-				twoSons(ExpressionType.OP_GR_EQ, tree, ec);
+				twoSons(ExpressionType.OP_GR_EQ);
+				type = Type.BOOL;
 			} else if (tree.getText().equals("<")) {
-				twoSons(ExpressionType.OP_LE, tree, ec);
+				twoSons(ExpressionType.OP_LE);
+				type = Type.BOOL;
 			} else if (tree.getText().equals(">")) {
-				twoSons(ExpressionType.OP_GR, tree, ec);
+				twoSons(ExpressionType.OP_GR);
+				type = Type.BOOL;
 
 			} else if (tree.getText().equals("<<")) {
-				twoSons(ExpressionType.OP_SHL, tree, ec);
+				twoSons(ExpressionType.OP_SHL);
+				type = expr1.getType(); // TODO: maybe just Type.INT?
 			} else if (tree.getText().equals(">>")) {
-				twoSons(ExpressionType.OP_SHR, tree, ec);
+				twoSons(ExpressionType.OP_SHR);
+				type = expr1.getType();
 
 			} else if (tree.getText().equals("+")) {
 				if (tree.getChildCount() == 1) {
-					oneSon(ExpressionType.OP_UNARY_PLUS, tree, ec);
+					oneSon(ExpressionType.OP_UNARY_PLUS);
+					type = expr1.getType();
 				} else {
-					twoSons(ExpressionType.OP_PLUS, tree, ec);
+					twoSons(ExpressionType.OP_PLUS);
+					type = ;
 				}
 			} else if (tree.getText().equals("-")) {
 				if (tree.getChildCount() == 1) {
-					oneSon(ExpressionType.OP_UNARY_MINUS, tree, ec);
+					oneSon(ExpressionType.OP_UNARY_MINUS);
+					type = ;
 				} else {
-					twoSons(ExpressionType.OP_MINUS, tree, ec);
+					twoSons(ExpressionType.OP_MINUS);
+					type = ;
 				}
 
 			} else if (tree.getText().equals("*")) {
-				twoSons(ExpressionType.OP_MULT, tree, ec);
+				twoSons(ExpressionType.OP_MULT);
+				type = ;
 			} else if (tree.getText().equals("/")) {
-				twoSons(ExpressionType.OP_DIV, tree, ec);
+				twoSons(ExpressionType.OP_DIV);
+				type = ;
 			} else if (tree.getText().equals("%")) {
-				twoSons(ExpressionType.OP_MOD, tree, ec);
+				twoSons(ExpressionType.OP_MOD);
+				type = ;
 
 			} else if (tree.getText().equals("++")) {
-				oneSon(ExpressionType.OP_PREFIX_PP, tree, ec);
+				oneSon(ExpressionType.OP_PREFIX_PP);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as increment operand");
+				type = expr1.getType();
 			} else if (tree.getText().equals("--")) {
-				oneSon(ExpressionType.OP_PREFIX_MM, tree, ec);
+				oneSon(ExpressionType.OP_PREFIX_MM);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as increment operand");
+				type = expr1.getType();
 			} else if (tree.getText().equals("!")) {
-				oneSon(ExpressionType.OP_NOT, tree, ec);
+				oneSon(ExpressionType.OP_NOT);
+				type = Type.BOOL;
 			} else if (tree.getText().equals("~")) {
-				oneSon(ExpressionType.OP_BIN_NOT, tree, ec);
+				oneSon(ExpressionType.OP_BIN_NOT);
+				type = expr1.getType();
 
 			} else {
 				assert(false);
@@ -281,6 +339,10 @@ public class Expression implements CodeProvider {
 				exprType == ExpressionType.OP_AND_EQ ||
 				exprType == ExpressionType.OP_XOR_EQ ||
 				exprType == ExpressionType.OP_OR_EQ;
+	}
+
+	public Type getType() {
+		return type;
 	}
 
 	public void writeCppCode(PrintWriter w) {
@@ -428,5 +490,8 @@ public class Expression implements CodeProvider {
 				w.print("(~"); expr1.writeCppCode(w); w.print(")");
 				break;
 		}
+	}
+	
+	public void writeAsmCode(PrintWriter w) {
 	}
 }

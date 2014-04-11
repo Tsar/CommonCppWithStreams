@@ -44,4 +44,12 @@ public class VarDefOrFunction implements CodeProvider {
 			function.writeCppCode(w);
 		}
 	}
+
+	public void writeAsmCode(PrintWriter w) {
+		if (isVarDef()) {
+			varDef.writeAsmCode(w);
+		} else {
+			function.writeAsmCode(w);
+		}
+	}
 }
