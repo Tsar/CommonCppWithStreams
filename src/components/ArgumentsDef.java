@@ -34,6 +34,6 @@ public class ArgumentsDef implements CodeProvider {
 		}
 	}
 
-	public void writeAsmCode(PrintWriter w) {
+	public void writeAsmCode(AsmWriter w) {
 	}
 }

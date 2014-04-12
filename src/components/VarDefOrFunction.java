@@ -45,7 +45,7 @@ public class VarDefOrFunction implements CodeProvider {
 		}
 	}
 
-	public void writeAsmCode(PrintWriter w) {
+	public void writeAsmCode(AsmWriter w) {
 		if (isVarDef()) {
 			varDef.writeAsmCode(w);
 		} else {

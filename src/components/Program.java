@@ -9,11 +9,9 @@ import org.antlr.runtime.tree.Tree;
 
 public class Program implements CodeProvider {
 	private ArrayList<VarDefOrFunction> contents;
-	private SymbolTable st;
-	
-	public Program(Tree tree, ErrorsCollector ec) {
+
+	public Program(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		contents = new ArrayList<VarDefOrFunction>();
-		st = new SymbolTable(ec);
 
 		st.beginBlock();
 		if (tree == null) {
@@ -43,13 +41,15 @@ public class Program implements CodeProvider {
 		}
 	}
 	
-	public void writeAsmCode(PrintWriter w) {
-	    w.println("    section .text");
-	    w.println("    global _func_main");
+	public void writeAsmCode(AsmWriter w) {
+	    w.c("section .text");
+	    w.c("global _func_main");
+	    w.ln();
 		for (VarDefOrFunction vf : contents) {
 			vf.writeAsmCode(w);
 		}
-		w.println("    section .data");
-		w.println("    end");
+		w.ln();
+		w.c("section .data");
+		w.c("end");
 	}
 }

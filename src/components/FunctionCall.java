@@ -24,6 +24,6 @@ public class FunctionCall implements CodeProvider {
 	public void writeCppCode(PrintWriter w) {
 	}
 
-	public void writeAsmCode(PrintWriter w) {
+	public void writeAsmCode(AsmWriter w) {
 	}
 }

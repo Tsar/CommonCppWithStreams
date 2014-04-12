@@ -35,11 +35,11 @@ public class Function implements CodeProvider {
 		w.println("}");
 	}
 
-	public void writeAsmCode(PrintWriter w) {
-		w.println("_func_" + name + ":");
-		w.println("    pushad");
+	public void writeAsmCode(AsmWriter w) {
+		w.l("_func_" + name);
+		w.pushad();
 
-		w.println("    popad");
-		w.println("    ret");
+		w.popad();
+		w.c("ret");
 	}
 }

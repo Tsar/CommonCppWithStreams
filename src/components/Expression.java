@@ -82,6 +82,7 @@ public class Expression implements CodeProvider {
 	private int numberValue;
 	private boolean boolValue;
 	private String varName;
+	private VarDef varDef;
 	
 	// if has children
 	private String fileName;
@@ -108,6 +109,9 @@ public class Expression implements CodeProvider {
 		this.ec = ec;
 		this.st = st;
 
+		expr1 = null;
+		expr2 = null;
+
 		if (tree.getChildCount() == 0) {
 			if (tree.getType() == CommonCppWithStreamsLexer.NUMBER) {
 				exprType = ExpressionType.NUMBER_VALUE;
@@ -121,7 +125,8 @@ public class Expression implements CodeProvider {
 				exprType = ExpressionType.VARIABLE;
 				varName = tree.getText();
 				boolean isBeingAssigned = (tree.getParent().getText().equals("=") && tree.getParent().getChild(0) == tree);
-				type = st.referenceVariableAndGetType(varName, !isBeingAssigned, tree.getLine());
+				varDef = st.referenceVariableAndGetVarDef(varName, !isBeingAssigned, tree.getLine());
+				type = varDef.getType();
 				if (isBeingAssigned) {
 					st.setVariableInitialized(varName);
 				}
@@ -558,19 +563,20 @@ public class Expression implements CodeProvider {
 				break;
 		}
 	}
-	
-	public void writeAsmCode(PrintWriter w) {
+
+	public void writeAsmCode(AsmWriter w) {
 		switch (exprType) {
 			case NUMBER_VALUE:
-				w.println("    mov eax, " + numberValue);
-				w.println("    push eax");
+				w.c("mov eax, " + numberValue);
+				w.push("eax");
 				break;
 			case BOOL_VALUE:
-				w.println("    mov eax, " + (boolValue ? "1" : "0"));
-				w.println("    push eax");
+				w.c("mov eax, " + (boolValue ? "1" : "0"));
+				w.push("eax");
 				break;
 			case VARIABLE:
-				// TODO:
+				w.c("mov eax, " + w.varAddr(varDef.getUId()));
+				w.push("eax");
 				break;
 			case INPUT_STREAM_FUNC:
 				break;
@@ -586,7 +592,7 @@ public class Expression implements CodeProvider {
 				break;
 			case FUNCTION_CALL:
 				//TODO: push arguments
-				w.println("    call _func_" + funcCall.getFunctionName());
+				w.c("call _func_" + funcCall.getFunctionName());
 				break;
 	
 			case OP_POSTFIX_PP:
@@ -647,28 +653,36 @@ public class Expression implements CodeProvider {
 			case OP_SHR:
 				break;
 			case OP_PLUS:
-				w.println("    pop ebx");
-				w.println("    pop eax");
-				w.println("    add eax, ebx");
-				w.println("    push eax");
+				expr1.writeAsmCode(w);
+				expr2.writeAsmCode(w);
+				w.pop("ebx");
+				w.pop("eax");
+				w.c("add eax, ebx");
+				w.push("eax");
 				break;
 			case OP_MINUS:
-				w.println("    pop ebx");
-				w.println("    pop eax");
-				w.println("    sub eax, ebx");
-				w.println("    push eax");
+				expr1.writeAsmCode(w);
+				expr2.writeAsmCode(w);
+				w.pop("ebx");
+				w.pop("eax");
+				w.c("sub eax, ebx");
+				w.push("eax");
 				break;
 			case OP_MULT:
-				w.println("    pop ebx");
-				w.println("    pop eax");
-				w.println("    imul eax, ebx");
-				w.println("    push eax");
+				expr1.writeAsmCode(w);
+				expr2.writeAsmCode(w);
+				w.pop("ebx");
+				w.pop("eax");
+				w.c("imul eax, ebx");
+				w.push("eax");
 				break;
 			case OP_DIV:
-				w.println("    pop ebx");
-				w.println("    pop eax");
-				w.println("    idiv eax, ebx");
-				w.println("    push eax");
+				expr1.writeAsmCode(w);
+				expr2.writeAsmCode(w);
+				w.pop("ebx");
+				w.pop("eax");
+				w.c("idiv eax, ebx");
+				w.push("eax");
 				break;
 			case OP_MOD:
 				break;

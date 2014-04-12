@@ -2,8 +2,10 @@ import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
 
+import components.AsmWriter;
 import components.ErrorsCollector;
 import components.Program;
+import components.SymbolTable;
 
 import java.io.*;
 
@@ -54,14 +56,22 @@ public class Compiler {
                 saveASTToFile(tree, fileNameWE + ".AST.dot", fileNameWE + ".AST.ps");
 
                 ErrorsCollector ec = new ErrorsCollector();
+                SymbolTable st = new SymbolTable(ec);
 
-                Program p = new Program(tree, ec);
+                Program p = new Program(tree, ec, st);
 
                 if (ec.getErrorsCount() == 0) {
-                	String outputFileName = fileNameWE + ".gen.cpp";
-                	PrintWriter out = new PrintWriter(outputFileName);
-                    p.writeCppCode(out);
-                    out.close();
+                	System.out.println("Writing C++ code...");
+                	PrintWriter cpp = new PrintWriter(fileNameWE + ".gen.cpp");
+                    p.writeCppCode(cpp);
+                    cpp.close();
+                    System.out.println("Done");
+
+                    System.out.println("Writing ASM code...");
+                    PrintWriter asm = new PrintWriter(fileNameWE + ".asm");
+                    p.writeAsmCode(new AsmWriter(asm));
+                    asm.close();
+                    System.out.println("Done");
                 }
 
                 System.out.println("======= " + ec.getErrorsCount() + " errors; " + ec.getWarningsCount() + " warnings =======");
