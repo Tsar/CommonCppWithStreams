@@ -6,9 +6,12 @@ public class SymbolTable {
 	private List<Map<String, Symbol>> lm;
 	private ErrorsCollector ec;
 
+	private boolean mainFuncDefined;
+
 	public SymbolTable(ErrorsCollector ec) {
 		this.ec = ec;
 		lm = new ArrayList<Map<String, Symbol>>();
+		mainFuncDefined = false;
 	}
 
 	private int currentBlockNumber() {
@@ -71,6 +74,11 @@ public class SymbolTable {
 			return;
 		}
 		lm.get(0).put(name, new Symbol(name, type));
+
+		if (!mainFuncDefined && name.equals("main")) {
+			mainFuncDefined = true;
+			ec.check(type == Type.INT || type == Type.VOID, lineNumber, "function 'main' can not return '" + TypeConverter.typeToString(type) + "'");
+		}
 	}
 
 	public Type referenceFunctionAndGetType(String name, int lineNumber) {
@@ -79,5 +87,9 @@ public class SymbolTable {
 		}
 		ec.check(false, lineNumber, "undefined function " + name);
 		return null;
+	}
+	
+	public boolean isMainFuncDefined() {
+		return mainFuncDefined;
 	}
 }

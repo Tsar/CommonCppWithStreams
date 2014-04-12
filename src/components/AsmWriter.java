@@ -27,6 +27,7 @@ public class AsmWriter {
 	}
 
 	public void l(String label) {
+		ln();
 		pw.println(label + ":");
 	}
 
@@ -39,6 +40,12 @@ public class AsmWriter {
 		assert(!(command.startsWith("push") || command.startsWith("pop")));
 
 		cInternal(command);
+	}
+
+	public void t(String comment) {
+		ln();
+		pw.print("    ; ");
+		pw.println(comment);
 	}
 
 	public int push(String regName) {

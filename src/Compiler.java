@@ -37,8 +37,7 @@ public class Compiler {
         System.out.println("Done\n");
         System.out.println("Converting AST to '" + psFileName + "'...");
         try {
-        	Runtime.getRuntime().exec("dot -Tps " + dotFileName + " -o " + psFileName).waitFor();
-        	System.out.println("Done\n");
+        	System.out.println((exec("dot -Tps " + dotFileName + " -o " + psFileName) == 0) ? "Done\n" : "Failed\n");
         } catch (Exception e) {
         	e.printStackTrace(System.err);
         }

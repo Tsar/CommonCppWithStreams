@@ -57,6 +57,7 @@ public class VarDef implements CodeProvider {
 			defaultValue.writeAsmCode(w);
 			w.pop("eax");
 		}
+		w.t("Variable Declaration: " + name);
 		w.setVariableSP(uid, w.push("eax"));
 	}
 }

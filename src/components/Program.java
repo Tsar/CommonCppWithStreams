@@ -33,6 +33,10 @@ public class Program implements CodeProvider {
 	        }
 		}
 		st.endBlock();
+
+		if (!st.isMainFuncDefined()) {
+			ec.fatalError("no function 'main' defined");
+		}
 	}
 
 	public void writeCppCode(PrintWriter w) {
@@ -44,9 +48,9 @@ public class Program implements CodeProvider {
 	public void writeAsmCode(AsmWriter w) {
 	    w.c("section .text");
 	    w.c("global _start");
-	    w.ln();
 	    w.l("_start");
 	    w.c("call _func_main");
+	    w.t("Exit with code 0");
 	    w.c("mov eax, 1");
 	    w.c("xor ebx, ebx"); // return code is 0 (TODO: support return code of main)
 	    w.c("int 80h");

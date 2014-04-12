@@ -6,62 +6,72 @@ digraph {
 		width=.25, height=.25, color="black", fillcolor="white", style="filled, solid, bold"];
 	edge [arrowsize=.5, color="black", style="bold"]
 
-  n0 [label=""];
-  n1 [label="VAR_DEF"];
-  n1 [label="VAR_DEF"];
-  n2 [label="int"];
-  n3 [label="a"];
-  n4 [label="+"];
-  n4 [label="+"];
-  n5 [label="4"];
-  n6 [label="5"];
-  n7 [label="VAR_DEF"];
-  n7 [label="VAR_DEF"];
-  n8 [label="int"];
-  n9 [label="c1"];
-  n10 [label="VAR_DEF"];
-  n10 [label="VAR_DEF"];
-  n11 [label="int"];
-  n12 [label="c2"];
-  n13 [label="VAR_DEF"];
-  n13 [label="VAR_DEF"];
-  n14 [label="int"];
-  n15 [label="c"];
-  n16 [label="VAR_DEF"];
-  n16 [label="VAR_DEF"];
-  n17 [label="int"];
-  n18 [label="b"];
-  n19 [label="a"];
-  n20 [label="FUNCTION"];
-  n20 [label="FUNCTION"];
+  n0 [label="FUNCTION"];
+  n1 [label="int"];
+  n2 [label="main"];
+  n3 [label="ARGS"];
+  n4 [label="BLOCK"];
+  n4 [label="BLOCK"];
+  n5 [label="VAR_DEF"];
+  n5 [label="VAR_DEF"];
+  n6 [label="int"];
+  n7 [label="a"];
+  n8 [label="+"];
+  n8 [label="+"];
+  n9 [label="4"];
+  n10 [label="5"];
+  n11 [label="VAR_DEF"];
+  n11 [label="VAR_DEF"];
+  n12 [label="int"];
+  n13 [label="c1"];
+  n14 [label="VAR_DEF"];
+  n14 [label="VAR_DEF"];
+  n15 [label="int"];
+  n16 [label="c2"];
+  n17 [label="VAR_DEF"];
+  n17 [label="VAR_DEF"];
+  n18 [label="int"];
+  n19 [label="c"];
+  n20 [label="VAR_DEF"];
+  n20 [label="VAR_DEF"];
   n21 [label="int"];
-  n22 [label="main"];
-  n23 [label="ARGS"];
-  n24 [label="BLOCK"];
+  n22 [label="b"];
+  n23 [label="a"];
+  n24 [label="="];
+  n24 [label="="];
+  n25 [label="*="];
+  n25 [label="*="];
+  n26 [label="b"];
+  n27 [label="2"];
+  n28 [label="3"];
 
-  n0 -> n1 // "" -> "VAR_DEF"
-  n1 -> n2 // "VAR_DEF" -> "int"
-  n1 -> n3 // "VAR_DEF" -> "a"
-  n1 -> n4 // "VAR_DEF" -> "+"
-  n4 -> n5 // "+" -> "4"
-  n4 -> n6 // "+" -> "5"
-  n0 -> n7 // "" -> "VAR_DEF"
-  n7 -> n8 // "VAR_DEF" -> "int"
-  n7 -> n9 // "VAR_DEF" -> "c1"
-  n0 -> n10 // "" -> "VAR_DEF"
-  n10 -> n11 // "VAR_DEF" -> "int"
-  n10 -> n12 // "VAR_DEF" -> "c2"
-  n0 -> n13 // "" -> "VAR_DEF"
-  n13 -> n14 // "VAR_DEF" -> "int"
-  n13 -> n15 // "VAR_DEF" -> "c"
-  n0 -> n16 // "" -> "VAR_DEF"
-  n16 -> n17 // "VAR_DEF" -> "int"
-  n16 -> n18 // "VAR_DEF" -> "b"
-  n16 -> n19 // "VAR_DEF" -> "a"
-  n0 -> n20 // "" -> "FUNCTION"
-  n20 -> n21 // "FUNCTION" -> "int"
-  n20 -> n22 // "FUNCTION" -> "main"
-  n20 -> n23 // "FUNCTION" -> "ARGS"
-  n20 -> n24 // "FUNCTION" -> "BLOCK"
+  n0 -> n1 // "FUNCTION" -> "int"
+  n0 -> n2 // "FUNCTION" -> "main"
+  n0 -> n3 // "FUNCTION" -> "ARGS"
+  n0 -> n4 // "FUNCTION" -> "BLOCK"
+  n4 -> n5 // "BLOCK" -> "VAR_DEF"
+  n5 -> n6 // "VAR_DEF" -> "int"
+  n5 -> n7 // "VAR_DEF" -> "a"
+  n5 -> n8 // "VAR_DEF" -> "+"
+  n8 -> n9 // "+" -> "4"
+  n8 -> n10 // "+" -> "5"
+  n4 -> n11 // "BLOCK" -> "VAR_DEF"
+  n11 -> n12 // "VAR_DEF" -> "int"
+  n11 -> n13 // "VAR_DEF" -> "c1"
+  n4 -> n14 // "BLOCK" -> "VAR_DEF"
+  n14 -> n15 // "VAR_DEF" -> "int"
+  n14 -> n16 // "VAR_DEF" -> "c2"
+  n4 -> n17 // "BLOCK" -> "VAR_DEF"
+  n17 -> n18 // "VAR_DEF" -> "int"
+  n17 -> n19 // "VAR_DEF" -> "c"
+  n4 -> n20 // "BLOCK" -> "VAR_DEF"
+  n20 -> n21 // "VAR_DEF" -> "int"
+  n20 -> n22 // "VAR_DEF" -> "b"
+  n20 -> n23 // "VAR_DEF" -> "a"
+  n4 -> n24 // "BLOCK" -> "="
+  n24 -> n25 // "=" -> "*="
+  n25 -> n26 // "*=" -> "b"
+  n25 -> n27 // "*=" -> "2"
+  n24 -> n28 // "=" -> "3"
 
 }

@@ -21,6 +21,7 @@ public class Function implements CodeProvider {
 		
 		type = TypeConverter.stringToType(tree.getChild(0).getText());
 		name = tree.getChild(1).getText();
+		st.declareFunction(name, type, tree.getLine());
 		st.beginBlock();
 		args = new ArgumentsDef(tree.getChild(2), ec, st);
 		block = new Block(tree.getChild(3), ec, st, true);
