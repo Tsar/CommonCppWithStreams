@@ -47,9 +47,11 @@ public class VarDef implements CodeProvider {
 
 	public void writeAsmCode(PrintWriter w) {
 		if (defaultValue != null) {
-			
+			defaultValue.writeAsmCode(w);
+			w.println("    pop eax");
+			// TODO
 		} else {
-			
+			// TODO
 		}
 	}
 }

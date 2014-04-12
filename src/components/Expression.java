@@ -122,6 +122,9 @@ public class Expression implements CodeProvider {
 				varName = tree.getText();
 				boolean isBeingAssigned = (tree.getParent().getText().equals("=") && tree.getParent().getChild(0) == tree);
 				type = st.referenceVariableAndGetType(varName, !isBeingAssigned, tree.getLine());
+				if (isBeingAssigned) {
+					st.setVariableInitialized(varName);
+				}
 			} else if (tree.getType() == CommonCppWithStreamsLexer.STREAM_FUNC) {
 				if (tree.getText().equals("InputStream")) {
 					exprType = ExpressionType.INPUT_STREAM_FUNC;
@@ -557,5 +560,126 @@ public class Expression implements CodeProvider {
 	}
 	
 	public void writeAsmCode(PrintWriter w) {
+		switch (exprType) {
+			case NUMBER_VALUE:
+				w.println("    mov eax, " + numberValue);
+				w.println("    push eax");
+				break;
+			case BOOL_VALUE:
+				w.println("    mov eax, " + (boolValue ? "1" : "0"));
+				w.println("    push eax");
+				break;
+			case VARIABLE:
+				// TODO:
+				break;
+			case INPUT_STREAM_FUNC:
+				break;
+			case OUTPUT_STREAM_FUNC:
+				break;
+			case INPUT_FILE_STREAM_FUNC:
+				break;
+			case OUTPUT_FILE_STREAM_FUNC:
+				break;
+			case INPUT_BINARY_FILE_STREAM_FUNC:
+				break;
+			case OUTPUT_BINARY_FILE_STREAM_FUNC:
+				break;
+			case FUNCTION_CALL:
+				//TODO: push arguments
+				w.println("    call _func_" + funcCall.getFunctionName());
+				break;
+	
+			case OP_POSTFIX_PP:
+				// TODO:
+				break;
+			case OP_POSTFIX_MM:
+				break;
+			case OP_PREFIX_PP:
+				break;
+			case OP_PREFIX_MM:
+				break;
+			case OP_EQ:
+				break;
+			case OP_MULT_EQ:
+				break;
+			case OP_DIV_EQ:
+				break;
+			case OP_MOD_EQ:
+				break;
+			case OP_PLUS_EQ:
+				break;
+			case OP_MINUS_EQ:
+				break;
+			case OP_SHR_EQ:
+				break;
+			case OP_SHL_EQ:
+				break;
+			case OP_AND_EQ:
+				break;
+			case OP_XOR_EQ:
+				break;
+			case OP_OR_EQ:
+				break;
+			case OP_OR:
+				break;
+			case OP_AND:
+				break;
+			case OP_BIN_OR:
+				break;
+			case OP_BIN_XOR:
+				break;
+			case OP_BIN_AND:
+				break;
+			case OP_EQ_EQ:
+				break;
+			case OP_NOT_EQ:
+				break;
+			case OP_LE_EQ:
+				break;
+			case OP_GR_EQ:
+				break;
+			case OP_LE:
+				break;
+			case OP_GR:
+				break;
+			case OP_SHL:
+				break;
+			case OP_SHR:
+				break;
+			case OP_PLUS:
+				w.println("    pop ebx");
+				w.println("    pop eax");
+				w.println("    add eax, ebx");
+				w.println("    push eax");
+				break;
+			case OP_MINUS:
+				w.println("    pop ebx");
+				w.println("    pop eax");
+				w.println("    sub eax, ebx");
+				w.println("    push eax");
+				break;
+			case OP_MULT:
+				w.println("    pop ebx");
+				w.println("    pop eax");
+				w.println("    imul eax, ebx");
+				w.println("    push eax");
+				break;
+			case OP_DIV:
+				w.println("    pop ebx");
+				w.println("    pop eax");
+				w.println("    idiv eax, ebx");
+				w.println("    push eax");
+				break;
+			case OP_MOD:
+				break;
+			case OP_UNARY_PLUS:
+				break;
+			case OP_UNARY_MINUS:
+				break;
+			case OP_NOT:
+				break;
+			case OP_BIN_NOT:
+				break;
+		}
 	}
 }

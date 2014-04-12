@@ -37,15 +37,9 @@ public class Function implements CodeProvider {
 
 	public void writeAsmCode(PrintWriter w) {
 		w.println("_func_" + name + ":");
-		w.println("    push ebx");
-		w.println("    push ebp");
-		w.println("    push esi");
-		w.println("    push edi");
-		
-		w.println("    pop edi");
-		w.println("    pop esi");
-		w.println("    pop ebp");
-		w.println("    pop ebx");
+		w.println("    pushad");
+
+		w.println("    popad");
 		w.println("    ret");
 	}
 }
