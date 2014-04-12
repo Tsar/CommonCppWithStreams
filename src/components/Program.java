@@ -43,7 +43,13 @@ public class Program implements CodeProvider {
 	
 	public void writeAsmCode(AsmWriter w) {
 	    w.c("section .text");
-	    w.c("global _func_main");
+	    w.c("global _start");
+	    w.ln();
+	    w.l("_start");
+	    w.c("call _func_main");
+	    w.c("mov eax, 1");
+	    w.c("xor ebx, ebx"); // return code is 0 (TODO: support return code of main)
+	    w.c("int 80h");
 	    w.ln();
 		for (VarDefOrFunction vf : contents) {
 			vf.writeAsmCode(w);

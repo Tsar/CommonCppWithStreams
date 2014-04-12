@@ -27,7 +27,7 @@ public class AsmWriter {
 	}
 
 	public void l(String label) {
-		pw.print(label + ":");
+		pw.println(label + ":");
 	}
 
 	private void cInternal(String command) {

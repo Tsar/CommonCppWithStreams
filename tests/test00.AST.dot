@@ -32,6 +32,12 @@ digraph {
   n17 [label="int"];
   n18 [label="b"];
   n19 [label="a"];
+  n20 [label="FUNCTION"];
+  n20 [label="FUNCTION"];
+  n21 [label="int"];
+  n22 [label="main"];
+  n23 [label="ARGS"];
+  n24 [label="BLOCK"];
 
   n0 -> n1 // "" -> "VAR_DEF"
   n1 -> n2 // "VAR_DEF" -> "int"
@@ -52,5 +58,10 @@ digraph {
   n16 -> n17 // "VAR_DEF" -> "int"
   n16 -> n18 // "VAR_DEF" -> "b"
   n16 -> n19 // "VAR_DEF" -> "a"
+  n0 -> n20 // "" -> "FUNCTION"
+  n20 -> n21 // "FUNCTION" -> "int"
+  n20 -> n22 // "FUNCTION" -> "main"
+  n20 -> n23 // "FUNCTION" -> "ARGS"
+  n20 -> n24 // "FUNCTION" -> "BLOCK"
 
 }

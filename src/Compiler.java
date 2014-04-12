@@ -12,6 +12,21 @@ import java.io.*;
 import gen.*;
 
 public class Compiler {
+	private static int exec(String command) throws IOException, InterruptedException {
+		Process proc = Runtime.getRuntime().exec(command);
+    	proc.waitFor();
+    	BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+        String s = null;
+        while ((s = stdInput.readLine()) != null) {
+            System.out.println(s);
+        }
+        while ((s = stdError.readLine()) != null) {
+            System.err.println(s);
+        }
+    	return proc.exitValue();
+	}
+
 	private static void saveASTToFile(CommonTree tree, String dotFileName, String psFileName) throws FileNotFoundException {
 		System.out.println("Saving AST to file '" + dotFileName + "'...");
 		DOTTreeGenerator gen = new DOTTreeGenerator();
@@ -19,11 +34,11 @@ public class Compiler {
         PrintWriter out = new PrintWriter(dotFileName);
         out.print(st);
         out.close();
-        System.out.println("Done");
+        System.out.println("Done\n");
         System.out.println("Converting AST to '" + psFileName + "'...");
         try {
-        	Runtime.getRuntime().exec("dot -Tps " + dotFileName + " -o " + psFileName);
-        	System.out.println("Done");
+        	Runtime.getRuntime().exec("dot -Tps " + dotFileName + " -o " + psFileName).waitFor();
+        	System.out.println("Done\n");
         } catch (Exception e) {
         	e.printStackTrace(System.err);
         }
@@ -65,13 +80,32 @@ public class Compiler {
                 	PrintWriter cpp = new PrintWriter(fileNameWE + ".gen.cpp");
                     p.writeCppCode(cpp);
                     cpp.close();
-                    System.out.println("Done");
+                    System.out.println("Done\n");
 
-                    System.out.println("Writing ASM code...");
-                    PrintWriter asm = new PrintWriter(fileNameWE + ".asm");
+                    String asmFileName = fileNameWE + ".asm";
+                    System.out.println("Writing ASM code to '" + asmFileName + "'...");
+                    PrintWriter asm = new PrintWriter(asmFileName);
                     p.writeAsmCode(new AsmWriter(asm));
                     asm.close();
-                    System.out.println("Done");
+                    System.out.println("Done\n");
+
+                    System.out.println("Creating object-file from asm...");
+                    try {
+                    	if (exec("yasm -f elf32 -o " + fileNameWE + ".o " + asmFileName) == 0) {
+                    		System.out.println("Done\n");
+
+                    		System.out.println("Creating exe-file from object-file...");
+                    		if (exec("ld -m elf_i386 " + fileNameWE + ".o -o " + fileNameWE) == 0) {
+                    			System.out.println("Done\n");
+                    		} else {
+                    			ec.fatalError("linking failed");
+                    		}
+                    	} else {
+                    		ec.fatalError("compilation failed");
+                    	}
+                    } catch (Exception e) {
+                    	e.printStackTrace(System.err);
+                    }
                 }
 
                 System.out.println("======= " + ec.getErrorsCount() + " errors; " + ec.getWarningsCount() + " warnings =======");

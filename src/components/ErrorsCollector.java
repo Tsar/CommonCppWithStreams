@@ -9,7 +9,7 @@ public class ErrorsCollector {
 	private int warningsCount;
 
 	public ErrorsCollector() {
-		printStream = System.out;
+		printStream = System.err;
 		errorsCount = 0;
 		warningsCount = 0;
 	}
@@ -33,7 +33,12 @@ public class ErrorsCollector {
 			++warningsCount;
 		}
 	}
-	
+
+	public void fatalError(String message) {
+		printStream.println("fatal error: " + message);
+		++errorsCount;
+	}
+
 	public int getErrorsCount() {
 		return errorsCount;
 	}
