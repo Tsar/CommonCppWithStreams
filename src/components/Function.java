@@ -48,6 +48,7 @@ public class Function implements CodeProvider {
 		w.l("_func_" + name);
 		w.pushad();
 
+		argsDef.writeAsmCode(w);
 		block.writeAsmCode(w);
 
 		w.t("Function '" + name + "' ending");

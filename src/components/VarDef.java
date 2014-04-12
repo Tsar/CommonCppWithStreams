@@ -40,6 +40,10 @@ public class VarDef implements CodeProvider {
 		return uid;
 	}
 
+	public void setUId(int uid) {
+		this.uid = uid;
+	}
+
 	public Type getType() {
 		return type;
 	}

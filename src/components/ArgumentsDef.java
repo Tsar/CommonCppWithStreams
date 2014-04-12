@@ -50,5 +50,10 @@ public class ArgumentsDef implements CodeProvider {
 	}
 
 	public void writeAsmCode(AsmWriter w) {
+		for (int i = 0; i < count(); ++i) {
+			VarDef arg = arguments.get(i);
+			arg.setUId(w.genNewUId());
+			w.setVariableSP(arg.getUId(), w.getSP() - 36 - 4 * (count() - i));
+		}
 	}
 }

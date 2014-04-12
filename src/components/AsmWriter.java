@@ -69,6 +69,10 @@ public class AsmWriter {
 		sp -= 32;
 	}
 
+	public int getSP() {
+		return sp;
+	}
+
 	public void setVariableSP(int varUId, int varSP) {
 		uidToSP.put(varUId, varSP);
 	}
