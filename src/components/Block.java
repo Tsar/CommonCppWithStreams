@@ -1,6 +1,5 @@
 package components;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import gen.CommonCppWithStreamsLexer;
@@ -23,12 +22,9 @@ public class Block implements CodeProvider {
 			st.endBlock();
 	}
 
-	public void writeCppCode(PrintWriter w) {
-		for (Statement st : contents) {
-			st.writeCppCode(w);
-		}
-	}
-
 	public void writeAsmCode(AsmWriter w) {
+		for (Statement statement : contents) {
+			statement.writeAsmCode(w);
+		}
 	}
 }

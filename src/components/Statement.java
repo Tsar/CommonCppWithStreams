@@ -1,7 +1,5 @@
 package components;
 
-import java.io.PrintWriter;
-
 import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
@@ -84,22 +82,18 @@ public class Statement implements CodeProvider {
 		expr = new Expression(tree, ec, st);
 	}
 
-	public void writeCppCode(PrintWriter w) {
+	public void writeAsmCode(AsmWriter w) {
 		switch (statementType) {
 			case VAR_DEF:
-				varDef.writeCppCode(w);
-				w.println(";");
+				varDef.writeAsmCode(w);
 				break;
 			case EXPR:
-				expr.writeCppCode(w);
-				w.println(";");
+				expr.writeAsmCode(w);
+				w.pop("eax");
 				break;
 			case BLOCK:
-				block.writeCppCode(w);
+				block.writeAsmCode(w);
 				break;
 		}
-	}
-
-	public void writeAsmCode(AsmWriter w) {
 	}
 }

@@ -21,6 +21,10 @@ public class TypeChecker {
 		return canBeAssigned(lvalue.getType(), exprType);
 	}
 
+	public static boolean canBeAssigned(VarDef lvalue, Expression expr) {
+		return canBeAssigned(lvalue.getType(), expr.getType());
+	}
+
 	public static boolean isIntOrBool(Type type) {
 		return type == Type.INT || type == Type.BOOL;
 	}

@@ -40,4 +40,8 @@ public class TypeConverter {
 	public static String typeToString(Expression expr) {
 		return typeToString(expr.getType());
 	}
+
+	public static String typeToString(VarDef varDef) {
+		return typeToString(varDef.getType());
+	}
 }

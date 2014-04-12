@@ -3,3 +3,7 @@ int f(int x) {
         return 1;
     return x * f(x - 1);
 }
+
+int main() {
+    f(2);
+}

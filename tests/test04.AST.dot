@@ -6,62 +6,87 @@ digraph {
 		width=.25, height=.25, color="black", fillcolor="white", style="filled, solid, bold"];
 	edge [arrowsize=.5, color="black", style="bold"]
 
-  n0 [label="FUNCTION"];
-  n1 [label="int"];
-  n2 [label="f"];
-  n3 [label="ARGS"];
-  n3 [label="ARGS"];
-  n4 [label="ARG"];
-  n4 [label="ARG"];
-  n5 [label="int"];
-  n6 [label="x"];
-  n7 [label="BLOCK"];
-  n7 [label="BLOCK"];
-  n8 [label="if"];
-  n8 [label="if"];
-  n9 [label="=="];
-  n9 [label="=="];
-  n10 [label="x"];
-  n11 [label="0"];
-  n12 [label="return"];
-  n12 [label="return"];
-  n13 [label="1"];
-  n14 [label="return"];
-  n14 [label="return"];
-  n15 [label="*"];
-  n15 [label="*"];
-  n16 [label="x"];
-  n17 [label="CALL"];
-  n17 [label="CALL"];
-  n18 [label="f"];
-  n19 [label="ARGS"];
-  n19 [label="ARGS"];
-  n20 [label="-"];
-  n20 [label="-"];
-  n21 [label="x"];
-  n22 [label="1"];
+  n0 [label=""];
+  n1 [label="FUNCTION"];
+  n1 [label="FUNCTION"];
+  n2 [label="int"];
+  n3 [label="f"];
+  n4 [label="ARGS"];
+  n4 [label="ARGS"];
+  n5 [label="ARG"];
+  n5 [label="ARG"];
+  n6 [label="int"];
+  n7 [label="x"];
+  n8 [label="BLOCK"];
+  n8 [label="BLOCK"];
+  n9 [label="if"];
+  n9 [label="if"];
+  n10 [label="=="];
+  n10 [label="=="];
+  n11 [label="x"];
+  n12 [label="0"];
+  n13 [label="return"];
+  n13 [label="return"];
+  n14 [label="1"];
+  n15 [label="return"];
+  n15 [label="return"];
+  n16 [label="*"];
+  n16 [label="*"];
+  n17 [label="x"];
+  n18 [label="CALL"];
+  n18 [label="CALL"];
+  n19 [label="f"];
+  n20 [label="ARGS"];
+  n20 [label="ARGS"];
+  n21 [label="-"];
+  n21 [label="-"];
+  n22 [label="x"];
+  n23 [label="1"];
+  n24 [label="FUNCTION"];
+  n24 [label="FUNCTION"];
+  n25 [label="int"];
+  n26 [label="main"];
+  n27 [label="ARGS"];
+  n28 [label="BLOCK"];
+  n28 [label="BLOCK"];
+  n29 [label="CALL"];
+  n29 [label="CALL"];
+  n30 [label="f"];
+  n31 [label="ARGS"];
+  n31 [label="ARGS"];
+  n32 [label="2"];
 
-  n0 -> n1 // "FUNCTION" -> "int"
-  n0 -> n2 // "FUNCTION" -> "f"
-  n0 -> n3 // "FUNCTION" -> "ARGS"
-  n3 -> n4 // "ARGS" -> "ARG"
-  n4 -> n5 // "ARG" -> "int"
-  n4 -> n6 // "ARG" -> "x"
-  n0 -> n7 // "FUNCTION" -> "BLOCK"
-  n7 -> n8 // "BLOCK" -> "if"
-  n8 -> n9 // "if" -> "=="
-  n9 -> n10 // "==" -> "x"
-  n9 -> n11 // "==" -> "0"
-  n8 -> n12 // "if" -> "return"
-  n12 -> n13 // "return" -> "1"
-  n7 -> n14 // "BLOCK" -> "return"
-  n14 -> n15 // "return" -> "*"
-  n15 -> n16 // "*" -> "x"
-  n15 -> n17 // "*" -> "CALL"
-  n17 -> n18 // "CALL" -> "f"
-  n17 -> n19 // "CALL" -> "ARGS"
-  n19 -> n20 // "ARGS" -> "-"
-  n20 -> n21 // "-" -> "x"
-  n20 -> n22 // "-" -> "1"
+  n0 -> n1 // "" -> "FUNCTION"
+  n1 -> n2 // "FUNCTION" -> "int"
+  n1 -> n3 // "FUNCTION" -> "f"
+  n1 -> n4 // "FUNCTION" -> "ARGS"
+  n4 -> n5 // "ARGS" -> "ARG"
+  n5 -> n6 // "ARG" -> "int"
+  n5 -> n7 // "ARG" -> "x"
+  n1 -> n8 // "FUNCTION" -> "BLOCK"
+  n8 -> n9 // "BLOCK" -> "if"
+  n9 -> n10 // "if" -> "=="
+  n10 -> n11 // "==" -> "x"
+  n10 -> n12 // "==" -> "0"
+  n9 -> n13 // "if" -> "return"
+  n13 -> n14 // "return" -> "1"
+  n8 -> n15 // "BLOCK" -> "return"
+  n15 -> n16 // "return" -> "*"
+  n16 -> n17 // "*" -> "x"
+  n16 -> n18 // "*" -> "CALL"
+  n18 -> n19 // "CALL" -> "f"
+  n18 -> n20 // "CALL" -> "ARGS"
+  n20 -> n21 // "ARGS" -> "-"
+  n21 -> n22 // "-" -> "x"
+  n21 -> n23 // "-" -> "1"
+  n0 -> n24 // "" -> "FUNCTION"
+  n24 -> n25 // "FUNCTION" -> "int"
+  n24 -> n26 // "FUNCTION" -> "main"
+  n24 -> n27 // "FUNCTION" -> "ARGS"
+  n24 -> n28 // "FUNCTION" -> "BLOCK"
+  n28 -> n29 // "BLOCK" -> "CALL"
+  n29 -> n30 // "CALL" -> "f"
+  n29 -> n31 // "CALL" -> "ARGS"
+  n31 -> n32 // "ARGS" -> "2"
 
 }

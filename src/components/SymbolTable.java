@@ -66,14 +66,14 @@ public class SymbolTable {
 		assert(false);
 	}
 
-	public void declareFunction(String name, Type type, int lineNumber) {
+	public void declareFunction(String name, Type type, Function funcDef, int lineNumber) {
 		assert(currentBlockNumber() == 0);
 
 		if (lm.get(0).containsKey(name)) {
 			ec.check(false, lineNumber, "redeclaration of '" + name + "' in the same block");
 			return;
 		}
-		lm.get(0).put(name, new Symbol(name, type));
+		lm.get(0).put(name, new Symbol(name, type, funcDef));
 
 		if (!mainFuncDefined && name.equals("main")) {
 			mainFuncDefined = true;
@@ -81,14 +81,14 @@ public class SymbolTable {
 		}
 	}
 
-	public Type referenceFunctionAndGetType(String name, int lineNumber) {
+	public Function referenceFunctionAndGetIt(String name, int lineNumber) {
 		if (lm.get(0).containsKey(name) && lm.get(0).get(name).isFunction()) {
-			return lm.get(0).get(name).getType();
+			return lm.get(0).get(name).getFuncDef();
 		}
 		ec.check(false, lineNumber, "undefined function " + name);
 		return null;
 	}
-	
+
 	public boolean isMainFuncDefined() {
 		return mainFuncDefined;
 	}

@@ -10,8 +10,12 @@ public class Symbol {
 	private boolean initialized;
 	private VarDef varDef;
 
+	// if function
+	private Function funcDef;
+
 	public Symbol(String name, Type type, VarDef varDef, boolean initialized) {
 		variable = true;
+		funcDef = null;
 
 		this.name = name;
 		this.type = type;
@@ -19,12 +23,13 @@ public class Symbol {
 		this.initialized = initialized;
 	}
 
-	public Symbol(String name, Type type/*, something else*/) {
+	public Symbol(String name, Type type, Function funcDef) {
 		variable = false;
 		varDef = null;
 
 		this.name = name;
 		this.type = type;
+		this.funcDef = funcDef;
 	}
 
 	public String getName() {
@@ -37,6 +42,10 @@ public class Symbol {
 
 	public VarDef getVarDef() {
 		return varDef;
+	}
+	
+	public Function getFuncDef() {
+		return funcDef;
 	}
 	
 	public boolean isVariable() {

@@ -1,7 +1,5 @@
 package components;
 
-import java.io.PrintWriter;
-
 import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
@@ -30,6 +28,14 @@ public class VarDef implements CodeProvider {
 		}
 	}
 
+	public boolean hasDefaultValue() {
+		return defaultValue != null;
+	}
+
+	public Expression getDefaultValue() {
+		return defaultValue;
+	}
+
 	public int getUId() {
 		return uid;
 	}
@@ -40,15 +46,6 @@ public class VarDef implements CodeProvider {
 
 	public String getName() {
 		return name;
-	}
-
-	public void writeCppCode(PrintWriter w) {
-		if (defaultValue != null) {
-			w.print(TypeConverter.typeToString(type) + " " + name + " = ");
-			defaultValue.writeCppCode(w);
-		} else {
-			w.print(TypeConverter.typeToString(type) + " " + name);
-		}
 	}
 
 	public void writeAsmCode(AsmWriter w) {

@@ -1,7 +1,5 @@
 package components;
 
-import java.io.PrintWriter;
-
 import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
@@ -167,8 +165,8 @@ public class Expression implements CodeProvider {
 				}
 			} else if (tree.getType() == CommonCppWithStreamsLexer.CALL) {
 				exprType = ExpressionType.FUNCTION_CALL;
-				funcCall = new FunctionCall(tree, ec);  // TODO: check args (here?)
-				type = st.referenceFunctionAndGetType(funcCall.getFunctionName(), tree.getLine());
+				funcCall = new FunctionCall(tree, ec, st);
+				type = funcCall.getType();
 
 			} else if (tree.getType() == CommonCppWithStreamsLexer.POSTFIX_PP) {
 				oneSon(ExpressionType.OP_POSTFIX_PP);
@@ -429,153 +427,6 @@ public class Expression implements CodeProvider {
 		return type;
 	}
 
-	public void writeCppCode(PrintWriter w) {
-		switch (exprType) {
-			case NUMBER_VALUE:
-				w.print(numberValue);
-				break;
-			case BOOL_VALUE:
-				w.print(boolValue ? "true" : "false");
-				break;
-			case VARIABLE:
-				w.print(varName);
-				break;
-			case INPUT_STREAM_FUNC:
-				w.print("InputStream()");
-				break;
-			case OUTPUT_STREAM_FUNC:
-				w.print("OutputStream()");
-				break;
-			case INPUT_FILE_STREAM_FUNC:
-				w.print("InputFileStream(" + fileName + ")");
-				break;
-			case OUTPUT_FILE_STREAM_FUNC:
-				w.print("OutputFileStream(" + fileName + ")");
-				break;
-			case INPUT_BINARY_FILE_STREAM_FUNC:
-				w.print("InputBinaryFileStream(" + fileName + ")");
-				break;
-			case OUTPUT_BINARY_FILE_STREAM_FUNC:
-				w.print("OutputBinaryFileStream(" + fileName + ")");
-				break;
-			case FUNCTION_CALL:
-				funcCall.writeCppCode(w);
-				break;
-
-			case OP_POSTFIX_PP:
-				w.print("("); expr1.writeCppCode(w); w.print("++)");
-				break;
-			case OP_POSTFIX_MM:
-				w.print("("); expr1.writeCppCode(w); w.print("--)");
-				break;
-			case OP_PREFIX_PP:
-				w.print("(++"); expr1.writeCppCode(w); w.print(")");
-				break;
-			case OP_PREFIX_MM:
-				w.print("(--"); expr1.writeCppCode(w); w.print(")");
-				break;
-			case OP_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" = "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_MULT_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" *= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_DIV_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" /= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_MOD_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" %= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_PLUS_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" += "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_MINUS_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" -= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_SHR_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" >>= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_SHL_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" <<= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_AND_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" &= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_XOR_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" ^= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_OR_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" |= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_OR:
-				w.print("("); expr1.writeCppCode(w); w.print(" || "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_AND:
-				w.print("("); expr1.writeCppCode(w); w.print(" && "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_BIN_OR:
-				w.print("("); expr1.writeCppCode(w); w.print(" | "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_BIN_XOR:
-				w.print("("); expr1.writeCppCode(w); w.print(" ^ "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_BIN_AND:
-				w.print("("); expr1.writeCppCode(w); w.print(" & "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_EQ_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" == "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_NOT_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" != "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_LE_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" <= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_GR_EQ:
-				w.print("("); expr1.writeCppCode(w); w.print(" >= "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_LE:
-				w.print("("); expr1.writeCppCode(w); w.print(" < "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_GR:
-				w.print("("); expr1.writeCppCode(w); w.print(" > "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_SHL:
-				w.print("("); expr1.writeCppCode(w); w.print(" << "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_SHR:
-				w.print("("); expr1.writeCppCode(w); w.print(" >> "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_PLUS:
-				w.print("("); expr1.writeCppCode(w); w.print(" + "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_MINUS:
-				w.print("("); expr1.writeCppCode(w); w.print(" - "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_MULT:
-				w.print("("); expr1.writeCppCode(w); w.print(" * "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_DIV:
-				w.print("("); expr1.writeCppCode(w); w.print(" / "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_MOD:
-				w.print("("); expr1.writeCppCode(w); w.print(" % "); expr2.writeCppCode(w); w.print(")");
-				break;
-			case OP_UNARY_PLUS:
-				expr1.writeCppCode(w);
-				break;
-			case OP_UNARY_MINUS:
-				w.print("(-"); expr1.writeCppCode(w); w.print(")");
-				break;
-			case OP_NOT:
-				w.print("(!"); expr1.writeCppCode(w); w.print(")");
-				break;
-			case OP_BIN_NOT:
-				w.print("(~"); expr1.writeCppCode(w); w.print(")");
-				break;
-		}
-	}
-
 	public void writeAsmCode(AsmWriter w) {
 		switch (exprType) {
 			case NUMBER_VALUE:
@@ -606,8 +457,7 @@ public class Expression implements CodeProvider {
 			case OUTPUT_BINARY_FILE_STREAM_FUNC:
 				break;
 			case FUNCTION_CALL:
-				//TODO: push arguments
-				w.c("call _func_" + funcCall.getFunctionName());
+				funcCall.writeAsmCode(w);
 				break;
 	
 			case OP_POSTFIX_PP:

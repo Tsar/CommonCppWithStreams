@@ -75,12 +75,6 @@ public class Compiler {
                 Program p = new Program(tree, ec, st);
 
                 if (ec.getErrorsCount() == 0) {
-                	System.out.println("Writing C++ code...");
-                	PrintWriter cpp = new PrintWriter(fileNameWE + ".gen.cpp");
-                    p.writeCppCode(cpp);
-                    cpp.close();
-                    System.out.println("Done\n");
-
                     String asmFileName = fileNameWE + ".asm";
                     System.out.println("Writing ASM code to '" + asmFileName + "'...");
                     PrintWriter asm = new PrintWriter(asmFileName);

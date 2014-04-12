@@ -1,6 +1,5 @@
 package components;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import gen.CommonCppWithStreamsLexer;
@@ -39,12 +38,6 @@ public class Program implements CodeProvider {
 		}
 	}
 
-	public void writeCppCode(PrintWriter w) {
-		for (VarDefOrFunction vf : contents) {
-			vf.writeCppCode(w);
-		}
-	}
-	
 	public void writeAsmCode(AsmWriter w) {
 	    w.c("section .text");
 	    w.c("global _start");
