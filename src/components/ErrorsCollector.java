@@ -27,7 +27,7 @@ public class ErrorsCollector {
 		}
 	}
 
-	public void warn(boolean condition, int lineNumber, String warningMessage) {
+	public void warnIfNot(boolean condition, int lineNumber, String warningMessage) {
 		if (!condition) {
 			printStream.println(lineNumber + ": warning: " + warningMessage);
 			++warningsCount;

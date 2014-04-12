@@ -19,6 +19,9 @@ public class TypeConverter {
 	}
 
 	public static String typeToString(Type type) {
+		if (type == null) {
+			return "<undefined-type>";
+		}
 		switch (type) {
 			case INT:
 				return "int";
@@ -32,5 +35,9 @@ public class TypeConverter {
 				return "OStream";
 		}
 		return "<undefined-type>";
+	}
+
+	public static String typeToString(Expression expr) {
+		return typeToString(expr.getType());
 	}
 }

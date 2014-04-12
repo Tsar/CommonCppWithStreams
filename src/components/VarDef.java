@@ -23,9 +23,17 @@ public class VarDef implements CodeProvider {
 		defaultValue = (tree.getChildCount() == 3) ? (new Expression(tree.getChild(2), ec, st)) : null;
 		
 		if (defaultValue != null) {
-			ec.check(TypeChecker.canBeAssigned(type, defaultValue.getType()), tree.getLine(), "conversion of '" + TypeConverter.typeToString(type) + "' to '" + TypeConverter.typeToString(defaultValue.getType()) + "' is not possible");
+			ec.check(TypeChecker.canBeAssigned(type, defaultValue), tree.getLine(), "conversion of '" + TypeConverter.typeToString(type) + "' to '" + TypeConverter.typeToString(defaultValue.getType()) + "' is not possible");
 			st.setVariableInitialized(name);
 		}
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public void writeCppCode(PrintWriter w) {

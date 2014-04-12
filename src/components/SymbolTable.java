@@ -34,9 +34,22 @@ public class SymbolTable {
 		lm.get(cb).put(name, new Symbol(name, type, false));
 	}
 
+	public Type referenceVariableAndGetType(String name, boolean checkForInitialized, int lineNumber) {
+		for (int i = currentBlockNumber(); i >= 0; --i) {
+			if (lm.get(i).containsKey(name) && lm.get(i).get(name).isVariable()) {
+				if (checkForInitialized) {
+					ec.warnIfNot(lm.get(i).get(name).isInitialized(), lineNumber, "using value of uninitialized variable '" + name + "'");
+				}
+				return lm.get(i).get(name).getType();
+			}
+		}
+		ec.check(false, lineNumber, "undefined variable " + name);
+		return null;
+	}
+
 	public void setVariableInitialized(String name) {
 		for (int i = currentBlockNumber(); i >= 0; --i) {
-			if (lm.get(i).containsKey(name)) {
+			if (lm.get(i).containsKey(name) && lm.get(i).get(name).isVariable()) {
 				lm.get(i).get(name).setInitialized();
 				return;
 			}
@@ -44,15 +57,21 @@ public class SymbolTable {
 		assert(false);
 	}
 
-	public Type getVariableType(String name) {
-		for (int i = currentBlockNumber(); i >= 0; --i) {
-			if (lm.get(i).containsKey(name)) {
-				return lm.get(i).get(name).getType();
-			}
+	public void declareFunction(String name, Type type, int lineNumber) {
+		assert(currentBlockNumber() == 0);
+
+		if (lm.get(0).containsKey(name)) {
+			ec.check(false, lineNumber, "redeclaration of '" + name + "' in the same block");
+			return;
 		}
-		return null;
+		lm.get(0).put(name, new Symbol(name, type));
 	}
 
-	public void declareFunction(String name, Type type, int lineNumber) {
+	public Type referenceFunctionAndGetType(String name, int lineNumber) {
+		if (lm.get(0).containsKey(name) && lm.get(0).get(name).isFunction()) {
+			return lm.get(0).get(name).getType();
+		}
+		ec.check(false, lineNumber, "undefined function " + name);
+		return null;
 	}
 }

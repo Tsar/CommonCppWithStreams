@@ -20,6 +20,9 @@ public class ArgumentsDef implements CodeProvider {
 			assert(child.getChildCount() == 2 || child.getChildCount() == 3);
 			
 			arguments.add(new VarDef(child, ec, st));
+			for (VarDef arg : arguments) {
+				st.setVariableInitialized(arg.getName());
+			}
 		}
 	}
 

@@ -17,6 +17,10 @@ public class FunctionCall implements CodeProvider {
 		funcName = tree.getChild(0).getText();
 	}
 
+	public String getFunctionName() {
+		return funcName;
+	}
+
 	public void writeCppCode(PrintWriter w) {
 	}
 

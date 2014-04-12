@@ -120,8 +120,8 @@ public class Expression implements CodeProvider {
 			} else if (tree.getType() == CommonCppWithStreamsLexer.NAME) {
 				exprType = ExpressionType.VARIABLE;
 				varName = tree.getText();
-				st.referenceVariable(varName);  // if not used in assignment as lvalue
-				type = st.getVariableType(varName);
+				boolean isBeingAssigned = (tree.getParent().getText().equals("=") && tree.getParent().getChild(0) == tree);
+				type = st.referenceVariableAndGetType(varName, !isBeingAssigned, tree.getLine());
 			} else if (tree.getType() == CommonCppWithStreamsLexer.STREAM_FUNC) {
 				if (tree.getText().equals("InputStream")) {
 					exprType = ExpressionType.INPUT_STREAM_FUNC;
@@ -140,7 +140,8 @@ public class Expression implements CodeProvider {
 				assert(tree.getChildCount() == 1);
 				assert(tree.getChild(0).getType() == CommonCppWithStreamsLexer.FILE_NAME_STR);
 
-				fileName = tree.getChild(0).getText();  // TODO: remove ""
+				String fileNameInQuotations = tree.getChild(0).getText();
+				fileName = fileNameInQuotations.substring(1, fileNameInQuotations.length() - 1);
 				if (tree.getText().equals("InputFileStream")) {
 					exprType = ExpressionType.INPUT_FILE_STREAM_FUNC;
 					type = Type.ISTREAM;
@@ -158,163 +159,226 @@ public class Expression implements CodeProvider {
 				}
 			} else if (tree.getType() == CommonCppWithStreamsLexer.CALL) {
 				exprType = ExpressionType.FUNCTION_CALL;
-				funcCall = new FunctionCall(tree, ec);  // TODO: check type (here?)
-				type = funcCall.getFuncType();
+				funcCall = new FunctionCall(tree, ec);  // TODO: check args (here?)
+				type = st.referenceFunctionAndGetType(funcCall.getFunctionName(), tree.getLine());
 
 			} else if (tree.getType() == CommonCppWithStreamsLexer.POSTFIX_PP) {
 				oneSon(ExpressionType.OP_POSTFIX_PP);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as increment operand");
-				// TODO: check type here and further
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "can not increment '" + TypeConverter.typeToString(expr1) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getType() == CommonCppWithStreamsLexer.POSTFIX_MM) {
 				oneSon(ExpressionType.OP_POSTFIX_MM);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as decrement operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "can not decrement '" + TypeConverter.typeToString(expr1) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("=")) {
 				twoSons(ExpressionType.OP_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '=' operand");
+				ec.check(expr1.getType() != Type.VOID, tree.getLine(), "'void' can not be assigned");
+				ec.check(TypeChecker.canBeAssigned(expr1, expr2), tree.getLine(), "can not assign '" + TypeConverter.typeToString(expr1) + "' to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("*=")) {
 				twoSons(ExpressionType.OP_MULT_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '*=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '*=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '*=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("/=")) {
 				twoSons(ExpressionType.OP_DIV_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '/=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '/=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '/=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("%=")) {
 				twoSons(ExpressionType.OP_MOD_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '%=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '%=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '%=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("+=")) {
 				twoSons(ExpressionType.OP_PLUS_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '+=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '+=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '+=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("-=")) {
 				twoSons(ExpressionType.OP_MINUS_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '-=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '-=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '-=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals(">>=")) {
 				twoSons(ExpressionType.OP_SHR_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '>>=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '>>=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '>>=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("<<=")) {
 				twoSons(ExpressionType.OP_SHL_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '<<=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '<<=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '<<=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("&=")) {
 				twoSons(ExpressionType.OP_AND_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '&=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '&=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '&=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("^=")) {
 				twoSons(ExpressionType.OP_XOR_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '^=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '^=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '^=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("|=")) {
 				twoSons(ExpressionType.OP_OR_EQ);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as left '|=' operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '|=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '|=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = expr1.getType();
 
 			} else if (tree.getText().equals("||")) {
 				twoSons(ExpressionType.OP_OR);
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '||' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '||' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.BOOL;
 
 			} else if (tree.getText().equals("&&")) {
 				twoSons(ExpressionType.OP_AND);
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '&&' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '&&' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.BOOL;
 
 			} else if (tree.getText().equals("|")) {
 				twoSons(ExpressionType.OP_BIN_OR);
-				type = expr1.getType();
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '|' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '|' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				type = Type.INT;
 
 			} else if (tree.getText().equals("^")) {
 				twoSons(ExpressionType.OP_BIN_XOR);
-				type = expr1.getType();
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '^' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '^' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				type = Type.INT;
 
 			} else if (tree.getText().equals("&")) {
 				twoSons(ExpressionType.OP_BIN_AND);
-				type = expr1.getType();
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '&' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '&' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				type = Type.INT;
 
 			} else if (tree.getText().equals("==")) {
 				twoSons(ExpressionType.OP_EQ_EQ);
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '==' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '==' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.BOOL;
 			} else if (tree.getText().equals("!=")) {
 				twoSons(ExpressionType.OP_NOT_EQ);
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '!=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '!=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.BOOL;
 
 			} else if (tree.getText().equals("<=")) {
 				twoSons(ExpressionType.OP_LE_EQ);
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '<=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '<=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.BOOL;
 			} else if (tree.getText().equals(">=")) {
 				twoSons(ExpressionType.OP_GR_EQ);
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '>=' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '>=' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.BOOL;
 			} else if (tree.getText().equals("<")) {
 				twoSons(ExpressionType.OP_LE);
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '<' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '<' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.BOOL;
 			} else if (tree.getText().equals(">")) {
 				twoSons(ExpressionType.OP_GR);
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '>' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '>' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.BOOL;
 
 			} else if (tree.getText().equals("<<")) {
 				twoSons(ExpressionType.OP_SHL);
-				type = expr1.getType(); // TODO: maybe just Type.INT?
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '<<' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '<<' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				type = Type.INT;
 			} else if (tree.getText().equals(">>")) {
 				twoSons(ExpressionType.OP_SHR);
-				type = expr1.getType();
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '>>' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '>>' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				type = Type.INT;
 
 			} else if (tree.getText().equals("+")) {
+				type = Type.INT;
 				if (tree.getChildCount() == 1) {
 					oneSon(ExpressionType.OP_UNARY_PLUS);
-					type = expr1.getType();
+					ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "unary operator '+' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
 				} else {
 					twoSons(ExpressionType.OP_PLUS);
-					type = ;
+					ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '+' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+					ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '+' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				}
 			} else if (tree.getText().equals("-")) {
+				type = Type.INT;
 				if (tree.getChildCount() == 1) {
 					oneSon(ExpressionType.OP_UNARY_MINUS);
-					type = ;
+					ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "unary operator '-' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
 				} else {
 					twoSons(ExpressionType.OP_MINUS);
-					type = ;
+					ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '-' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+					ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '-' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				}
 
 			} else if (tree.getText().equals("*")) {
 				twoSons(ExpressionType.OP_MULT);
-				type = ;
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '*' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '*' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				type = Type.INT;
 			} else if (tree.getText().equals("/")) {
 				twoSons(ExpressionType.OP_DIV);
-				type = ;
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '/' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '/' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				type = Type.INT;
 			} else if (tree.getText().equals("%")) {
 				twoSons(ExpressionType.OP_MOD);
-				type = ;
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '%' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '%' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				type = Type.INT;
 
 			} else if (tree.getText().equals("++")) {
 				oneSon(ExpressionType.OP_PREFIX_PP);
 				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as increment operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "can not increment '" + TypeConverter.typeToString(expr1) + "'");
 				type = expr1.getType();
 			} else if (tree.getText().equals("--")) {
 				oneSon(ExpressionType.OP_PREFIX_MM);
-				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as increment operand");
+				ec.check(expr1.isLValue(), tree.getLine(), "lvalue required as decrement operand");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "can not decrement '" + TypeConverter.typeToString(expr1) + "'");
 				type = expr1.getType();
 			} else if (tree.getText().equals("!")) {
 				oneSon(ExpressionType.OP_NOT);
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "unary operator '!' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
 				type = Type.BOOL;
 			} else if (tree.getText().equals("~")) {
 				oneSon(ExpressionType.OP_BIN_NOT);
-				type = expr1.getType();
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "unary operator '~' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				type = Type.INT;
 
 			} else {
 				assert(false);
