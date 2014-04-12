@@ -32,6 +32,10 @@ public class Function implements CodeProvider {
 		st.endBlock();
 	}
 
+	public Type getType() {
+		return type;
+	}
+
 	public void checkArgumentsAndFillDefaults(ArrayList<Expression> args, int lineNumber) {
 		if (argsDef.count() < args.size()) {
 			ec.check(false, lineNumber, "more arguments passed to function '" + name + "' than it has");
@@ -46,6 +50,7 @@ public class Function implements CodeProvider {
 
 		block.writeAsmCode(w);
 
+		w.t("Function '" + name + "' ending");
 		w.popad();
 		w.c("ret");
 	}

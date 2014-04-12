@@ -85,13 +85,16 @@ public class Statement implements CodeProvider {
 	public void writeAsmCode(AsmWriter w) {
 		switch (statementType) {
 			case VAR_DEF:
+				w.t("Statement: Variable Declaration");
 				varDef.writeAsmCode(w);
 				break;
 			case EXPR:
+				w.t("Statement: Expression");
 				expr.writeAsmCode(w);
 				w.pop("eax");
 				break;
 			case BLOCK:
+				w.t("Statement: Block");
 				block.writeAsmCode(w);
 				break;
 		}

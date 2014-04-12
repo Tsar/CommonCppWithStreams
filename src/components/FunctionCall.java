@@ -25,6 +25,7 @@ public class FunctionCall implements CodeProvider {
 
 		Function funcDef = st.referenceFunctionAndGetIt(name, tree.getLine());
 		if (funcDef != null) {
+			type = funcDef.getType();
 			funcDef.checkArgumentsAndFillDefaults(args, tree.getLine());
 		}
 	}
@@ -38,6 +39,7 @@ public class FunctionCall implements CodeProvider {
 	}
 
 	public void writeAsmCode(AsmWriter w) {
+		w.t("Function '" + name + "' Call");
 		for (Expression arg : args) {
 			arg.writeAsmCode(w);
 		}

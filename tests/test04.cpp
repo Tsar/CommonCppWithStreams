@@ -5,5 +5,7 @@ int f(int x) {
 }
 
 int main() {
-    f(2);
+    int a;
+    int b = f(1) * f(4);
+    a = f(2) * f(3);
 }
