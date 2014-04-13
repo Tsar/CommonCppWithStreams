@@ -79,7 +79,7 @@ public class Compiler {
                     String asmFileName = fileNameWE + ".asm";
                     System.out.println("Writing ASM code to '" + asmFileName + "'...");
                     PrintWriter asm = new PrintWriter(asmFileName);
-                    p.writeAsmCode(new AsmWriter(asm));
+                    p.writeAsmCode(new AsmWriter(asm, false));
                     asm.close();
                     System.out.println("Done\n");
 
