@@ -19,46 +19,50 @@ digraph {
   n7 [label="x"];
   n8 [label="BLOCK"];
   n8 [label="BLOCK"];
-  n9 [label="BLOCK"];
-  n9 [label="BLOCK"];
-  n10 [label="VAR_DEF"];
-  n10 [label="VAR_DEF"];
-  n11 [label="int"];
-  n12 [label="a"];
-  n13 [label="10"];
-  n14 [label="*"];
-  n14 [label="*"];
-  n15 [label="a"];
-  n16 [label="a"];
+  n9 [label="if"];
+  n9 [label="if"];
+  n10 [label="=="];
+  n10 [label="=="];
+  n11 [label="x"];
+  n12 [label="0"];
+  n13 [label="BLOCK"];
+  n13 [label="BLOCK"];
+  n14 [label="VAR_DEF"];
+  n14 [label="VAR_DEF"];
+  n15 [label="int"];
+  n16 [label="b"];
   n17 [label="return"];
   n17 [label="return"];
-  n18 [label="*"];
-  n18 [label="*"];
-  n19 [label="x"];
-  n20 [label="x"];
-  n21 [label="FUNCTION"];
-  n21 [label="FUNCTION"];
-  n22 [label="int"];
-  n23 [label="main"];
+  n18 [label="1"];
+  n19 [label="return"];
+  n19 [label="return"];
+  n20 [label="*"];
+  n20 [label="*"];
+  n21 [label="x"];
+  n22 [label="CALL"];
+  n22 [label="CALL"];
+  n23 [label="f"];
   n24 [label="ARGS"];
-  n25 [label="BLOCK"];
-  n25 [label="BLOCK"];
-  n26 [label="VAR_DEF"];
-  n26 [label="VAR_DEF"];
-  n27 [label="int"];
-  n28 [label="a"];
-  n29 [label="CALL"];
-  n29 [label="CALL"];
-  n30 [label="f"];
+  n24 [label="ARGS"];
+  n25 [label="-"];
+  n25 [label="-"];
+  n26 [label="x"];
+  n27 [label="1"];
+  n28 [label="FUNCTION"];
+  n28 [label="FUNCTION"];
+  n29 [label="int"];
+  n30 [label="main"];
   n31 [label="ARGS"];
-  n31 [label="ARGS"];
-  n32 [label="3"];
+  n32 [label="BLOCK"];
+  n32 [label="BLOCK"];
   n33 [label="return"];
   n33 [label="return"];
-  n34 [label="*"];
-  n34 [label="*"];
-  n35 [label="2"];
-  n36 [label="a"];
+  n34 [label="CALL"];
+  n34 [label="CALL"];
+  n35 [label="f"];
+  n36 [label="ARGS"];
+  n36 [label="ARGS"];
+  n37 [label="5"];
 
   n0 -> n1 // "" -> "FUNCTION"
   n1 -> n2 // "FUNCTION" -> "int"
@@ -68,33 +72,34 @@ digraph {
   n5 -> n6 // "ARG" -> "int"
   n5 -> n7 // "ARG" -> "x"
   n1 -> n8 // "FUNCTION" -> "BLOCK"
-  n8 -> n9 // "BLOCK" -> "BLOCK"
-  n9 -> n10 // "BLOCK" -> "VAR_DEF"
-  n10 -> n11 // "VAR_DEF" -> "int"
-  n10 -> n12 // "VAR_DEF" -> "a"
-  n10 -> n13 // "VAR_DEF" -> "10"
-  n9 -> n14 // "BLOCK" -> "*"
-  n14 -> n15 // "*" -> "a"
-  n14 -> n16 // "*" -> "a"
-  n8 -> n17 // "BLOCK" -> "return"
-  n17 -> n18 // "return" -> "*"
-  n18 -> n19 // "*" -> "x"
-  n18 -> n20 // "*" -> "x"
-  n0 -> n21 // "" -> "FUNCTION"
-  n21 -> n22 // "FUNCTION" -> "int"
-  n21 -> n23 // "FUNCTION" -> "main"
-  n21 -> n24 // "FUNCTION" -> "ARGS"
-  n21 -> n25 // "FUNCTION" -> "BLOCK"
-  n25 -> n26 // "BLOCK" -> "VAR_DEF"
-  n26 -> n27 // "VAR_DEF" -> "int"
-  n26 -> n28 // "VAR_DEF" -> "a"
-  n26 -> n29 // "VAR_DEF" -> "CALL"
-  n29 -> n30 // "CALL" -> "f"
-  n29 -> n31 // "CALL" -> "ARGS"
-  n31 -> n32 // "ARGS" -> "3"
-  n25 -> n33 // "BLOCK" -> "return"
-  n33 -> n34 // "return" -> "*"
-  n34 -> n35 // "*" -> "2"
-  n34 -> n36 // "*" -> "a"
+  n8 -> n9 // "BLOCK" -> "if"
+  n9 -> n10 // "if" -> "=="
+  n10 -> n11 // "==" -> "x"
+  n10 -> n12 // "==" -> "0"
+  n9 -> n13 // "if" -> "BLOCK"
+  n13 -> n14 // "BLOCK" -> "VAR_DEF"
+  n14 -> n15 // "VAR_DEF" -> "int"
+  n14 -> n16 // "VAR_DEF" -> "b"
+  n13 -> n17 // "BLOCK" -> "return"
+  n17 -> n18 // "return" -> "1"
+  n8 -> n19 // "BLOCK" -> "return"
+  n19 -> n20 // "return" -> "*"
+  n20 -> n21 // "*" -> "x"
+  n20 -> n22 // "*" -> "CALL"
+  n22 -> n23 // "CALL" -> "f"
+  n22 -> n24 // "CALL" -> "ARGS"
+  n24 -> n25 // "ARGS" -> "-"
+  n25 -> n26 // "-" -> "x"
+  n25 -> n27 // "-" -> "1"
+  n0 -> n28 // "" -> "FUNCTION"
+  n28 -> n29 // "FUNCTION" -> "int"
+  n28 -> n30 // "FUNCTION" -> "main"
+  n28 -> n31 // "FUNCTION" -> "ARGS"
+  n28 -> n32 // "FUNCTION" -> "BLOCK"
+  n32 -> n33 // "BLOCK" -> "return"
+  n33 -> n34 // "return" -> "CALL"
+  n34 -> n35 // "CALL" -> "f"
+  n34 -> n36 // "CALL" -> "ARGS"
+  n36 -> n37 // "ARGS" -> "5"
 
 }

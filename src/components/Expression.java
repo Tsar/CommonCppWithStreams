@@ -614,8 +614,40 @@ public class Expression implements CodeProvider {
 			case OP_BIN_AND:
 				break;
 			case OP_EQ_EQ:
+				{
+				expr1.writeAsmCode(w);
+				expr2.writeAsmCode(w);
+				w.t("Expression: ==");
+				w.pop("ebx");
+				w.pop("eax");
+				w.c("cmp eax, ebx");
+				int uid = w.genNewUId();
+				w.c("jnz _cmp_" + uid + "_false");
+				w.c("mov eax, 1");
+				w.c("jmp _cmp_" + uid + "_end");
+				w.l("_cmp_" + uid + "_false");
+				w.c("mov eax, 0");
+				w.l("_cmp_" + uid + "_end");
+				w.push("eax");
+				}
 				break;
 			case OP_NOT_EQ:
+				{
+				expr1.writeAsmCode(w);
+				expr2.writeAsmCode(w);
+				w.t("Expression: !=");
+				w.pop("ebx");
+				w.pop("eax");
+				w.c("cmp eax, ebx");
+				int uid = w.genNewUId();
+				w.c("jz _cmp_" + uid + "_false");
+				w.c("mov eax, 1");
+				w.c("jmp _cmp_" + uid + "_end");
+				w.l("_cmp_" + uid + "_false");
+				w.c("mov eax, 0");
+				w.l("_cmp_" + uid + "_end");
+				w.push("eax");
+				}
 				break;
 			case OP_LE_EQ:
 				break;
@@ -676,5 +708,6 @@ public class Expression implements CodeProvider {
 			case OP_BIN_NOT:
 				break;
 		}
+		w.ln();
 	}
 }

@@ -1,12 +1,11 @@
 int f(int x) {
-    {
-        int a = 10;
-        a * a;
+    if (x == 0) {
+        int b;
+        return 1;
     }
-    return x * x;
+    return x * f(x - 1);
 }
 
 int main() {
-    int a = f(3);
-    return 2 * a;
+    return f(5);
 }

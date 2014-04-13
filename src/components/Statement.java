@@ -30,12 +30,14 @@ public class Statement implements CodeProvider {
 	private VarDef varDef;
 	private Return ret;
 	private Expression expr;
+	private If if_;
 	private Block block;
 	
 	public Statement(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		varDef = null;
 		ret = null;
 		expr = null;
+		if_ = null;
 		block = null;
 
 		switch (tree.getType()) {
@@ -69,7 +71,7 @@ public class Statement implements CodeProvider {
 				return;
 			case CommonCppWithStreamsLexer.IF:
 				statementType = StatementType.IF;
-				// TODO
+				if_ = new If(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.BREAK:
 				statementType = StatementType.BREAK;
@@ -103,6 +105,25 @@ public class Statement implements CodeProvider {
 				w.t("Statement: Expression");
 				expr.writeAsmCode(w);
 				w.pop("eax");
+				break;
+			case FOR:
+				// TODO
+				break;
+			case WHILE:
+				// TODO
+				break;
+			case DOWHILE:
+				// TODO
+				break;
+			case IF:
+				w.t("Statement: If");
+				if_.writeAsmCode(w);
+				break;
+			case BREAK:
+				// TODO
+				break;
+			case CONTINUE:
+				// TODO
 				break;
 			case BLOCK:
 				w.t("Statement: Block");
