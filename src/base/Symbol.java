@@ -1,4 +1,7 @@
-package components;
+package base;
+
+import components.Function;
+import components.VarDef;
 
 public class Symbol {
 	private String name;

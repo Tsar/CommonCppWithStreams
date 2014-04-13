@@ -1,4 +1,8 @@
-package components;
+package base;
+
+import components.Expression;
+import components.Function;
+import components.VarDef;
 
 public class TypeConverter {
 	public static Type stringToType(String typeName) {
@@ -43,5 +47,9 @@ public class TypeConverter {
 
 	public static String typeToString(VarDef varDef) {
 		return typeToString(varDef.getType());
+	}
+
+	public static String typeToString(Function funcDef) {
+		return typeToString(funcDef.getType());
 	}
 }

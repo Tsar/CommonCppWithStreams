@@ -6,6 +6,13 @@ import java.util.ArrayList;
 
 import org.antlr.runtime.tree.Tree;
 
+import base.AsmWriter;
+import base.CodeProvider;
+import base.ErrorsCollector;
+import base.SymbolTable;
+import base.TypeChecker;
+import base.TypeConverter;
+
 public class ArgumentsDef implements CodeProvider {
 	private ErrorsCollector ec;
 
@@ -53,7 +60,7 @@ public class ArgumentsDef implements CodeProvider {
 		for (int i = 0; i < count(); ++i) {
 			VarDef arg = arguments.get(i);
 			arg.setUId(w.genNewUId());
-			w.setVariableSP(arg.getUId(), w.getSP() - 36 - 4 * (count() - i));
+			w.setVariableSP(arg.getUId(), w.getSP() - 16 - 4 * (count() - i));
 		}
 	}
 }

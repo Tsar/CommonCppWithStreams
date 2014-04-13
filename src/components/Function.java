@@ -6,6 +6,13 @@ import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
+import base.AsmWriter;
+import base.CodeProvider;
+import base.ErrorsCollector;
+import base.SymbolTable;
+import base.Type;
+import base.TypeConverter;
+
 public class Function implements CodeProvider {
 	private ErrorsCollector ec;
 
@@ -32,6 +39,10 @@ public class Function implements CodeProvider {
 		st.endBlock();
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	public Type getType() {
 		return type;
 	}
@@ -46,13 +57,18 @@ public class Function implements CodeProvider {
 
 	public void writeAsmCode(AsmWriter w) {
 		w.l("_func_" + name);
-		w.pushad();
+		w.push4();
+		int initialSP = w.getSP();
 
 		argsDef.writeAsmCode(w);
 		block.writeAsmCode(w);
 
-		w.t("Function '" + name + "' ending");
-		w.popad();
+		w.l("_end_of_func_" + name);
+		w.tNoLn("cleaning stack of local function variables");
+		while (w.getSP() != initialSP) {
+			w.pop("esi");
+		}
+		w.pop4();
 		w.c("ret");
 	}
 }

@@ -4,6 +4,14 @@ import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
+import base.AsmWriter;
+import base.CodeProvider;
+import base.ErrorsCollector;
+import base.SymbolTable;
+import base.Type;
+import base.TypeChecker;
+import base.TypeConverter;
+
 public class Expression implements CodeProvider {
 	private enum ExpressionType {
 		NUMBER_VALUE,

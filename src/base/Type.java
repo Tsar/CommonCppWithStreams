@@ -1,4 +1,4 @@
-package components;
+package base;
 
 public enum Type {
 	INT,

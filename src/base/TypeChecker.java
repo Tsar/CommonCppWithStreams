@@ -1,4 +1,7 @@
-package components;
+package base;
+
+import components.Expression;
+import components.VarDef;
 
 public class TypeChecker {
 	public static boolean canBeAssigned(Type lvalueType, Type exprType) {

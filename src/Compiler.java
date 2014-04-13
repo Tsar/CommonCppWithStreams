@@ -2,10 +2,11 @@ import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
 
-import components.AsmWriter;
-import components.ErrorsCollector;
+import base.AsmWriter;
+import base.ErrorsCollector;
+import base.SymbolTable;
+
 import components.Program;
-import components.SymbolTable;
 
 import java.io.*;
 

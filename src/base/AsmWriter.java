@@ -1,4 +1,4 @@
-package components;
+package base;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -42,8 +42,16 @@ public class AsmWriter {
 		cInternal(command);
 	}
 
+	public void c(String command, String comment) {
+		c(command + "  ; " + comment);
+	}
+
 	public void t(String comment) {
 		ln();
+		tNoLn(comment);
+	}
+
+	public void tNoLn(String comment) {
 		pw.print("    ; ");
 		pw.println(comment);
 	}
@@ -53,20 +61,35 @@ public class AsmWriter {
 		sp += 4;
 		return sp;
 	}
+	
+	public int push(String regName, String comment) {
+		cInternal("push " + regName + "  ; " + comment);
+		sp += 4;
+		return sp;
+	}
 
 	public void pop(String regName) {
 		cInternal("pop " + regName);
 		sp -= 4;
 	}
 
-	public void pushad() {
-		cInternal("pushad");
-		sp += 32;
+	public void pop(String regName, String comment) {
+		cInternal("pop " + regName + "  ; " + comment);
+		sp -= 4;
 	}
 
-	public void popad() {
-		cInternal("popad");
-		sp -= 32;
+	public void push4() {
+		push("ebx");
+		push("ebp");
+		push("esi");
+		push("edi");
+	}
+
+	public void pop4() {
+		pop("ebx");
+		pop("ebp");
+		pop("esi");
+		pop("edi");
 	}
 
 	public int getSP() {

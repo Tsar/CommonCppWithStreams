@@ -1,5 +1,8 @@
 package components;
 
+import base.AsmWriter;
+import base.CodeProvider;
+
 public class VarDefOrFunction implements CodeProvider {
 	private VarDef varDef;
 	private Function function;

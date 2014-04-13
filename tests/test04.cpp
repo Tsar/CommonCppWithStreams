@@ -1,9 +1,12 @@
 int f(int x) {
-    x * f(x - 1);
+    {
+        int a = 10;
+        a * a;
+    }
+    return x * x;
 }
 
 int main() {
-    int a;
-    int b = f(1) * f(4);
-    a = f(2) * f(3);
+    int a = f(3);
+    return 2 * a;
 }

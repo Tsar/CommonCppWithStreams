@@ -1,6 +1,9 @@
-package components;
+package base;
 
 import java.util.*;
+
+import components.Function;
+import components.VarDef;
 
 public class SymbolTable {
 	private List<Map<String, Symbol>> lm;

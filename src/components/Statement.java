@@ -4,6 +4,11 @@ import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
+import base.AsmWriter;
+import base.CodeProvider;
+import base.ErrorsCollector;
+import base.SymbolTable;
+
 public class Statement implements CodeProvider {
 	private enum StatementType {
 		VAR_DEF,
@@ -23,14 +28,16 @@ public class Statement implements CodeProvider {
 	private StatementType statementType;
 	
 	private VarDef varDef;
+	private Return ret;
 	private Expression expr;
 	private Block block;
 	
 	public Statement(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		varDef = null;
+		ret = null;
 		expr = null;
 		block = null;
-		
+
 		switch (tree.getType()) {
 			case CommonCppWithStreamsLexer.VAR_DEF:
 				statementType = StatementType.VAR_DEF;
@@ -46,7 +53,7 @@ public class Statement implements CodeProvider {
 				return;
 			case CommonCppWithStreamsLexer.RETURN:
 				statementType = StatementType.RETURN;
-				// TODO
+				ret = new Return(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.FOR:
 				statementType = StatementType.FOR;
@@ -87,6 +94,10 @@ public class Statement implements CodeProvider {
 			case VAR_DEF:
 				w.t("Statement: Variable Declaration");
 				varDef.writeAsmCode(w);
+				break;
+			case RETURN:
+				w.t("Statement: Return");
+				ret.writeAsmCode(w);
 				break;
 			case EXPR:
 				w.t("Statement: Expression");

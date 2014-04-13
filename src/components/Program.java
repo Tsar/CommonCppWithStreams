@@ -6,6 +6,11 @@ import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
+import base.AsmWriter;
+import base.CodeProvider;
+import base.ErrorsCollector;
+import base.SymbolTable;
+
 public class Program implements CodeProvider {
 	private ArrayList<VarDefOrFunction> contents;
 
@@ -43,16 +48,17 @@ public class Program implements CodeProvider {
 	    w.c("global _start");
 	    w.l("_start");
 	    w.c("call _func_main");
-	    w.t("Exit with code 0");
-	    w.c("mov eax, 1");
-	    w.c("xor ebx, ebx"); // return code is 0 (TODO: support return code of main)
+	    w.t("Exit with result of 'main' (it is in eax)");
+	    w.c("mov ebx, eax");
+	    w.c("mov eax, 1", "number of exit syscall");
 	    w.c("int 80h");
-	    w.ln();
 		for (VarDefOrFunction vf : contents) {
 			vf.writeAsmCode(w);
 		}
 		w.ln();
 		w.c("section .data");
 		w.c("end");
+
+		assert(w.getSP() == 0);
 	}
 }

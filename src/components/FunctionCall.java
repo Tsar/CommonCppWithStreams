@@ -6,6 +6,12 @@ import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
+import base.AsmWriter;
+import base.CodeProvider;
+import base.ErrorsCollector;
+import base.SymbolTable;
+import base.Type;
+
 public class FunctionCall implements CodeProvider {
 	private String name;
 	private Type type;
@@ -44,5 +50,10 @@ public class FunctionCall implements CodeProvider {
 			arg.writeAsmCode(w);
 		}
 		w.c("call _func_" + name);
+		// return value should be in eax by now
+		for (int i = 0; i < args.size(); ++i) {
+			w.pop("ebx");
+		}
+		w.push("eax");
 	}
 }
