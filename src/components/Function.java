@@ -64,9 +64,11 @@ public class Function implements CodeProvider {
 		block.writeAsmCode(w);
 
 		w.l("_end_of_func_" + name);
-		w.tNoLn("cleaning stack of local function variables");
-		while (w.getSP() != initialSP) {
-			w.pop("esi");
+		if (w.getSP() != initialSP) {
+			w.tNoLn("cleaning stack of local function variables");
+			w.c("add esp, " + (w.getSP() - initialSP));
+			w.ln();
+			w.setSP(initialSP);
 		}
 		w.pop4();
 		w.c("ret");

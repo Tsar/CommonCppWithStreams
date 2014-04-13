@@ -1,4 +1,5 @@
 int f(int x) {
+    int qwerty;
     if (x == 0) {
         int b;
         int c;

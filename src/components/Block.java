@@ -52,22 +52,19 @@ public class Block implements CodeProvider {
 			statement.writeAsmCode(w);
 		}
 		if (!functionBlock) {
-			w.t("cleaning stack of local block variables");
-			while (w.getSP() != initialSP) {
-				w.pop("esi");
+			if (w.getSP() != initialSP) {
+				writeAsmCodeToCleanLocalVariables(w);
+				w.setSP(initialSP);
 			}
 		}
 
 		w.blockEnd();
 	}
 
-	// Following method is used by Return, Break and Continue
 	public void writeAsmCodeToCleanLocalVariables(AsmWriter w) {
-		int copyOfSP = w.getSP();
-		w.t("cleaning stack of local block variables [for return, break or continue]");
-		while (w.getSP() != initialSP) {
-			w.pop("esi");
+		if (w.getSP() != initialSP) {
+			w.t("cleaning stack of local block variables");
+			w.c("add esp, " + (w.getSP() - initialSP));
 		}
-		w.setSP(copyOfSP);
 	}
 }
