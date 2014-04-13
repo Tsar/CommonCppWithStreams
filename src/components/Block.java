@@ -52,10 +52,7 @@ public class Block implements CodeProvider {
 			statement.writeAsmCode(w);
 		}
 		if (!functionBlock) {
-			if (w.getSP() != initialSP) {
-				writeAsmCodeToCleanLocalVariables(w);
-				w.setSP(initialSP);
-			}
+			writeAsmCodeToCleanLocalVariables(w);
 		}
 
 		w.blockEnd();
@@ -65,6 +62,7 @@ public class Block implements CodeProvider {
 		if (w.getSP() != initialSP) {
 			w.t("cleaning stack of local block variables");
 			w.c("add esp, " + (w.getSP() - initialSP));
+			w.setSP(initialSP);
 		}
 	}
 }

@@ -47,12 +47,14 @@ public class Return implements CodeProvider {
 	}
 
 	public void writeAsmCode(AsmWriter w) {
+		int copyOfSP = w.getSP();
 		List<Block> blockList = w.getBlockList();
 		int i = blockList.size() - 1;
 		while (i >= 0 && !blockList.get(i).isFunctionBlock()) {
 			blockList.get(i).writeAsmCodeToCleanLocalVariables(w);
 			--i;
 		}
+		w.setSP(copyOfSP);
 
 		if (expr != null) {
 			expr.writeAsmCode(w);
