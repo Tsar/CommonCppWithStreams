@@ -66,9 +66,8 @@ public class Function implements CodeProvider {
 		w.l("_end_of_func_" + name);
 		if (w.getSP() != initialSP) {
 			w.tNoLn("cleaning stack of local function variables");
-			w.c("add esp, " + (w.getSP() - initialSP));
+			w.addESP(w.getSP() - initialSP);
 			w.ln();
-			w.setSP(initialSP);
 		}
 		w.pop4();
 		w.c("ret");

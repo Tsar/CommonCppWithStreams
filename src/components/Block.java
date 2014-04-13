@@ -61,8 +61,7 @@ public class Block implements CodeProvider {
 	public void writeAsmCodeToCleanLocalVariables(AsmWriter w) {
 		if (w.getSP() != initialSP) {
 			w.t("cleaning stack of local block variables");
-			w.c("add esp, " + (w.getSP() - initialSP));
-			w.setSP(initialSP);
+			w.addESP(w.getSP() - initialSP);
 		}
 	}
 }

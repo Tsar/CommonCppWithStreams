@@ -56,7 +56,7 @@ public class AsmWriter {
 	}
 
 	public void c(String command) {
-		assert(!(command.startsWith("push") || command.startsWith("pop")/* || command.startsWith("add esp")*/));
+		assert(!(command.startsWith("push") || command.startsWith("pop") || command.startsWith("add esp")));
 
 		cInternal(command);
 	}
@@ -112,13 +112,7 @@ public class AsmWriter {
 		pop(optimizePushPop ? regName : (regName + "  ; " + comment));
 	}
 
-	/*
-    // FOLLOWING CODE IS INCORRECT: IMAGINE, IF USED INSIDE IF WITH RETURN [still requires to think]
 	public void addESP(int addition) {
-		addESP(addition, true);
-	}
-
-	public void addESP(int addition, boolean changeSP) {
 		if (!optimizePushPop) {
 			cInternal("add esp, " + addition);
 		} else {
@@ -133,11 +127,8 @@ public class AsmWriter {
 				cInternal("add esp, " + addition_);
 			}
 		}
-		if (changeSP) {
-			sp -= addition;
-		}
+		sp -= addition;
 	}
-	*/
 
 	public void push4() {
 		push("ebx");
