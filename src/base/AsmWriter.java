@@ -31,6 +31,10 @@ public class AsmWriter {
 		blockList = new ArrayList<Block>();
 	}
 
+	public void close() {
+		pw.close();
+	}
+
 	public int genNewUId() {
 		return nextUId++;
 	}
@@ -39,19 +43,23 @@ public class AsmWriter {
 		pw.println();
 	}
 
-	public void l(String label) {
-		ln();
-		pw.println(label + ":");
-	}
-
-	private void cInternal(String command) {
+	public void optimizerOutput() {
 		if (optimizePushPop) {
 			for (String pp : pendingPushPopList) {
 				pw.println("    " + pp);
 			}
 			pendingPushPopList.clear();
 		}
+	}
 
+	public void l(String label) {
+		optimizerOutput();
+		ln();
+		pw.println(label + ":");
+	}
+
+	private void cInternal(String command) {
+		optimizerOutput();
 		pw.println("    " + command);
 	}
 
@@ -138,10 +146,10 @@ public class AsmWriter {
 	}
 
 	public void pop4() {
-		pop("ebx");
-		pop("ebp");
-		pop("esi");
 		pop("edi");
+		pop("esi");
+		pop("ebp");
+		pop("ebx");
 	}
 
 	public int getSP() {

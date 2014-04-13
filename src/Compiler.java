@@ -78,9 +78,7 @@ public class Compiler {
                 if (ec.getErrorsCount() == 0) {
                     String asmFileName = fileNameWE + ".asm";
                     System.out.println("Writing ASM code to '" + asmFileName + "'...");
-                    PrintWriter asm = new PrintWriter(asmFileName);
-                    p.writeAsmCode(new AsmWriter(asm, true));
-                    asm.close();
+                    p.writeAsmCode(new AsmWriter(new PrintWriter(asmFileName), true));
                     System.out.println("Done\n");
 
                     System.out.println("Creating object-file from asm...");

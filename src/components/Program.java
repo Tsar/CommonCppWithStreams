@@ -58,6 +58,7 @@ public class Program implements CodeProvider {
 		w.ln();
 		w.c("section .data");
 		w.c("end");
+		w.close();
 
 		assert(w.getSP() == 0);
 	}
