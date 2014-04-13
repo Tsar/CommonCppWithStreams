@@ -22,14 +22,14 @@ public class ErrorsCollector {
 	
 	public void check(boolean condition, int lineNumber, String errorMessage) {
 		if (!condition) {
-			printStream.println(lineNumber + ": error: " + errorMessage);
+			printStream.println("line " + lineNumber + ": error: " + errorMessage);
 			++errorsCount;
 		}
 	}
 
 	public void warnIfNot(boolean condition, int lineNumber, String warningMessage) {
 		if (!condition) {
-			printStream.println(lineNumber + ": warning: " + warningMessage);
+			printStream.println("line " + lineNumber + ": warning: " + warningMessage);
 			++warningsCount;
 		}
 	}

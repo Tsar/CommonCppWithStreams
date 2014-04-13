@@ -1,9 +1,9 @@
 int a = 3 + 5 + 7, b;
 int c = a += b += 7;
 
-int b = 2 + 2 * 2, b2 = (2 + 2) * 2;
+int b1 = 2 + 2 * 2, b2 = (2 + 2) * 2;
 
-void f(int x, int y, bool z, bool q = true, int x = 7 * 6 * 9 << 4) { // some comment
+void f(int x, int y, bool z, bool q = true, int zz = 7 * 6 * 9 << 4) { // some comment
     return;
 }
 
@@ -34,7 +34,8 @@ int main() {
         return 9;
     }
     
-    Stream x = InputStream(), y;
+    IStream x = InputStream();
+    OStream y;
     y = OutputFileStream("out.txt");
     
     x >> a >> b >> c >> d;
