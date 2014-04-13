@@ -1,8 +1,12 @@
 package base;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import components.Block;
 
 public class AsmWriter {
 	private PrintWriter pw;
@@ -10,12 +14,14 @@ public class AsmWriter {
 	private int sp;
 	private int nextUId;
 	private Map<Integer, Integer> uidToSP;
+	private List<Block> blockList;
 
 	public AsmWriter(PrintWriter pw) {
 		this.pw = pw;
 		sp = 0;
 		nextUId = 0;
 		uidToSP = new HashMap<Integer, Integer>();
+		blockList = new ArrayList<Block>();
 	}
 
 	public int genNewUId() {
@@ -96,6 +102,10 @@ public class AsmWriter {
 		return sp;
 	}
 
+	public void setSP(int sp) {
+		this.sp = sp;
+	}
+
 	public void setVariableSP(int varUId, int varSP) {
 		uidToSP.put(varUId, varSP);
 	}
@@ -104,5 +114,17 @@ public class AsmWriter {
 		assert(uidToSP.containsKey(varUId));
 
 		return "[esp + " + (sp - uidToSP.get(varUId)) + "]";
+	}
+
+	public void blockStart(Block b) {
+		blockList.add(b);
+	}
+
+	public void blockEnd() {
+		blockList.remove(blockList.size() - 1);
+	}
+
+	public List<Block> getBlockList() {
+		return blockList;
 	}
 }

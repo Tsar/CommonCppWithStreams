@@ -10,7 +10,7 @@ import base.ErrorsCollector;
 import base.SymbolTable;
 
 public class Statement implements CodeProvider {
-	private enum StatementType {
+	public enum StatementType {
 		VAR_DEF,
 		STREAM_READ,
 		STREAM_WRITE,
@@ -89,6 +89,10 @@ public class Statement implements CodeProvider {
 
 		statementType = StatementType.EXPR;
 		expr = new Expression(tree, ec, st);
+	}
+
+	public StatementType getStatementType() {
+		return statementType;
 	}
 
 	public void writeAsmCode(AsmWriter w) {

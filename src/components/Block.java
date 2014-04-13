@@ -6,6 +6,8 @@ import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
 
+import components.Statement.StatementType;
+
 import base.AsmWriter;
 import base.CodeProvider;
 import base.ErrorsCollector;
@@ -14,6 +16,8 @@ import base.SymbolTable;
 public class Block implements CodeProvider {
 	private ArrayList<Statement> contents;
 	private boolean functionBlock;
+
+	private int initialSP;
 
 	public Block(Tree tree, ErrorsCollector ec, SymbolTable st, boolean functionBlock) {
 		assert(tree.getType() == CommonCppWithStreamsLexer.BLOCK);
@@ -24,14 +28,23 @@ public class Block implements CodeProvider {
 			st.beginBlock();
 		contents = new ArrayList<Statement>();
 		for (int i = 0; i < tree.getChildCount(); ++i) {
-			contents.add(new Statement(tree.getChild(i), ec, st));
+			Statement statement = new Statement(tree.getChild(i), ec, st);
+			contents.add(statement);
+			if (statement.getStatementType() == StatementType.RETURN)
+				break;
 		}
 		if (!functionBlock)
 			st.endBlock();
 	}
 
+	public boolean isFunctionBlock() {
+		return functionBlock;
+	}
+
 	public void writeAsmCode(AsmWriter w) {
-		int initialSP = w.getSP();
+		w.blockStart(this);
+
+		initialSP = w.getSP();
 		if (!functionBlock) {
 			w.t("Block");
 		}
@@ -44,5 +57,17 @@ public class Block implements CodeProvider {
 				w.pop("esi");
 			}
 		}
+
+		w.blockEnd();
+	}
+
+	// Following method is used by Return, Break and Continue
+	public void writeAsmCodeToCleanLocalVariables(AsmWriter w) {
+		int copyOfSP = w.getSP();
+		w.t("cleaning stack of local block variables [for return, break or continue]");
+		while (w.getSP() != initialSP) {
+			w.pop("esi");
+		}
+		w.setSP(copyOfSP);
 	}
 }

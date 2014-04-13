@@ -1,5 +1,7 @@
 package components;
 
+import java.util.List;
+
 import gen.CommonCppWithStreamsLexer;
 
 import org.antlr.runtime.tree.Tree;
@@ -45,6 +47,13 @@ public class Return implements CodeProvider {
 	}
 
 	public void writeAsmCode(AsmWriter w) {
+		List<Block> blockList = w.getBlockList();
+		int i = blockList.size() - 1;
+		while (i >= 0 && !blockList.get(i).isFunctionBlock()) {
+			blockList.get(i).writeAsmCodeToCleanLocalVariables(w);
+			--i;
+		}
+
 		if (expr != null) {
 			expr.writeAsmCode(w);
 			w.pop("eax", "return function '" + funcName + "' value to eax");
