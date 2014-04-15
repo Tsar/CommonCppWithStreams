@@ -13,7 +13,7 @@ import java.io.*;
 import gen.*;
 
 public class Compiler {
-	private static final boolean OPTIMIZE_PUSH_POP = false;
+	private static final boolean OPTIMIZE_PUSH_POP = true;
 
 	private static int exec(String command) throws IOException, InterruptedException {
 		Process proc = Runtime.getRuntime().exec(command);
@@ -30,6 +30,7 @@ public class Compiler {
     	return proc.exitValue();
 	}
 
+	@SuppressWarnings("unused")
 	private static void saveASTToFile(CommonTree tree, String dotFileName, String psFileName) throws FileNotFoundException {
 		System.out.println("Saving AST to file '" + dotFileName + "'...");
 		DOTTreeGenerator gen = new DOTTreeGenerator();
@@ -70,7 +71,7 @@ public class Compiler {
                 String fileNameWE = fileName.replaceFirst("[.][^.]+$", "");  // without extension
 
                 // Save AST graph to file
-                saveASTToFile(tree, fileNameWE + ".AST.dot", fileNameWE + ".AST.ps");
+                //saveASTToFile(tree, fileNameWE + ".AST.dot", fileNameWE + ".AST.ps");
 
                 ErrorsCollector ec = new ErrorsCollector();
                 SymbolTable st = new SymbolTable(ec);
@@ -90,6 +91,7 @@ public class Compiler {
 
                     		System.out.println("Creating exe-file from object-file...");
                     		if (exec("ld -m elf_i386 " + fileNameWE + ".o -o " + fileNameWE) == 0) {
+                    			new File(fileNameWE + ".o").delete();
                     			System.out.println("Done\n");
                     		} else {
                     			ec.fatalError("linking failed");

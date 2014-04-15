@@ -1,3 +1,5 @@
+int x = 5;
+
 int f(int x) {
     int qwerty;
     if (x == 0) {
@@ -16,5 +18,5 @@ int f(int x) {
 }
 
 int main() {
-    return f(5);
+    return f(x) + x;
 }
