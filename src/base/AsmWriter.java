@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import components.Block;
+import components.VarDef;
 
 public class AsmWriter {
 	private PrintWriter pw;
@@ -29,6 +30,28 @@ public class AsmWriter {
 		nextUId = 0;
 		uidToSP = new HashMap<Integer, Integer>();
 		blockList = new ArrayList<Block>();
+	}
+
+	public void writeBeginning() {
+	    c("section .text");
+	    c("global _start");
+	    l("_start");
+
+	    t("Save initial 'esp' value to 'edx'");
+	    c("mov edx, esp");
+	}
+
+	public void writeExitSyscall() {
+		t("Exit with result of 'main' (it is in 'eax')");
+	    c("mov ebx, eax");
+	    c("mov eax, 1", "number of exit syscall");
+	    c("int 80h");
+	}
+
+	public void writeEndingAndClose() {
+		c("section .data");
+		c("end");
+		close();
 	}
 
 	public void close() {
@@ -60,11 +83,11 @@ public class AsmWriter {
 
 	private void cInternal(String command) {
 		optimizerOutput();
-		pw.println("    " + command);
+		pw.println("    " + command + "  ; sp = " + sp);
 	}
 
 	public void c(String command) {
-		assert(!(command.startsWith("push") || command.startsWith("pop") || command.startsWith("add esp")));
+		assert(!(command.startsWith("push") || command.startsWith("pop") || command.startsWith("call") || command.startsWith("ret") || command.startsWith("add esp")));
 
 		cInternal(command);
 	}
@@ -120,6 +143,15 @@ public class AsmWriter {
 		pop(optimizePushPop ? regName : (regName + "  ; " + comment));
 	}
 
+	public void call(String label) {
+		cInternal("call " + label);
+	}
+
+	public void ret() {
+		cInternal("ret");
+	}
+
+	// Method for cleaning stack
 	public void addESP(int addition) {
 		if (!optimizePushPop) {
 			cInternal("add esp, " + addition);
@@ -164,10 +196,11 @@ public class AsmWriter {
 		uidToSP.put(varUId, varSP);
 	}
 
-	public String varAddr(int varUId) {
+	public String varAddr(VarDef varDef) {
+		int varUId = varDef.getUId();
 		assert(uidToSP.containsKey(varUId));
 
-		return "[esp + " + (sp - uidToSP.get(varUId)) + "]";
+		return varDef.isGlobal() ? "[edx - " + uidToSP.get(varUId) + "]" : "[esp + " + (sp - uidToSP.get(varUId)) + "]";
 	}
 
 	public void blockStart(Block b) {

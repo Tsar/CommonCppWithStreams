@@ -70,6 +70,6 @@ public class Function implements CodeProvider {
 			w.ln();
 		}
 		w.pop4();
-		w.c("ret");
+		w.ret();
 	}
 }

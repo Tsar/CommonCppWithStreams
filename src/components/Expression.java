@@ -427,8 +427,8 @@ public class Expression implements CodeProvider {
 		return expr1.getLValueVariable();
 	}
 
-	private int getLValueVariableUId() {
-		return getLValueVariable().varDef.getUId();
+	private VarDef getLValueVariableVarDef() {
+		return getLValueVariable().varDef;
 	}
 
 	public Type getType() {
@@ -449,7 +449,7 @@ public class Expression implements CodeProvider {
 				break;
 			case VARIABLE:
 				w.t("Expression: Variable " + varDef.getName());
-				w.c("mov eax, " + w.varAddr(varDef.getUId()));
+				w.c("mov eax, " + w.varAddr(varDef));
 				w.push("eax");
 				break;
 			case INPUT_STREAM_FUNC:
@@ -474,7 +474,7 @@ public class Expression implements CodeProvider {
 				w.pop("eax");
 				w.push("eax");
 				w.c("inc eax");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(expr1.getLValueVariableVarDef()) + ", eax");
 				break;
 			case OP_POSTFIX_MM:
 				expr1.writeAsmCode(w);
@@ -482,14 +482,14 @@ public class Expression implements CodeProvider {
 				w.pop("eax");
 				w.push("eax");
 				w.c("dec eax");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(expr1.getLValueVariableVarDef()) + ", eax");
 				break;
 			case OP_PREFIX_PP:
 				expr1.writeAsmCode(w);
 				w.t("Expression: prefix ++");
 				w.pop("eax");
 				w.c("inc eax");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_PREFIX_MM:
@@ -497,7 +497,7 @@ public class Expression implements CodeProvider {
 				w.t("Expression: prefix --");
 				w.pop("eax");
 				w.c("dec eax");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 
@@ -507,7 +507,7 @@ public class Expression implements CodeProvider {
 				w.t("Expression: =");
 				w.pop("ebx");
 				w.pop("eax");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", ebx");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", ebx");
 				w.push("ebx");
 				break;
 			case OP_MULT_EQ:
@@ -517,7 +517,7 @@ public class Expression implements CodeProvider {
 				w.pop("ebx");
 				w.pop("eax");
 				w.c("imul eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_DIV_EQ:
@@ -527,7 +527,7 @@ public class Expression implements CodeProvider {
 				w.pop("ebx");
 				w.pop("eax");
 				w.c("idiv eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_MOD_EQ:
@@ -539,7 +539,7 @@ public class Expression implements CodeProvider {
 				w.pop("ebx");
 				w.pop("eax");
 				w.c("add eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_MINUS_EQ:
@@ -549,7 +549,7 @@ public class Expression implements CodeProvider {
 				w.pop("ebx");
 				w.pop("eax");
 				w.c("sub eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_SHR_EQ:
@@ -559,7 +559,7 @@ public class Expression implements CodeProvider {
 				w.pop("ebx");
 				w.pop("eax");
 				w.c("shr eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_SHL_EQ:
@@ -569,7 +569,7 @@ public class Expression implements CodeProvider {
 				w.pop("ebx");
 				w.pop("eax");
 				w.c("shl eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_AND_EQ:
@@ -579,7 +579,7 @@ public class Expression implements CodeProvider {
 				w.pop("ebx");
 				w.pop("eax");
 				w.c("and eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_XOR_EQ:
@@ -589,7 +589,7 @@ public class Expression implements CodeProvider {
 				w.pop("ebx");
 				w.pop("eax");
 				w.c("xor eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_OR_EQ:
@@ -599,7 +599,7 @@ public class Expression implements CodeProvider {
 				w.pop("ebx");
 				w.pop("eax");
 				w.c("or eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableUId()) + ", eax");
+				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 

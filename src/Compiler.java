@@ -13,6 +13,8 @@ import java.io.*;
 import gen.*;
 
 public class Compiler {
+	private static final boolean OPTIMIZE_PUSH_POP = false;
+
 	private static int exec(String command) throws IOException, InterruptedException {
 		Process proc = Runtime.getRuntime().exec(command);
     	proc.waitFor();
@@ -78,7 +80,7 @@ public class Compiler {
                 if (ec.getErrorsCount() == 0) {
                     String asmFileName = fileNameWE + ".asm";
                     System.out.println("Writing ASM code to '" + asmFileName + "'...");
-                    p.writeAsmCode(new AsmWriter(new PrintWriter(asmFileName), true));
+                    p.writeAsmCode(new AsmWriter(new PrintWriter(asmFileName), OPTIMIZE_PUSH_POP));
                     System.out.println("Done\n");
 
                     System.out.println("Creating object-file from asm...");

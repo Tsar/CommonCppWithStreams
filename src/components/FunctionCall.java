@@ -46,14 +46,16 @@ public class FunctionCall implements CodeProvider {
 
 	public void writeAsmCode(AsmWriter w) {
 		w.t("Function '" + name + "' Call");
+		if (args.size() > 0) {
+			w.t("Pushing arguments on stack");
+		}
 		for (Expression arg : args) {
 			arg.writeAsmCode(w);
 		}
-		w.c("call _func_" + name);
+		w.call("_func_" + name);
 		// return value should be in eax by now
-		for (int i = 0; i < args.size(); ++i) {
-			w.pop("ebx");
-		}
+		w.t("Removing arguments from stack");
+		w.addESP(args.size() * 4);
 		w.push("eax");
 	}
 }

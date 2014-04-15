@@ -12,25 +12,27 @@ import base.ErrorsCollector;
 import base.SymbolTable;
 
 public class Program implements CodeProvider {
-	private ArrayList<VarDefOrFunction> contents;
+	private ArrayList<VarDef> varDefs;  // global variables
+	private ArrayList<Function> functions;
 
 	public Program(Tree tree, ErrorsCollector ec, SymbolTable st) {
-		contents = new ArrayList<VarDefOrFunction>();
+		varDefs = new ArrayList<VarDef>();
+		functions = new ArrayList<Function>();
 
 		st.beginBlock();
 		if (tree == null) {
 			// Nothing to do: empty program
 		} else if (tree.getType() == CommonCppWithStreamsLexer.VAR_DEF) {
-			contents.add(new VarDefOrFunction(new VarDef(tree, ec, st)));
+			varDefs.add(new VarDef(tree, ec, st, true));
 		} else if (tree.getType() == CommonCppWithStreamsLexer.FUNCTION) {
-			contents.add(new VarDefOrFunction(new Function(tree, ec, st)));
+			functions.add(new Function(tree, ec, st));
 		} else {
 			for (int i = 0; i < tree.getChildCount(); ++i) {
 	        	Tree child = tree.getChild(i);
 	        	if (child.getType() == CommonCppWithStreamsLexer.VAR_DEF) {
-	        		contents.add(new VarDefOrFunction(new VarDef(child, ec, st)));
+	        		varDefs.add(new VarDef(child, ec, st, true));
 	        	} else if (child.getType() == CommonCppWithStreamsLexer.FUNCTION) {
-	        		contents.add(new VarDefOrFunction(new Function(child, ec, st)));
+	        		functions.add(new Function(child, ec, st));
 	        	} else {
 	        		assert(false);
 	        	}
@@ -44,21 +46,27 @@ public class Program implements CodeProvider {
 	}
 
 	public void writeAsmCode(AsmWriter w) {
-	    w.c("section .text");
-	    w.c("global _start");
-	    w.l("_start");
-	    w.c("call _func_main");
-	    w.t("Exit with result of 'main' (it is in eax)");
-	    w.c("mov ebx, eax");
-	    w.c("mov eax, 1", "number of exit syscall");
-	    w.c("int 80h");
-		for (VarDefOrFunction vf : contents) {
-			vf.writeAsmCode(w);
+		w.writeBeginning();
+
+	    w.t("Declare (and init) global variables");
+	    for (VarDef varDef : varDefs) {
+			varDef.writeAsmCode(w);
 		}
-		w.ln();
-		w.c("section .data");
-		w.c("end");
-		w.close();
+
+	    w.ln();
+	    w.call("_func_main");
+
+	    w.t("Clear global variables");
+	    w.addESP(varDefs.size() * 4);
+
+	    w.writeExitSyscall();
+
+	    for (Function function : functions) {
+			function.writeAsmCode(w);
+		}
+	    w.ln();
+
+		w.writeEndingAndClose();
 
 		assert(w.getSP() == 0);
 	}

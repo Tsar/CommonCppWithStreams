@@ -17,6 +17,8 @@ public class VarDef implements CodeProvider {
 	private String name;
 	private Expression defaultValue;
 
+	private boolean global;
+
 	private int uid;  // variable unique id
 
 	public VarDef(Tree tree, ErrorsCollector ec, SymbolTable st) {
@@ -36,8 +38,18 @@ public class VarDef implements CodeProvider {
 		}
 	}
 
+	public boolean isGlobal() {
+		return global;
+	}
+
+	public VarDef(Tree tree, ErrorsCollector ec, SymbolTable st, boolean global) {
+		this(tree, ec, st);
+		this.global = global;
+		st.setVariableInitialized(name);
+	}
+
 	public boolean hasDefaultValue() {
-		return defaultValue != null;
+		return global || (defaultValue != null);
 	}
 
 	public Expression getDefaultValue() {
@@ -65,6 +77,9 @@ public class VarDef implements CodeProvider {
 		if (defaultValue != null) {
 			defaultValue.writeAsmCode(w);
 			w.pop("eax");
+		} else if (global) {
+			w.t("Global variable default initial value");
+			w.c("mov eax, 0");
 		}
 		w.t("Variable Declaration: " + name);
 		w.setVariableSP(uid, w.push("eax"));
