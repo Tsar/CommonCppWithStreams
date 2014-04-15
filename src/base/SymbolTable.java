@@ -28,12 +28,7 @@ public class SymbolTable {
 	public void endBlock() {
 		int cb = currentBlockNumber();
 		assert(cb >= 0);
-		
-		Iterator<Symbol> it = lm.get(cb).values().iterator();
-		while (it.hasNext()) {
-			Symbol s = it.next();
-			// TODO: VarDef.deinit(s.getName());
-		}
+
 		lm.remove(cb);
 	}
 
