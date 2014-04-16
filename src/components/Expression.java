@@ -13,6 +13,12 @@ import base.TypeChecker;
 import base.TypeConverter;
 
 public class Expression implements CodeProvider {
+	private static final String ASM_SHR = "mov ecx, ebx\n    shr eax, cl";
+	private static final String ASM_SHL = "mov ecx, ebx\n    shl eax, cl";
+
+	private static final String ASM_DIV = " push edx\n     xor edx, edx\n     cdq\n     idiv ebx\n     pop edx";
+	private static final String ASM_MOD = " push edx\n     xor edx, edx\n     cdq\n     idiv ebx\n     mov eax, edx\n     pop edx";
+
 	private enum ExpressionType {
 		NOP,
 
@@ -584,10 +590,10 @@ public class Expression implements CodeProvider {
 				writeAsmCodeForOpSmthEq(w, "*=", "imul eax, ebx");
 				break;
 			case OP_DIV_EQ:
-				writeAsmCodeForOpSmthEq(w, "/=", "idiv eax, ebx");
+				writeAsmCodeForOpSmthEq(w, "/=", ASM_DIV);
 				break;
 			case OP_MOD_EQ:
-				// TODO
+				writeAsmCodeForOpSmthEq(w, "%=", ASM_MOD);
 				break;
 			case OP_PLUS_EQ:
 				writeAsmCodeForOpSmthEq(w, "+=", "add eax, ebx");
@@ -596,10 +602,10 @@ public class Expression implements CodeProvider {
 				writeAsmCodeForOpSmthEq(w, "-=", "sub eax, ebx");
 				break;
 			case OP_SHR_EQ:
-				writeAsmCodeForOpSmthEq(w, ">>=", "mov ecx, ebx\n    shr eax, cl");
+				writeAsmCodeForOpSmthEq(w, ">>=", ASM_SHR);
 				break;
 			case OP_SHL_EQ:
-				writeAsmCodeForOpSmthEq(w, "<<=", "mov ecx, ebx\n    shl eax, cl");
+				writeAsmCodeForOpSmthEq(w, "<<=", ASM_SHL);
 				break;
 			case OP_AND_EQ:
 				writeAsmCodeForOpSmthEq(w, "&=", "and eax, ebx");
@@ -648,10 +654,10 @@ public class Expression implements CodeProvider {
 				break;
 
 			case OP_SHL:
-				writeAsmCodeForBinaryCountOp(w, ">>>", "mov ecx, ebx\n    shl eax, cl");
+				writeAsmCodeForBinaryCountOp(w, ">>>", ASM_SHL);
 				break;
 			case OP_SHR:
-				writeAsmCodeForBinaryCountOp(w, "<<<", "mov ecx, ebx\n    shr eax, cl");
+				writeAsmCodeForBinaryCountOp(w, "<<<", ASM_SHR);
 				break;
 
 			case OP_PLUS:
@@ -664,10 +670,10 @@ public class Expression implements CodeProvider {
 				writeAsmCodeForBinaryCountOp(w, "*", "imul eax, ebx");
 				break;
 			case OP_DIV:
-				writeAsmCodeForBinaryCountOp(w, "/", "idiv eax, ebx");
+				writeAsmCodeForBinaryCountOp(w, "/", ASM_DIV);
 				break;
 			case OP_MOD:
-				// TODO
+				writeAsmCodeForBinaryCountOp(w, "%", ASM_MOD);
 				break;
 
 			case OP_UNARY_PLUS:
