@@ -1,8 +1,8 @@
 int main() {
-    int a;
-    IStream is = InputFileStream("abc'de'.,&^!@#$%^&*()txt");
-    is >> a;
+    int a, b;
+    IStream is = InputFileStream("abcde.txt");
+    is >> a >> b;
     OStream os = OutputStream();
-    os << a * 2;
+    os << a * 2 << a <<< a;
     return 0;
 }

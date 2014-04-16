@@ -60,8 +60,8 @@ public class Expression implements CodeProvider {
 		OP_LE,          // <
 		OP_GR,          // >
 
-		OP_SHL,         // <<
-		OP_SHR,         // >>
+		OP_SHL,         // <<<
+		OP_SHR,         // >>>
 
 		OP_PLUS,        // a + b
 		OP_MINUS,       // a - b
@@ -332,15 +332,15 @@ public class Expression implements CodeProvider {
 				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '>' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.BOOL;
 
-			} else if (tree.getText().equals("<<")) {
+			} else if (tree.getText().equals("<<<")) {
 				twoSons(ExpressionType.OP_SHL);
-				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '<<' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
-				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '<<' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '<<<' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '<<<' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.INT;
-			} else if (tree.getText().equals(">>")) {
+			} else if (tree.getText().equals(">>>")) {
 				twoSons(ExpressionType.OP_SHR);
-				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '>>' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
-				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '>>' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr1), tree.getLine(), "operator '>>>' can not be applied to '" + TypeConverter.typeToString(expr1) + "'");
+				ec.check(TypeChecker.isIntOrBool(expr2), tree.getLine(), "operator '>>>' can not be applied to '" + TypeConverter.typeToString(expr2) + "'");
 				type = Type.INT;
 
 			} else if (tree.getText().equals("+")) {

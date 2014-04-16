@@ -46,7 +46,7 @@ stream_func   : STREAM_FUNC '('! ')'!;
 stream_f_func : STREAM_F_FUNC^ '('! FILE_NAME_STR ')'!;
 
 stream_read   : NAME ('>>' NAME)+ ';' -> ^(STREAM_READ ^(NAME NAME+));
-stream_write  : NAME ('<<' expr10)+ ';' -> ^(STREAM_WRITE ^(NAME expr10+));
+stream_write  : NAME ('<<' expr)+ ';' -> ^(STREAM_WRITE ^(NAME expr+));
 
 expr          : expr2 (('=' | '*=' | '/=' | '%=' | '+=' | '-=' | '>>=' | '<<=' | '&=' | '^=' | '|=')^ expr)*;
 expr2         : expr3 ('||'^ expr3)*;
@@ -56,7 +56,7 @@ expr5         : expr6 ('^'^ expr6)*;
 expr6         : expr7 ('&'^ expr7)*;
 expr7         : expr8 (('==' | '!=')^ expr8)*;
 expr8         : expr9 (('<=' | '>=' | '<' | '>')^ expr9)*;
-expr9         : expr10 (('<<' | '>>')^ expr10)*;
+expr9         : expr10 (('<<<' | '>>>')^ expr10)*;
 expr10        : expr11 (('+' | '-')^ expr11)*;
 expr11        : expr12 (('*' | '/' | '%')^ expr12)*;
 expr12        : ('++' | '--' | '!' | '~' | '+' | '-')^ expr12 | expr13;
