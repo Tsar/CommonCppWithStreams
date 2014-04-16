@@ -17,6 +17,7 @@ public class AsmWriter {
 	private int nextUId;
 	private Map<Integer, Integer> uidToSP;
 	private List<Block> blockList;
+	private List<String> fileNames;
 
 	private List<String> pendingPushPopList;  // for optimizing
 
@@ -30,6 +31,7 @@ public class AsmWriter {
 		nextUId = 0;
 		uidToSP = new HashMap<Integer, Integer>();
 		blockList = new ArrayList<Block>();
+		fileNames = new ArrayList<String>();
 	}
 
 	public void writeBeginning() {
@@ -44,12 +46,97 @@ public class AsmWriter {
 	public void writeExitSyscall() {
 		t("Exit with result of 'main' (it is in 'eax')");
 	    c("mov ebx, eax");
-	    c("mov eax, 1", "number of exit syscall");
+	    c("mov eax, 1", "number of 'exit' syscall");
 	    c("int 80h");
 	}
 
 	public void writeEndingAndClose() {
+		l("_minus_to_buffer_and_continue");
+		c("mov byte [str_buf], '-'");
+		c("inc esi");
+		c("neg eax");
+		c("neg edi");
+		c("jmp _continue_writing_int");
+
+		l("prepare_int_eax_to_write");
+		c("mov edi, eax");
+		c("mov ebx, 10");
+		c("mov esi, 0");
+		c("test eax, eax");
+		c("js _minus_to_buffer_and_continue");
+
+		l("_continue_writing_int");
+		c("xor edx, edx");
+		c("div ebx");
+		c("inc esi");
+		c("test eax, eax");
+		c("jnz _continue_writing_int");
+
+		c("mov eax, edi");
+		c("lea edi, [esi + str_buf - 1]");
+
+		l("_continue_writing_int_2");
+		c("xor edx, edx");
+		c("div ebx");
+		c("add dl, '0'");
+		c("mov byte [edi], dl");
+		c("dec edi");
+		c("test eax, eax");
+		c("jnz _continue_writing_int_2");
+
+		l("_finish_writing_int");
+		c("mov ecx, str_buf");
+		c("mov edx, esi");
+		c("ret");
+		ln();
+
+		l("prepare_bool_eax_to_write");
+		c("test eax, eax");
+		c("jz _false_to_eax");
+		c("mov ecx, str_true");
+		c("mov edx, 4");
+		c("ret");
+		l("_false_to_eax");
+		c("mov ecx, str_false");
+		c("mov edx, 5");
+		c("ret");
+		ln();
+
+		l("write_space");
+		c("mov ecx, str_space");
+		c("mov edx, 1");
+		c("mov eax, 4", "number of 'write' syscall");
+	    c("int 80h");
+		c("ret");
+		ln();
+
+		l("write_endl");
+		c("mov ecx, str_endl");
+		c("mov edx, 1");
+		c("mov eax, 4", "number of 'write' syscall");
+	    c("int 80h");
+		c("ret");
+		ln();
+
+		c("section .rodata");
+		ln();
+		pw.println("str_true  db \"true\"");
+		pw.println("str_false db \"false\"");
+		pw.println("str_space db \" \"");
+		pw.println("str_endl  db 10");
+		ln();
+		if (fileNames.size() > 0) {
+			for (int i = 0; i < fileNames.size(); ++i) {
+				pw.println("filename_" + i + " db " + fileNames.get(i) + ",0");
+			}
+			ln();
+		}
+
 		c("section .data");
+		ln();
+		pw.println("str_buf db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
+		ln();
+
 		c("end");
 		close();
 	}
@@ -64,6 +151,11 @@ public class AsmWriter {
 
 	public void ln() {
 		pw.println();
+	}
+
+	public int addFileName(String fileName) {
+		fileNames.add(fileName);
+		return fileNames.size() - 1;
 	}
 
 	public void optimizerOutput() {
@@ -87,7 +179,7 @@ public class AsmWriter {
 	}
 
 	public void c(String command) {
-		assert(!(command.startsWith("push") || command.startsWith("pop") || command.startsWith("call") || command.startsWith("ret") || command.startsWith("add esp")));
+		assert(!(command.startsWith("push") || command.startsWith("pop") || command.startsWith("add esp")));
 
 		cInternal(command);
 	}
@@ -141,14 +233,6 @@ public class AsmWriter {
 
 	public void pop(String regName, String comment) {
 		pop(optimizePushPop ? regName : (regName + "  ; " + comment));
-	}
-
-	public void call(String label) {
-		cInternal("call " + label);
-	}
-
-	public void ret() {
-		cInternal("ret");
 	}
 
 	// Method for cleaning stack

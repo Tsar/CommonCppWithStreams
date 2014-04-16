@@ -34,11 +34,11 @@ public class Statement implements CodeProvider {
 				return;
 			case CommonCppWithStreamsLexer.STREAM_READ:
 				statementType = StatementType.STREAM_READ;
-				// TODO
+				statement = new StreamRead(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.STREAM_WRITE:
 				statementType = StatementType.STREAM_WRITE;
-				// TODO
+				statement = new StreamWrite(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.RETURN:
 				statementType = StatementType.RETURN;

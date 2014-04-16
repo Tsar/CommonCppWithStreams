@@ -158,8 +158,7 @@ public class Expression implements CodeProvider {
 				assert(tree.getChildCount() == 1);
 				assert(tree.getChild(0).getType() == CommonCppWithStreamsLexer.FILE_NAME_STR);
 
-				String fileNameInQuotations = tree.getChild(0).getText();
-				fileName = fileNameInQuotations.substring(1, fileNameInQuotations.length() - 1);
+				fileName = tree.getChild(0).getText();
 				if (tree.getText().equals("InputFileStream")) {
 					exprType = ExpressionType.INPUT_FILE_STREAM_FUNC;
 					type = Type.ISTREAM;
@@ -457,16 +456,62 @@ public class Expression implements CodeProvider {
 				w.push("eax");
 				break;
 			case INPUT_STREAM_FUNC:
+				w.t("Expression: InputStream()");
+				w.c("mov eax, 1");
+				w.push("eax");
 				break;
 			case OUTPUT_STREAM_FUNC:
+				w.t("Expression: OutputStream()");
+				w.c("mov eax, 2");
+				w.push("eax");
 				break;
 			case INPUT_FILE_STREAM_FUNC:
+				{
+				w.t("Expression: InputFileStream()");
+				int fileNameNum = w.addFileName(fileName);
+				if (fileNameNum > 0x00FFFFFF) {
+					ec.fatalError("Compiler does not support more than " + 0x00FFFFFF + " file names in code");
+					return;
+				}
+				w.c("mov eax, " + ((fileNameNum << 8) | 3));
+				w.push("eax");
+				}
 				break;
 			case OUTPUT_FILE_STREAM_FUNC:
+				{
+				w.t("Expression: OutputFileStream()");
+				int fileNameNum = w.addFileName(fileName);
+				if (fileNameNum > 0x00FFFFFF) {
+					ec.fatalError("Compiler does not support more than " + 0x00FFFFFF + " file names in code");
+					return;
+				}
+				w.c("mov eax, " + ((fileNameNum << 8) | 4));
+				w.push("eax");
+				}
 				break;
 			case INPUT_BINARY_FILE_STREAM_FUNC:
+				{
+				w.t("Expression: InputBinaryFileStream()");
+				int fileNameNum = w.addFileName(fileName);
+				if (fileNameNum > 0x00FFFFFF) {
+					ec.fatalError("Compiler does not support more than " + 0x00FFFFFF + " file names in code");
+					return;
+				}
+				w.c("mov eax, " + ((fileNameNum << 8) | 5));
+				w.push("eax");
+				}
 				break;
 			case OUTPUT_BINARY_FILE_STREAM_FUNC:
+				{
+				w.t("Expression: OutputBinaryFileStream()");
+				int fileNameNum = w.addFileName(fileName);
+				if (fileNameNum > 0x00FFFFFF) {
+					ec.fatalError("Compiler does not support more than " + 0x00FFFFFF + " file names in code");
+					return;
+				}
+				w.c("mov eax, " + ((fileNameNum << 8) | 6));
+				w.push("eax");
+				}
 				break;
 			case FUNCTION_CALL:
 				funcCall.writeAsmCode(w);
@@ -704,8 +749,14 @@ public class Expression implements CodeProvider {
 			case OP_MOD:
 				break;
 			case OP_UNARY_PLUS:
+				expr1.writeAsmCode(w);
 				break;
 			case OP_UNARY_MINUS:
+				expr1.writeAsmCode(w);
+				w.t("Expression: unary -");
+				w.pop("eax");
+				w.c("neg eax");
+				w.push("eax");
 				break;
 			case OP_NOT:
 				break;

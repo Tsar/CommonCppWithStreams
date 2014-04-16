@@ -52,7 +52,7 @@ public class FunctionCall implements CodeProvider {
 		for (Expression arg : args) {
 			arg.writeAsmCode(w);
 		}
-		w.call("_func_" + name);
+		w.c("call _func_" + name);
 		// return value should be in eax by now
 		w.t("Removing arguments from stack");
 		w.addESP(args.size() * 4);

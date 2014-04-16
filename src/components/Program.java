@@ -54,7 +54,7 @@ public class Program implements CodeProvider {
 		}
 
 	    w.ln();
-	    w.call("_func_main");
+	    w.c("call _func_main");
 
 	    w.t("Clear global variables");
 	    w.addESP(varDefs.size() * 4);
