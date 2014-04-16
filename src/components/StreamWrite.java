@@ -1,6 +1,7 @@
 package components;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import gen.CommonCppWithStreamsLexer;
 
@@ -15,7 +16,7 @@ import base.TypeChecker;
 
 public class StreamWrite implements CodeProvider {
 	private VarDef streamDef;
-	private ArrayList<Expression> exprs;
+	private List<Expression> exprs;
 
 	public StreamWrite(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		assert(tree.getType() == CommonCppWithStreamsLexer.STREAM_WRITE);
@@ -32,7 +33,7 @@ public class StreamWrite implements CodeProvider {
 		exprs = new ArrayList<Expression>();
 		for (int i = 0; i < tree.getChild(0).getChildCount(); ++i) {
 			Expression expr = new Expression(tree.getChild(0).getChild(i), ec, st);
-			ec.check(TypeChecker.isIntOrBool(expr), tree.getChild(0).getChild(i).getLine(), "Can not output anything except for int or bool");
+			ec.check(TypeChecker.isIntOrBool(expr), tree.getChild(0).getChild(i).getLine(), "Can not write anything except for int or bool");
 			exprs.add(expr);
 		}
 	}

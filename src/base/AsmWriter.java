@@ -185,6 +185,46 @@ public class AsmWriter {
 		l("_W_descriptor_is_set");
 		c("ret");
 
+		/* open for reading */
+		l("get_R_descriptor_into_ebp_and_mode_into_esi");
+		c("mov ebp, 0", "descriptor of console");
+		c("mov esi, 0", "text mode");
+		c("cmp al, 1");
+		c("jz _R_descriptor_is_set");
+
+		c("cmp al, 5");
+		c("jnz _R_descriptor_try_next");
+
+		c("mov esi, 1", "binary mode");
+		c("jmp _R_descriptor_open_file");
+
+		l("_R_descriptor_try_next");
+		c("cmp al, 3");
+		c("jnz _R_descriptor_is_set", "reading from console, if not 1, 3 or 5");
+
+		l("_R_descriptor_open_file");
+		push("edx");
+		c("shr eax, 8");
+		c("mov ebx, 256");
+		c("mul ebx");
+		c("lea ebx, [eax + filename_0]");
+		c("mov ecx, 0", "O_RDONLY");
+		c("mov edx, 0");
+		c("mov eax, 5", "number of 'open' syscall");
+		c("int 80h");
+		c("mov ebp, eax");
+		pop("edx");
+
+		c("cmp ebp, -1", "checking descriptor");
+		c("jz _R_open_file_failed");
+
+		l("_R_descriptor_is_set");
+		c("ret");
+
+		l("_R_open_file_failed");
+		//c("int3");
+		c("ud2");
+
 		/* close */
 		l("close_by_descriptor_in_ebp");
 		c("test ebp, ebp");

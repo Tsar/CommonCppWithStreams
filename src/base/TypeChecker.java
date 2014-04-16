@@ -35,4 +35,8 @@ public class TypeChecker {
 	public static boolean isIntOrBool(Expression expr) {
 		return isIntOrBool(expr.getType());
 	}
+
+	public static boolean isIntOrBool(VarDef varDef) {
+		return isIntOrBool(varDef.getType());
+	}
 }
