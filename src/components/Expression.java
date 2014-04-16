@@ -444,6 +444,27 @@ public class Expression implements CodeProvider {
 		return type;
 	}
 
+	private void writeAsmCodeForOpSmthEq(AsmWriter w, String op, String asmLine) {
+		expr2.writeAsmCode(w);
+		expr1.writeAsmCode(w);
+		w.t("Expression: " + op);
+		w.pop("eax");
+		w.pop("ebx");
+		w.c(asmLine);
+		w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
+		w.push("eax");
+	}
+
+	private void writeAsmCodeForBinaryOp(AsmWriter w, String op, String asmLine) {
+		expr1.writeAsmCode(w);
+		expr2.writeAsmCode(w);
+		w.t("Expression: " + op);
+		w.pop("ebx");
+		w.pop("eax");
+		w.c(asmLine);
+		w.push("eax");
+	}
+
 	public void writeAsmCode(AsmWriter w) {
 		switch (exprType) {
 			case NOP:
@@ -557,96 +578,34 @@ public class Expression implements CodeProvider {
 				w.push("ebx");
 				break;
 			case OP_MULT_EQ:
-				expr2.writeAsmCode(w);
-				expr1.writeAsmCode(w);
-				w.t("Expression: *=");
-				w.pop("eax");
-				w.pop("ebx");
-				w.c("imul eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
-				w.push("eax");
+				writeAsmCodeForOpSmthEq(w, "*=", "imul eax, ebx");
 				break;
 			case OP_DIV_EQ:
-				expr2.writeAsmCode(w);
-				expr1.writeAsmCode(w);
-				w.t("Expression: /=");
-				w.pop("eax");
-				w.pop("ebx");
-				w.c("idiv eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
-				w.push("eax");
+				writeAsmCodeForOpSmthEq(w, "/=", "idiv eax, ebx");
 				break;
 			case OP_MOD_EQ:
+				// TODO
 				break;
 			case OP_PLUS_EQ:
-				expr2.writeAsmCode(w);
-				expr1.writeAsmCode(w);
-				w.t("Expression: +=");
-				w.pop("eax");
-				w.pop("ebx");
-				w.c("add eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
-				w.push("eax");
+				writeAsmCodeForOpSmthEq(w, "+=", "add eax, ebx");
 				break;
 			case OP_MINUS_EQ:
-				expr2.writeAsmCode(w);
-				expr1.writeAsmCode(w);
-				w.t("Expression: -=");
-				w.pop("eax");
-				w.pop("ebx");
-				w.c("sub eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
-				w.push("eax");
+				writeAsmCodeForOpSmthEq(w, "-=", "sub eax, ebx");
 				break;
 			case OP_SHR_EQ:
-				expr2.writeAsmCode(w);
-				expr1.writeAsmCode(w);
-				w.t("Expression: >>=");
-				w.pop("eax");
-				w.pop("ebx");
-				w.c("shr eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
-				w.push("eax");
+				writeAsmCodeForOpSmthEq(w, ">>=", "shr eax, ebx");
 				break;
 			case OP_SHL_EQ:
-				expr2.writeAsmCode(w);
-				expr1.writeAsmCode(w);
-				w.t("Expression: <<=");
-				w.pop("eax");
-				w.pop("ebx");
-				w.c("shl eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
-				w.push("eax");
+				writeAsmCodeForOpSmthEq(w, "<<=", "shl eax, ebx");
 				break;
 			case OP_AND_EQ:
-				expr2.writeAsmCode(w);
-				expr1.writeAsmCode(w);
-				w.t("Expression: &=");
-				w.pop("eax");
-				w.pop("ebx");
-				w.c("and eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
-				w.push("eax");
+				writeAsmCodeForOpSmthEq(w, "&=", "and eax, ebx");
 				break;
 			case OP_XOR_EQ:
-				expr2.writeAsmCode(w);
-				expr1.writeAsmCode(w);
-				w.t("Expression: ^=");
-				w.pop("eax");
-				w.pop("ebx");
-				w.c("xor eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
-				w.push("eax");
+				writeAsmCodeForOpSmthEq(w, "^=", "xor eax, ebx");
 				break;
 			case OP_OR_EQ:
-				expr2.writeAsmCode(w);
-				expr1.writeAsmCode(w);
-				w.t("Expression: |=");
-				w.pop("eax");
-				w.pop("ebx");
-				w.c("or eax, ebx");
-				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
-				w.push("eax");
+				writeAsmCodeForOpSmthEq(w, "|=", "or eax, ebx");
 				break;
 
 			case OP_OR:
@@ -708,42 +667,19 @@ public class Expression implements CodeProvider {
 			case OP_SHR:
 				break;
 			case OP_PLUS:
-				expr1.writeAsmCode(w);
-				expr2.writeAsmCode(w);
-				w.t("Expression: +");
-				w.pop("ebx");
-				w.pop("eax");
-				w.c("add eax, ebx");
-				w.push("eax");
+				writeAsmCodeForBinaryOp(w, "+", "add eax, ebx");
 				break;
 			case OP_MINUS:
-				expr1.writeAsmCode(w);
-				expr2.writeAsmCode(w);
-				w.t("Expression: -");
-				w.pop("ebx");
-				w.pop("eax");
-				w.c("sub eax, ebx");
-				w.push("eax");
+				writeAsmCodeForBinaryOp(w, "-", "sub eax, ebx");
 				break;
 			case OP_MULT:
-				expr1.writeAsmCode(w);
-				expr2.writeAsmCode(w);
-				w.t("Expression: *");
-				w.pop("ebx");
-				w.pop("eax");
-				w.c("imul eax, ebx");
-				w.push("eax");
+				writeAsmCodeForBinaryOp(w, "*", "imul eax, ebx");
 				break;
 			case OP_DIV:
-				expr1.writeAsmCode(w);
-				expr2.writeAsmCode(w);
-				w.t("Expression: /");
-				w.pop("ebx");
-				w.pop("eax");
-				w.c("idiv eax, ebx");
-				w.push("eax");
+				writeAsmCodeForBinaryOp(w, "/", "idiv eax, ebx");
 				break;
 			case OP_MOD:
+				// TODO
 				break;
 			case OP_UNARY_PLUS:
 				expr1.writeAsmCode(w);
