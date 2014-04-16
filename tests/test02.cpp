@@ -1,6 +1,7 @@
-int main() {
-    int i = 0;
-    ++ ++ i;
+void main() {
+    int a = 34567, b = -941215;
     OStream s = OutputStream();
-    s << i;
+    s << a << b;
+    a ^= b ^= a ^= b;
+    s << a << b;
 }

@@ -548,30 +548,30 @@ public class Expression implements CodeProvider {
 				break;
 
 			case OP_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: =");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", ebx");
 				w.push("ebx");
 				break;
 			case OP_MULT_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: *=");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("imul eax, ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_DIV_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: /=");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("idiv eax, ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
@@ -579,71 +579,71 @@ public class Expression implements CodeProvider {
 			case OP_MOD_EQ:
 				break;
 			case OP_PLUS_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: +=");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("add eax, ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_MINUS_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: -=");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("sub eax, ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_SHR_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: >>=");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("shr eax, ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_SHL_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: <<=");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("shl eax, ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_AND_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: &=");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("and eax, ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_XOR_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: ^=");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("xor eax, ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
 				break;
 			case OP_OR_EQ:
-				expr1.writeAsmCode(w);
 				expr2.writeAsmCode(w);
+				expr1.writeAsmCode(w);
 				w.t("Expression: |=");
-				w.pop("ebx");
 				w.pop("eax");
+				w.pop("ebx");
 				w.c("or eax, ebx");
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", eax");
 				w.push("eax");
