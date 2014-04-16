@@ -58,5 +58,15 @@ int main() {
         j++;
     }
 
+    int x = 2;
+    do {
+        bool opq = false;
+        s << x;
+        x += 1;
+        if (x == 3)
+            continue;
+        bool opq2 = 10;
+    } while (x == 3);
+
     return 32 + u;
 }

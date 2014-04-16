@@ -11,17 +11,9 @@ import base.SymbolTable;
 
 public class Statement implements CodeProvider {
 	public enum StatementType {
-		VAR_DEF,
-		STREAM_READ,
-		STREAM_WRITE,
 		EXPR,
 		RETURN,
-		WHILE,
-		FOR,
-		IF,
-		BREAK,
-		CONTINUE,
-		BLOCK
+		OTHER
 	}
 
 	private StatementType statementType;
@@ -30,15 +22,15 @@ public class Statement implements CodeProvider {
 	public Statement(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		switch (tree.getType()) {
 			case CommonCppWithStreamsLexer.VAR_DEF:
-				statementType = StatementType.VAR_DEF;
+				statementType = StatementType.OTHER;
 				statement = new VarDef(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.STREAM_READ:
-				statementType = StatementType.STREAM_READ;
+				statementType = StatementType.OTHER;
 				statement = new StreamRead(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.STREAM_WRITE:
-				statementType = StatementType.STREAM_WRITE;
+				statementType = StatementType.OTHER;
 				statement = new StreamWrite(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.RETURN:
@@ -46,27 +38,31 @@ public class Statement implements CodeProvider {
 				statement = new Return(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.WHILE:
-				statementType = StatementType.WHILE;
+				statementType = StatementType.OTHER;
 				statement = new While(tree, ec, st);
 				return;
+			case CommonCppWithStreamsLexer.DOWHILE:
+				statementType = StatementType.OTHER;
+				statement = new DoWhile(tree, ec, st);
+				return;
 			case CommonCppWithStreamsLexer.FOR:
-				statementType = StatementType.FOR;
+				statementType = StatementType.OTHER;
 				statement = new For(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.IF:
-				statementType = StatementType.IF;
+				statementType = StatementType.OTHER;
 				statement = new If(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.BREAK:
-				statementType = StatementType.BREAK;
+				statementType = StatementType.OTHER;
 				statement = new Break(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.CONTINUE:
-				statementType = StatementType.CONTINUE;
+				statementType = StatementType.OTHER;
 				statement = new Continue(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.BLOCK:
-				statementType = StatementType.BLOCK;
+				statementType = StatementType.OTHER;
 				statement = new Block(tree, ec, st, false);
 				return;
 		}

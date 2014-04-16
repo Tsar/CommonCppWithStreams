@@ -8,7 +8,6 @@ import java.util.Map;
 
 import components.Block;
 import components.VarDef;
-import components.While;
 
 public class AsmWriter {
 	private PrintWriter pw;

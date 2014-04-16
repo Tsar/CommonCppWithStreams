@@ -20,7 +20,9 @@ public class Continue implements CodeProvider {
 
 		blocksUnderCycle = 0;
 		Tree p = tree.getParent();
-		while (p != null && p.getType() != CommonCppWithStreamsLexer.WHILE && p.getType() != CommonCppWithStreamsLexer.FOR) {
+		while (p != null && p.getType() != CommonCppWithStreamsLexer.WHILE
+				          && p.getType() != CommonCppWithStreamsLexer.DOWHILE
+				          && p.getType() != CommonCppWithStreamsLexer.FOR) {
 			if (p.getType() == CommonCppWithStreamsLexer.BLOCK)
 				++blocksUnderCycle;
 			p = p.getParent();
