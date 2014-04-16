@@ -2,6 +2,9 @@ int u = 92;
 
 int main() {
     OStream s = OutputStream();
+
+    s << 2 <<< 2;
+    s << 9999 >>> 4;
     int i = 0;
     for (i = 0; i != 20; ++i) {
         int a, b, c;
@@ -27,9 +30,11 @@ int main() {
         int a = 12345;
         break;
     }
+    
+    s << (-3 >= 1);
 
     i = 10;
-    while (i != 0) {
+    while (i > 0) {
         --i;
         int qqq1 = 2, qqq3;
         if (i == 3) {
@@ -39,6 +44,8 @@ int main() {
         }
         s << i;
     }
+
+    s << false;
 
     i = 0;
     for (; i != 20;) {

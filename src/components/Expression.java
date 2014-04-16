@@ -455,13 +455,30 @@ public class Expression implements CodeProvider {
 		w.push("eax");
 	}
 
-	private void writeAsmCodeForBinaryOp(AsmWriter w, String op, String asmLine) {
+	private void writeAsmCodeForBinaryCountOp(AsmWriter w, String op, String asmLine) {
 		expr1.writeAsmCode(w);
 		expr2.writeAsmCode(w);
 		w.t("Expression: " + op);
 		w.pop("ebx");
 		w.pop("eax");
 		w.c(asmLine);
+		w.push("eax");
+	}
+
+	private void writeAsmCodeForBinaryCmpOp(AsmWriter w, String op, String condGotoIfTrueCommand) {
+		expr1.writeAsmCode(w);
+		expr2.writeAsmCode(w);
+		w.t("Expression: " + op);
+		w.pop("ebx");
+		w.pop("eax");
+		w.c("cmp eax, ebx");
+		int uid = w.genNewUId();
+		w.c(condGotoIfTrueCommand + " _cmp_" + uid + "_true");
+		w.c("mov eax, 0");
+		w.c("jmp _cmp_" + uid + "_end");
+		w.l("_cmp_" + uid + "_true");
+		w.c("mov eax, 1");
+		w.l("_cmp_" + uid + "_end");
 		w.push("eax");
 	}
 
@@ -577,6 +594,7 @@ public class Expression implements CodeProvider {
 				w.c("mov " + w.varAddr(getLValueVariableVarDef()) + ", ebx");
 				w.push("ebx");
 				break;
+
 			case OP_MULT_EQ:
 				writeAsmCodeForOpSmthEq(w, "*=", "imul eax, ebx");
 				break;
@@ -593,10 +611,10 @@ public class Expression implements CodeProvider {
 				writeAsmCodeForOpSmthEq(w, "-=", "sub eax, ebx");
 				break;
 			case OP_SHR_EQ:
-				writeAsmCodeForOpSmthEq(w, ">>=", "shr eax, ebx");
+				writeAsmCodeForOpSmthEq(w, ">>=", "mov ecx, ebx\n    shr eax, cl");
 				break;
 			case OP_SHL_EQ:
-				writeAsmCodeForOpSmthEq(w, "<<=", "shl eax, ebx");
+				writeAsmCodeForOpSmthEq(w, "<<=", "mov ecx, ebx\n    shl eax, cl");
 				break;
 			case OP_AND_EQ:
 				writeAsmCodeForOpSmthEq(w, "&=", "and eax, ebx");
@@ -612,75 +630,56 @@ public class Expression implements CodeProvider {
 				break;
 			case OP_AND:
 				break;
+
 			case OP_BIN_OR:
 				break;
 			case OP_BIN_XOR:
 				break;
 			case OP_BIN_AND:
 				break;
+
 			case OP_EQ_EQ:
-				{
-				expr1.writeAsmCode(w);
-				expr2.writeAsmCode(w);
-				w.t("Expression: ==");
-				w.pop("ebx");
-				w.pop("eax");
-				w.c("cmp eax, ebx");
-				int uid = w.genNewUId();
-				w.c("jnz _cmp_" + uid + "_false");
-				w.c("mov eax, 1");
-				w.c("jmp _cmp_" + uid + "_end");
-				w.l("_cmp_" + uid + "_false");
-				w.c("mov eax, 0");
-				w.l("_cmp_" + uid + "_end");
-				w.push("eax");
-				}
+				writeAsmCodeForBinaryCmpOp(w, "==", "jz");
 				break;
 			case OP_NOT_EQ:
-				{
-				expr1.writeAsmCode(w);
-				expr2.writeAsmCode(w);
-				w.t("Expression: !=");
-				w.pop("ebx");
-				w.pop("eax");
-				w.c("cmp eax, ebx");
-				int uid = w.genNewUId();
-				w.c("jz _cmp_" + uid + "_false");
-				w.c("mov eax, 1");
-				w.c("jmp _cmp_" + uid + "_end");
-				w.l("_cmp_" + uid + "_false");
-				w.c("mov eax, 0");
-				w.l("_cmp_" + uid + "_end");
-				w.push("eax");
-				}
+				writeAsmCodeForBinaryCmpOp(w, "!=", "jnz");
 				break;
 			case OP_LE_EQ:
+				writeAsmCodeForBinaryCmpOp(w, "<=", "jle");
 				break;
 			case OP_GR_EQ:
+				writeAsmCodeForBinaryCmpOp(w, ">=", "jge");
 				break;
 			case OP_LE:
+				writeAsmCodeForBinaryCmpOp(w, "<", "jl");
 				break;
 			case OP_GR:
+				writeAsmCodeForBinaryCmpOp(w, ">", "jg");
 				break;
+
 			case OP_SHL:
+				writeAsmCodeForBinaryCountOp(w, ">>>", "mov ecx, ebx\n    shl eax, cl");
 				break;
 			case OP_SHR:
+				writeAsmCodeForBinaryCountOp(w, "<<<", "mov ecx, ebx\n    shr eax, cl");
 				break;
+
 			case OP_PLUS:
-				writeAsmCodeForBinaryOp(w, "+", "add eax, ebx");
+				writeAsmCodeForBinaryCountOp(w, "+", "add eax, ebx");
 				break;
 			case OP_MINUS:
-				writeAsmCodeForBinaryOp(w, "-", "sub eax, ebx");
+				writeAsmCodeForBinaryCountOp(w, "-", "sub eax, ebx");
 				break;
 			case OP_MULT:
-				writeAsmCodeForBinaryOp(w, "*", "imul eax, ebx");
+				writeAsmCodeForBinaryCountOp(w, "*", "imul eax, ebx");
 				break;
 			case OP_DIV:
-				writeAsmCodeForBinaryOp(w, "/", "idiv eax, ebx");
+				writeAsmCodeForBinaryCountOp(w, "/", "idiv eax, ebx");
 				break;
 			case OP_MOD:
 				// TODO
 				break;
+
 			case OP_UNARY_PLUS:
 				expr1.writeAsmCode(w);
 				break;
