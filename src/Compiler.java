@@ -13,6 +13,7 @@ import java.io.*;
 import gen.*;
 
 public class Compiler {
+	private static final boolean SAVE_AST_TO_FILE = true;
 	private static final boolean OPTIMIZE_PUSH_POP = true;
 
 	private static int exec(String command) throws IOException, InterruptedException {
@@ -30,7 +31,6 @@ public class Compiler {
     	return proc.exitValue();
 	}
 
-	@SuppressWarnings("unused")
 	private static void saveASTToFile(CommonTree tree, String dotFileName, String psFileName) throws FileNotFoundException {
 		System.out.println("Saving AST to file '" + dotFileName + "'...");
 		DOTTreeGenerator gen = new DOTTreeGenerator();
@@ -70,8 +70,10 @@ public class Compiler {
                 
                 String fileNameWE = fileName.replaceFirst("[.][^.]+$", "");  // without extension
 
-                // Save AST graph to file
-                //saveASTToFile(tree, fileNameWE + ".AST.dot", fileNameWE + ".AST.ps");
+                if (SAVE_AST_TO_FILE) {
+                	// Save AST graph to file
+                	saveASTToFile(tree, fileNameWE + ".AST.dot", fileNameWE + ".AST.ps");
+                }
 
                 ErrorsCollector ec = new ErrorsCollector();
                 SymbolTable st = new SymbolTable(ec);

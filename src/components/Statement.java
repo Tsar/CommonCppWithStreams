@@ -65,10 +65,6 @@ public class Statement implements CodeProvider {
 				statementType = StatementType.WHILE;
 				// TODO
 				return;
-			case CommonCppWithStreamsLexer.DOWHILE:
-				statementType = StatementType.DOWHILE;
-				// TODO
-				return;
 			case CommonCppWithStreamsLexer.IF:
 				statementType = StatementType.IF;
 				if_ = new If(tree, ec, st);

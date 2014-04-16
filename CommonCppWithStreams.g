@@ -12,14 +12,12 @@ tokens {
     ARG;
     ARGS;
     CALL;
-    DOWHILE;
-    FOR_INIT;
-    FOR_COND;
-    FOR_ACT;
     POSTFIX_PP;
     POSTFIX_MM;
     STREAM_READ;
     STREAM_WRITE;
+    TRUE;
+    NOP;
 }
 
 @header        {package gen;}
@@ -37,11 +35,11 @@ function_def  : TYPE NAME '(' function_args ')' block -> ^(FUNCTION TYPE NAME fu
 
 block         : '{' statement* '}' -> ^(BLOCK statement*);
 statement     : variables_def | stream_read | stream_write | expr ';'! | RETURN^ expr? ';'! | for_ | while_ | if_ | BREAK ';'! | CONTINUE ';'! | block | ';' -> BLOCK;
-for_init      : expr? -> ^(FOR_INIT expr?);
-for_cond      : expr? -> ^(FOR_COND expr?);
-for_act       : expr? -> ^(FOR_ACT expr?);
-for_          : FOR^ '('! for_init ';'! for_cond ';'! for_act ')'! statement;
-while_        : WHILE^ '('! expr ')'! statement | DO statement WHILE '(' expr ')' ';' -> ^(DOWHILE expr statement);
+for_init      : expr | -> NOP;
+for_cond      : expr | -> TRUE;
+for_act       : expr | -> NOP;
+for_          : FOR '(' for_init ';' for_cond ';' for_act ')' statement -> ^(BLOCK for_init ^(WHILE for_cond ^(BLOCK statement for_act)));
+while_        : WHILE^ '('! expr ')'! statement | DO statement WHILE '(' expr ')' ';' -> ^(BLOCK statement ^(WHILE expr statement));
 if_           : IF^ '('! expr ')'! statement (options {greedy=true;} : ELSE! statement)?;
 function_call : NAME '(' (expr (',' expr)*)? ')' -> ^(CALL NAME ^(ARGS expr*));
 stream_func   : STREAM_FUNC '('! ')'!;
