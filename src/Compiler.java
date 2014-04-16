@@ -13,7 +13,7 @@ import java.io.*;
 import gen.*;
 
 public class Compiler {
-	private static final boolean SAVE_AST_TO_FILE = true;
+	private static final boolean SAVE_AST_TO_FILE = false;
 	private static final boolean OPTIMIZE_PUSH_POP = true;
 
 	private static int exec(String command) throws IOException, InterruptedException {

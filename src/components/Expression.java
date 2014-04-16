@@ -127,6 +127,10 @@ public class Expression implements CodeProvider {
 				exprType = ExpressionType.BOOL_VALUE;
 				type = Type.BOOL;
 				boolValue = tree.getText().equals("true");
+			} else if (tree.getType() == CommonCppWithStreamsLexer.TRUE) {
+				exprType = ExpressionType.BOOL_VALUE;
+				type = Type.BOOL;
+				boolValue = true;
 			} else if (tree.getType() == CommonCppWithStreamsLexer.NAME) {
 				exprType = ExpressionType.VARIABLE;
 				varName = tree.getText();

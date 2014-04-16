@@ -25,15 +25,15 @@ public class If implements CodeProvider {
 
 	public void writeAsmCode(AsmWriter w) {
 		int uid = w.genNewUId();
-		w.c("jmp _if_" + uid + "_cond");
 
 		if (st2 != null) {
+			w.c("jmp _if_" + uid + "_cond");
 			w.l("_if_" + uid + "_else_part");
 			st2.writeAsmCode(w);
 			w.c("jmp _if_" + uid + "_end");
+			w.l("_if_" + uid + "_cond");
 		}
 
-		w.l("_if_" + uid + "_cond");
 		cond.writeAsmCode(w);
 		w.pop("eax");
 		w.c("test eax, eax");

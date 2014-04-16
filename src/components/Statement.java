@@ -16,9 +16,7 @@ public class Statement implements CodeProvider {
 		STREAM_WRITE,
 		EXPR,
 		RETURN,
-		FOR,
 		WHILE,
-		DOWHILE,
 		IF,
 		BREAK,
 		CONTINUE,
@@ -26,24 +24,13 @@ public class Statement implements CodeProvider {
 	}
 
 	private StatementType statementType;
-	
-	private VarDef varDef;
-	private Return ret;
-	private Expression expr;
-	private If if_;
-	private Block block;
-	
-	public Statement(Tree tree, ErrorsCollector ec, SymbolTable st) {
-		varDef = null;
-		ret = null;
-		expr = null;
-		if_ = null;
-		block = null;
+	private CodeProvider statement;
 
+	public Statement(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		switch (tree.getType()) {
 			case CommonCppWithStreamsLexer.VAR_DEF:
 				statementType = StatementType.VAR_DEF;
-				varDef = new VarDef(tree, ec, st);
+				statement = new VarDef(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.STREAM_READ:
 				statementType = StatementType.STREAM_READ;
@@ -55,19 +42,15 @@ public class Statement implements CodeProvider {
 				return;
 			case CommonCppWithStreamsLexer.RETURN:
 				statementType = StatementType.RETURN;
-				ret = new Return(tree, ec, st);
-				return;
-			case CommonCppWithStreamsLexer.FOR:
-				statementType = StatementType.FOR;
-				// TODO
+				statement = new Return(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.WHILE:
 				statementType = StatementType.WHILE;
-				// TODO
+				statement = new While(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.IF:
 				statementType = StatementType.IF;
-				if_ = new If(tree, ec, st);
+				statement = new If(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.BREAK:
 				statementType = StatementType.BREAK;
@@ -79,12 +62,12 @@ public class Statement implements CodeProvider {
 				return;
 			case CommonCppWithStreamsLexer.BLOCK:
 				statementType = StatementType.BLOCK;
-				block = new Block(tree, ec, st, false);
+				statement = new Block(tree, ec, st, false);
 				return;
 		}
 
 		statementType = StatementType.EXPR;
-		expr = new Expression(tree, ec, st);
+		statement = new Expression(tree, ec, st);
 	}
 
 	public StatementType getStatementType() {
@@ -92,43 +75,9 @@ public class Statement implements CodeProvider {
 	}
 
 	public void writeAsmCode(AsmWriter w) {
-		switch (statementType) {
-			case VAR_DEF:
-				w.t("Statement: Variable Declaration");
-				varDef.writeAsmCode(w);
-				break;
-			case RETURN:
-				w.t("Statement: Return");
-				ret.writeAsmCode(w);
-				break;
-			case EXPR:
-				w.t("Statement: Expression");
-				expr.writeAsmCode(w);
-				w.pop("eax");
-				break;
-			case FOR:
-				// TODO
-				break;
-			case WHILE:
-				// TODO
-				break;
-			case DOWHILE:
-				// TODO
-				break;
-			case IF:
-				w.t("Statement: If");
-				if_.writeAsmCode(w);
-				break;
-			case BREAK:
-				// TODO
-				break;
-			case CONTINUE:
-				// TODO
-				break;
-			case BLOCK:
-				w.t("Statement: Block");
-				block.writeAsmCode(w);
-				break;
+		statement.writeAsmCode(w);
+		if (statementType == StatementType.EXPR) {
+			w.pop("eax");
 		}
 	}
 }
