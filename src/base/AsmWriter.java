@@ -18,7 +18,7 @@ public class AsmWriter {
 	private int nextUId;
 	private Map<Integer, Integer> uidToSP;
 	private List<Block> blockList;
-	private List<While> whileList;
+	private List<UIdHolder> loopList;
 	private List<String> fileNames;
 
 	private List<String> pendingPushPopList;  // for optimizing
@@ -33,7 +33,7 @@ public class AsmWriter {
 		nextUId = 0;
 		uidToSP = new HashMap<Integer, Integer>();
 		blockList = new ArrayList<Block>();
-		whileList = new ArrayList<While>();
+		loopList = new ArrayList<UIdHolder>();
 		fileNames = new ArrayList<String>();
 	}
 
@@ -428,15 +428,17 @@ public class AsmWriter {
 		return blockList;
 	}
 
-	public void whileStart(While b) {
-		whileList.add(b);
+	public void loopStart(UIdHolder b) {
+		loopList.add(b);
 	}
 
-	public void whileEnd() {
-		whileList.remove(whileList.size() - 1);
+	public void loopEnd() {
+		loopList.remove(loopList.size() - 1);
 	}
 
-	public List<While> getWhileList() {
-		return whileList;
+	public int getLastLoopUId() {
+		assert(loopList.size() > 0);
+
+		return loopList.get(loopList.size() - 1).getUId();
 	}
 }

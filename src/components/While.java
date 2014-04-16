@@ -8,8 +8,9 @@ import base.AsmWriter;
 import base.CodeProvider;
 import base.ErrorsCollector;
 import base.SymbolTable;
+import base.UIdHolder;
 
-public class While implements CodeProvider {
+public class While implements CodeProvider, UIdHolder {
 	private Expression cond;
 	private Statement statement;
 
@@ -26,20 +27,20 @@ public class While implements CodeProvider {
 	public void writeAsmCode(AsmWriter w) {
 		uid = w.genNewUId();
 
-		w.whileStart(this);
+		w.loopStart(this);
 
-		w.l("_while_" + uid + "_start");
+		w.l("_loop_" + uid + "_start");
 		cond.writeAsmCode(w);
 		w.pop("eax");
 		w.c("test eax, eax");
-		w.c("jz _while_" + uid + "_end");
+		w.c("jz _loop_" + uid + "_end");
 
 		statement.writeAsmCode(w);
-		w.c("jmp _while_" + uid + "_start");
+		w.c("jmp _loop_" + uid + "_start");
 
-		w.l("_while_" + uid + "_end");
+		w.l("_loop_" + uid + "_end");
 
-		w.whileEnd();
+		w.loopEnd();
 	}
 
 	public int getUId() {

@@ -12,6 +12,7 @@ tokens {
     ARG;
     ARGS;
     CALL;
+    FOR;
     POSTFIX_PP;
     POSTFIX_MM;
     STREAM_READ;
@@ -38,7 +39,7 @@ statement     : variables_def | stream_read | stream_write | expr ';'! | RETURN^
 for_init      : expr | -> NOP;
 for_cond      : expr | -> TRUE;
 for_act       : expr | -> NOP;
-for_          : FOR '(' for_init ';' for_cond ';' for_act ')' statement -> ^(BLOCK for_init ^(WHILE for_cond ^(BLOCK statement for_act)));
+for_          : FOR^ '('! for_init ';'! for_cond ';'! for_act ')'! statement;
 while_        : WHILE^ '('! expr ')'! statement | DO statement WHILE '(' expr ')' ';' -> ^(BLOCK statement ^(WHILE expr statement));
 if_           : IF^ '('! expr ')'! statement (options {greedy=true;} : ELSE! statement)?;
 function_call : NAME '(' (expr (',' expr)*)? ')' -> ^(CALL NAME ^(ARGS expr*));

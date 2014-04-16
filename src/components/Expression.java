@@ -14,6 +14,8 @@ import base.TypeConverter;
 
 public class Expression implements CodeProvider {
 	private enum ExpressionType {
+		NOP,
+
 		NUMBER_VALUE,
 		BOOL_VALUE,
 		VARIABLE,
@@ -119,7 +121,9 @@ public class Expression implements CodeProvider {
 		expr2 = null;
 
 		if (tree.getChildCount() == 0) {
-			if (tree.getType() == CommonCppWithStreamsLexer.NUMBER) {
+			if (tree.getType() == CommonCppWithStreamsLexer.NOP) {
+				exprType = ExpressionType.NOP;
+			} else if (tree.getType() == CommonCppWithStreamsLexer.NUMBER) {
 				exprType = ExpressionType.NUMBER_VALUE;
 				type = Type.INT;
 				numberValue = Integer.parseInt(tree.getText());
@@ -442,6 +446,9 @@ public class Expression implements CodeProvider {
 
 	public void writeAsmCode(AsmWriter w) {
 		switch (exprType) {
+			case NOP:
+				w.push("eax");
+				break;
 			case NUMBER_VALUE:
 				w.t("Expression: Number");
 				w.c("mov eax, " + numberValue);

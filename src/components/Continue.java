@@ -11,11 +11,11 @@ import base.CodeProvider;
 import base.ErrorsCollector;
 import base.SymbolTable;
 
-public class Break implements CodeProvider {
+public class Continue implements CodeProvider {
 	private int blocksUnderCycle;
 
-	public Break(Tree tree, ErrorsCollector ec, SymbolTable st) {
-		assert(tree.getType() == CommonCppWithStreamsLexer.BREAK);
+	public Continue(Tree tree, ErrorsCollector ec, SymbolTable st) {
+		assert(tree.getType() == CommonCppWithStreamsLexer.CONTINUE);
 		assert(tree.getChildCount() == 0);
 
 		blocksUnderCycle = 0;
@@ -26,7 +26,7 @@ public class Break implements CodeProvider {
 			p = p.getParent();
 		}
 		if (p == null) {
-			ec.check(false, tree.getLine(), "'break' not in any cycle");
+			ec.check(false, tree.getLine(), "'continue' not in any cycle");
 			return;
 		}
 	}
@@ -43,6 +43,6 @@ public class Break implements CodeProvider {
 			w.setSP(copyOfSP);
 		}
 
-		w.c("jmp _loop_" + w.getLastLoopUId() + "_end");
+		w.c("jmp _loop_" + w.getLastLoopUId() + "_start");
 	}
 }

@@ -28,8 +28,6 @@ public class Block implements CodeProvider {
 			st.beginBlock();
 		contents = new ArrayList<Statement>();
 		for (int i = 0; i < tree.getChildCount(); ++i) {
-			if (tree.getChild(i).getType() == CommonCppWithStreamsLexer.NOP)
-				continue;
 			Statement statement = new Statement(tree.getChild(i), ec, st);
 			contents.add(statement);
 			if (statement.getStatementType() == StatementType.RETURN)

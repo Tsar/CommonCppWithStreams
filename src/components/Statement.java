@@ -17,6 +17,7 @@ public class Statement implements CodeProvider {
 		EXPR,
 		RETURN,
 		WHILE,
+		FOR,
 		IF,
 		BREAK,
 		CONTINUE,
@@ -48,6 +49,10 @@ public class Statement implements CodeProvider {
 				statementType = StatementType.WHILE;
 				statement = new While(tree, ec, st);
 				return;
+			case CommonCppWithStreamsLexer.FOR:
+				statementType = StatementType.FOR;
+				statement = new For(tree, ec, st);
+				return;
 			case CommonCppWithStreamsLexer.IF:
 				statementType = StatementType.IF;
 				statement = new If(tree, ec, st);
@@ -58,7 +63,7 @@ public class Statement implements CodeProvider {
 				return;
 			case CommonCppWithStreamsLexer.CONTINUE:
 				statementType = StatementType.CONTINUE;
-				// TODO
+				statement = new Continue(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.BLOCK:
 				statementType = StatementType.BLOCK;
