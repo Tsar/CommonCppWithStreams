@@ -54,7 +54,7 @@ public class Statement implements CodeProvider {
 				return;
 			case CommonCppWithStreamsLexer.BREAK:
 				statementType = StatementType.BREAK;
-				// TODO
+				statement = new Break(tree, ec, st);
 				return;
 			case CommonCppWithStreamsLexer.CONTINUE:
 				statementType = StatementType.CONTINUE;

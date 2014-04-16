@@ -8,6 +8,7 @@ import java.util.Map;
 
 import components.Block;
 import components.VarDef;
+import components.While;
 
 public class AsmWriter {
 	private PrintWriter pw;
@@ -17,6 +18,7 @@ public class AsmWriter {
 	private int nextUId;
 	private Map<Integer, Integer> uidToSP;
 	private List<Block> blockList;
+	private List<While> whileList;
 	private List<String> fileNames;
 
 	private List<String> pendingPushPopList;  // for optimizing
@@ -31,6 +33,7 @@ public class AsmWriter {
 		nextUId = 0;
 		uidToSP = new HashMap<Integer, Integer>();
 		blockList = new ArrayList<Block>();
+		whileList = new ArrayList<While>();
 		fileNames = new ArrayList<String>();
 	}
 
@@ -423,5 +426,17 @@ public class AsmWriter {
 
 	public List<Block> getBlockList() {
 		return blockList;
+	}
+
+	public void whileStart(While b) {
+		whileList.add(b);
+	}
+
+	public void whileEnd() {
+		whileList.remove(whileList.size() - 1);
+	}
+
+	public List<While> getWhileList() {
+		return whileList;
 	}
 }

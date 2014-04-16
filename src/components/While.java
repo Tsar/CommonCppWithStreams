@@ -12,6 +12,8 @@ import base.SymbolTable;
 public class While implements CodeProvider {
 	private Expression cond;
 	private Statement statement;
+
+	private int uid;
 	
 	public While(Tree tree, ErrorsCollector ec, SymbolTable st) {
 		assert(tree.getType() == CommonCppWithStreamsLexer.WHILE);
@@ -22,17 +24,25 @@ public class While implements CodeProvider {
 	}
 
 	public void writeAsmCode(AsmWriter w) {
-		int uid = w.genNewUId();
-		
+		uid = w.genNewUId();
+
+		w.whileStart(this);
+
 		w.l("_while_" + uid + "_start");
 		cond.writeAsmCode(w);
 		w.pop("eax");
 		w.c("test eax, eax");
 		w.c("jz _while_" + uid + "_end");
-		
+
 		statement.writeAsmCode(w);
 		w.c("jmp _while_" + uid + "_start");
-		
+
 		w.l("_while_" + uid + "_end");
+
+		w.whileEnd();
+	}
+
+	public int getUId() {
+		return uid;
 	}
 }
