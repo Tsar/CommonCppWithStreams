@@ -445,6 +445,7 @@ public class Expression implements CodeProvider {
 	}
 
 	private void writeAsmCodeForOpSmthEq(AsmWriter w, String op, String asmLine) {
+		// Order is important (!!!)
 		expr2.writeAsmCode(w);
 		expr1.writeAsmCode(w);
 		w.t("Expression: " + op);
@@ -482,6 +483,14 @@ public class Expression implements CodeProvider {
 		w.push("eax");
 	}
 
+	private void writeAsmCodeForFileStream(AsmWriter w, String func, int streamTypeId) {
+		w.t("Expression: " + func);
+		int fileNameNum = w.addFileName(fileName);
+		assert(fileNameNum <= 0x00FFFFFF);
+		w.c("mov eax, " + ((fileNameNum << 8) | streamTypeId));
+		w.push("eax");
+	}
+
 	public void writeAsmCode(AsmWriter w) {
 		switch (exprType) {
 			case NOP:
@@ -513,40 +522,16 @@ public class Expression implements CodeProvider {
 				w.push("eax");
 				break;
 			case INPUT_FILE_STREAM_FUNC:
-				{
-				w.t("Expression: InputFileStream()");
-				int fileNameNum = w.addFileName(fileName);
-				assert(fileNameNum <= 0x00FFFFFF);
-				w.c("mov eax, " + ((fileNameNum << 8) | 3));
-				w.push("eax");
-				}
+				writeAsmCodeForFileStream(w, "InputFileStream()", 3);
 				break;
 			case OUTPUT_FILE_STREAM_FUNC:
-				{
-				w.t("Expression: OutputFileStream()");
-				int fileNameNum = w.addFileName(fileName);
-				assert(fileNameNum <= 0x00FFFFFF);
-				w.c("mov eax, " + ((fileNameNum << 8) | 4));
-				w.push("eax");
-				}
+				writeAsmCodeForFileStream(w, "OutputFileStream()", 4);
 				break;
 			case INPUT_BINARY_FILE_STREAM_FUNC:
-				{
-				w.t("Expression: InputBinaryFileStream()");
-				int fileNameNum = w.addFileName(fileName);
-				assert(fileNameNum <= 0x00FFFFFF);
-				w.c("mov eax, " + ((fileNameNum << 8) | 5));
-				w.push("eax");
-				}
+				writeAsmCodeForFileStream(w, "InputBinaryFileStream()", 5);
 				break;
 			case OUTPUT_BINARY_FILE_STREAM_FUNC:
-				{
-				w.t("Expression: OutputBinaryFileStream()");
-				int fileNameNum = w.addFileName(fileName);
-				assert(fileNameNum <= 0x00FFFFFF);
-				w.c("mov eax, " + ((fileNameNum << 8) | 6));
-				w.push("eax");
-				}
+				writeAsmCodeForFileStream(w, "OutputBinaryFileStream()", 6);
 				break;
 			case FUNCTION_CALL:
 				funcCall.writeAsmCode(w);
@@ -627,15 +612,20 @@ public class Expression implements CodeProvider {
 				break;
 
 			case OP_OR:
+				// TODO
 				break;
 			case OP_AND:
+				// TODO
 				break;
 
 			case OP_BIN_OR:
+				writeAsmCodeForBinaryCountOp(w, "|", "or eax, ebx");
 				break;
 			case OP_BIN_XOR:
+				writeAsmCodeForBinaryCountOp(w, "^", "xor eax, ebx");
 				break;
 			case OP_BIN_AND:
+				writeAsmCodeForBinaryCountOp(w, "&", "and eax, ebx");
 				break;
 
 			case OP_EQ_EQ:
@@ -691,8 +681,14 @@ public class Expression implements CodeProvider {
 				w.push("eax");
 				break;
 			case OP_NOT:
+				// TODO
 				break;
 			case OP_BIN_NOT:
+				expr1.writeAsmCode(w);
+				w.t("Expression: ~");
+				w.pop("eax");
+				w.c("not eax");
+				w.push("eax");
 				break;
 		}
 		w.ln();
