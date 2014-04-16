@@ -10,11 +10,20 @@ public class SymbolTable {
 	private ErrorsCollector ec;
 
 	private boolean mainFuncDefined;
+	private int fileNamesCount;
 
 	public SymbolTable(ErrorsCollector ec) {
 		this.ec = ec;
 		lm = new ArrayList<Map<String, Symbol>>();
 		mainFuncDefined = false;
+		fileNamesCount = 0;
+	}
+	
+	public void incFileNamesCount() {
+		++fileNamesCount;
+		if (fileNamesCount > 0x01000000) {
+			ec.fatalError("Compiler does not support more than " + 0x01000000 + " file names in code");
+		}
 	}
 
 	private int currentBlockNumber() {

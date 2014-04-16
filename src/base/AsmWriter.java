@@ -118,6 +118,47 @@ public class AsmWriter {
 		c("ret");
 		ln();
 
+		l("get_W_descriptor_into_ebp");
+		c("mov ebp, 0", "descriptor of console");
+		c("cmp al, 2");
+		c("jz _W_descriptor_is_set");
+
+		c("cmp al, 4");
+		c("jnz _W_descriptor_is_set", "writing to console, if not 2 or 4");
+
+		push("edx");
+		c("shr eax, 8");
+		c("mov ebx, 256");
+		c("mul ebx");
+		c("lea ebx, [eax + filename_0]");
+		c("mov ecx, 101", "O_CREAT | O_WRONLY");
+		c("mov edx, 644", "access mode");
+		c("mov eax, 5", "number of 'open' syscall");
+		c("int 80h");
+		c("mov ebp, eax");
+
+		c("mov ebx, eax");
+		c("mov ecx, 0");
+		c("mov edx, 2", "SEEK_END");
+		c("mov eax, 19", "number of 'lseek' syscall");
+		c("int 80h");
+		pop("edx");
+
+		l("_W_descriptor_is_set");
+		c("ret");
+
+		l("close_by_descriptor_in_ebp");
+		c("test ebp, ebp");
+		c("jz _descriptor_closed");
+
+		c("mov ebx, ebp");
+		c("mov eax, 6", "number of 'close' syscall");
+		c("int 80h");
+
+		l("_descriptor_closed");
+		c("ret");
+		ln();
+
 		c("section .rodata");
 		ln();
 		pw.println("str_true  db \"true\"");
@@ -127,10 +168,16 @@ public class AsmWriter {
 		ln();
 		if (fileNames.size() > 0) {
 			for (int i = 0; i < fileNames.size(); ++i) {
-				pw.println("filename_" + i + " db " + fileNames.get(i) + ",0");
+				pw.print("filename_" + i + " db " + fileNames.get(i));
+				for (int j = 0; j < 258 - fileNames.get(i).length(); ++j) {
+					pw.print(",0");
+				}
+				pw.println();
 			}
-			ln();
+		} else {
+			pw.println("filename_0 db 0");
 		}
+		ln();
 
 		c("section .data");
 		ln();

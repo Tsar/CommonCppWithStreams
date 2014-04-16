@@ -40,6 +40,9 @@ public class StreamWrite implements CodeProvider {
 	public void writeAsmCode(AsmWriter w) {
 		assert(exprs != null);
 
+		w.c("mov eax, " + w.varAddr(streamDef));
+		w.c("call get_W_descriptor_into_ebp");
+
 		for (int i = 0; i < exprs.size(); ++i) {
 			Expression expr = exprs.get(i);
 			expr.writeAsmCode(w);
@@ -56,11 +59,13 @@ public class StreamWrite implements CodeProvider {
 					assert(false);
 					break;
 			}
-			w.c("mov ebx, 0");  // TODO: fd
+			w.c("mov ebx, ebp");
 			w.c("mov eax, 4", "number of 'write' syscall");
 		    w.c("int 80h");
 			w.c("call write_" + ((i == exprs.size() - 1) ? "endl" : "space"));
 			w.pop("edx");
 		}
+
+		w.c("call close_by_descriptor_in_ebp");
 	}
 }

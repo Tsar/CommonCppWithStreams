@@ -158,7 +158,9 @@ public class Expression implements CodeProvider {
 				assert(tree.getChildCount() == 1);
 				assert(tree.getChild(0).getType() == CommonCppWithStreamsLexer.FILE_NAME_STR);
 
-				fileName = tree.getChild(0).getText();
+				fileName = tree.getChild(0).getText();  // file name in quotations
+				ec.check(fileName.length() <= 257, tree.getChild(0).getLine(), "File name can not be longer than 255 characters");
+				st.incFileNamesCount();
 				if (tree.getText().equals("InputFileStream")) {
 					exprType = ExpressionType.INPUT_FILE_STREAM_FUNC;
 					type = Type.ISTREAM;
@@ -469,10 +471,7 @@ public class Expression implements CodeProvider {
 				{
 				w.t("Expression: InputFileStream()");
 				int fileNameNum = w.addFileName(fileName);
-				if (fileNameNum > 0x00FFFFFF) {
-					ec.fatalError("Compiler does not support more than " + 0x00FFFFFF + " file names in code");
-					return;
-				}
+				assert(fileNameNum <= 0x00FFFFFF);
 				w.c("mov eax, " + ((fileNameNum << 8) | 3));
 				w.push("eax");
 				}
@@ -481,10 +480,7 @@ public class Expression implements CodeProvider {
 				{
 				w.t("Expression: OutputFileStream()");
 				int fileNameNum = w.addFileName(fileName);
-				if (fileNameNum > 0x00FFFFFF) {
-					ec.fatalError("Compiler does not support more than " + 0x00FFFFFF + " file names in code");
-					return;
-				}
+				assert(fileNameNum <= 0x00FFFFFF);
 				w.c("mov eax, " + ((fileNameNum << 8) | 4));
 				w.push("eax");
 				}
@@ -493,10 +489,7 @@ public class Expression implements CodeProvider {
 				{
 				w.t("Expression: InputBinaryFileStream()");
 				int fileNameNum = w.addFileName(fileName);
-				if (fileNameNum > 0x00FFFFFF) {
-					ec.fatalError("Compiler does not support more than " + 0x00FFFFFF + " file names in code");
-					return;
-				}
+				assert(fileNameNum <= 0x00FFFFFF);
 				w.c("mov eax, " + ((fileNameNum << 8) | 5));
 				w.push("eax");
 				}
@@ -505,10 +498,7 @@ public class Expression implements CodeProvider {
 				{
 				w.t("Expression: OutputBinaryFileStream()");
 				int fileNameNum = w.addFileName(fileName);
-				if (fileNameNum > 0x00FFFFFF) {
-					ec.fatalError("Compiler does not support more than " + 0x00FFFFFF + " file names in code");
-					return;
-				}
+				assert(fileNameNum <= 0x00FFFFFF);
 				w.c("mov eax, " + ((fileNameNum << 8) | 6));
 				w.push("eax");
 				}
