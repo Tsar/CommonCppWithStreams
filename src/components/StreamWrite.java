@@ -41,7 +41,7 @@ public class StreamWrite implements CodeProvider {
 		assert(exprs != null);
 
 		w.c("mov eax, " + w.varAddr(streamDef));
-		w.c("call get_W_descriptor_into_ebp");
+		w.c("call get_W_descriptor_into_ebp_and_mode_into_esi");
 
 		for (int i = 0; i < exprs.size(); ++i) {
 			Expression expr = exprs.get(i);
@@ -62,7 +62,7 @@ public class StreamWrite implements CodeProvider {
 			w.c("mov ebx, ebp");
 			w.c("mov eax, 4", "number of 'write' syscall");
 		    w.c("int 80h");
-			w.c("call write_" + ((i == exprs.size() - 1) ? "endl" : "space"));
+			w.c("call write_" + ((i == exprs.size() - 1) ? "endl" : "space") + "_if_text_mode");
 			w.pop("edx");
 		}
 

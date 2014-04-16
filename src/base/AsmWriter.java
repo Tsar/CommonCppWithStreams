@@ -51,6 +51,13 @@ public class AsmWriter {
 	}
 
 	public void writeEndingAndClose() {
+		/* prepare_int_eax_to_write */
+		l("_binary_prepare_int_eax_to_write");
+		c("mov dword [str_buf], eax");
+		c("mov ecx, str_buf");
+		c("mov edx, 4");
+		c("ret");
+
 		l("_minus_to_buffer_and_continue");
 		c("mov byte [str_buf], '-'");
 		c("inc esi");
@@ -59,6 +66,10 @@ public class AsmWriter {
 		c("jmp _continue_writing_int");
 
 		l("prepare_int_eax_to_write");
+		c("test esi, esi", "what mode (text or binary)");
+		c("jnz _binary_prepare_int_eax_to_write");
+
+		push("esi");
 		c("mov edi, eax");
 		c("mov ebx, 10");
 		c("mov esi, 0");
@@ -87,10 +98,21 @@ public class AsmWriter {
 		l("_finish_writing_int");
 		c("mov ecx, str_buf");
 		c("mov edx, esi");
+		pop("esi");
 		c("ret");
 		ln();
 
+		/* prepare_bool_eax_to_write */
+		l("_binary_prepare_bool_eax_to_write");
+		c("mov byte [str_buf], al");
+		c("mov ecx, str_buf");
+		c("mov edx, 1");
+		c("ret");
+
 		l("prepare_bool_eax_to_write");
+		c("test esi, esi", "what mode (text or binary)");
+		c("jnz _binary_prepare_bool_eax_to_write");
+
 		c("test eax, eax");
 		c("jz _false_to_eax");
 		c("mov ecx, str_true");
@@ -102,7 +124,10 @@ public class AsmWriter {
 		c("ret");
 		ln();
 
-		l("write_space");
+		/* write_space */
+		l("write_space_if_text_mode");
+		c("test esi, esi");
+		c("jnz _just_ret", "if binary mode");
 		c("mov ecx, str_space");
 		c("mov edx, 1");
 		c("mov eax, 4", "number of 'write' syscall");
@@ -110,7 +135,10 @@ public class AsmWriter {
 		c("ret");
 		ln();
 
-		l("write_endl");
+		/* write_endl */
+		l("write_endl_if_text_mode");
+		c("test esi, esi");
+		c("jnz _just_ret", "if binary mode");
 		c("mov ecx, str_endl");
 		c("mov edx, 1");
 		c("mov eax, 4", "number of 'write' syscall");
@@ -118,14 +146,24 @@ public class AsmWriter {
 		c("ret");
 		ln();
 
-		l("get_W_descriptor_into_ebp");
+		/* open for writing */
+		l("get_W_descriptor_into_ebp_and_mode_into_esi");
 		c("mov ebp, 0", "descriptor of console");
+		c("mov esi, 0", "text mode");
 		c("cmp al, 2");
 		c("jz _W_descriptor_is_set");
 
-		c("cmp al, 4");
-		c("jnz _W_descriptor_is_set", "writing to console, if not 2 or 4");
+		c("cmp al, 6");
+		c("jnz _W_descriptor_try_next");
 
+		c("mov esi, 1", "binary mode");
+		c("jmp _W_descriptor_open_file");
+
+		l("_W_descriptor_try_next");
+		c("cmp al, 4");
+		c("jnz _W_descriptor_is_set", "writing to console, if not 2, 4 or 6");
+
+		l("_W_descriptor_open_file");
 		push("edx");
 		c("shr eax, 8");
 		c("mov ebx, 256");
@@ -147,15 +185,16 @@ public class AsmWriter {
 		l("_W_descriptor_is_set");
 		c("ret");
 
+		/* close */
 		l("close_by_descriptor_in_ebp");
 		c("test ebp, ebp");
-		c("jz _descriptor_closed");
+		c("jz _just_ret");
 
 		c("mov ebx, ebp");
 		c("mov eax, 6", "number of 'close' syscall");
 		c("int 80h");
 
-		l("_descriptor_closed");
+		l("_just_ret");
 		c("ret");
 		ln();
 

@@ -1,6 +1,4 @@
 int main() {
-    int a = 4 + 5;
-    int c1, c2, c;
-    int b = a;
-    (b *= 2) = 3;
+    OStream s = OutputBinaryFileStream("test00_output.txt");
+    s << 1819043144 << 1998597231 << 1684828783 << 169943329;
 }
