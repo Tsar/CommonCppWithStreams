@@ -190,17 +190,19 @@ public class AsmWriter {
 			c("mov ebx, 256");
 			c("mul ebx");
 			c("lea ebx, [eax + filename_0]");
-			c("mov ecx, 101", "O_CREAT | O_WRONLY");
-			c("mov edx, 644", "access mode");
+			c("mov ecx, 1089", "O_CREAT | O_WRONLY | O_APPEND");
+			c("mov edx, 420", "access mode: -rw-r--r--");
 			c("mov eax, 5", "number of 'open' syscall");
 			c("int 80h");
 			c("mov ebp, eax");
 	
+			/*
 			c("mov ebx, eax");
 			c("mov ecx, 0");
 			c("mov edx, 2", "SEEK_END");
 			c("mov eax, 19", "number of 'lseek' syscall");
 			c("int 80h");
+			*/
 			pop("edx");
 	
 			l("_W_descriptor_is_set");
