@@ -13,8 +13,7 @@ int main() {
 
     is = InputBinaryFileStream("test00_output.txt");
     int d;
-    is >> a >> b >> c;
-    is >> d;
+    is >> a >> b; is >> c; is >> d;
 
     os << a << b << c << d;
     os << 1819043144 << 1998597231 << 1684828783 << 169943329;

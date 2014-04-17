@@ -370,11 +370,13 @@ public class AsmWriter {
 			c("jnz _R_descriptor_try_7");
 
 			c("mov esi, 1", "binary mode");
+			c("jmp _R_descriptor_get_from_eax");
 
 			l("_R_descriptor_try_7");
 			c("cmp al, 7");
 			c("jnz _R_descriptor_try_5");
 
+			l("_R_descriptor_get_from_eax");
 			c("mov ebp, eax");
 			c("shr ebp, 8");
 			c("ret");
@@ -405,9 +407,6 @@ public class AsmWriter {
 			pop("eax");
 			pop("edx");
 	
-			c("cmp ebp, -1", "checking descriptor");
-			c("jz _R_open_file_failed");
-
 			c("mov ebx, ebp");
 			c("shl ebx, 8");
 			c("and eax, 255");
@@ -415,10 +414,6 @@ public class AsmWriter {
 
 			l("_R_descriptor_is_set");
 			c("ret");
-	
-			l("_R_open_file_failed");
-			//c("int3");
-			c("ud2");
 		}
 
 		c("section .rodata");
