@@ -302,8 +302,28 @@ public class AsmWriter {
 			l("read_bool_to_eax");
 			c("test esi, esi", "what mode (text or binary)");
 			c("jnz _binary_read_bool_to_eax");
-	
-			// TODO: read bool as text
+
+			c("call read_token_to_str_buf");
+			c("test ecx, ecx");
+			c("jz __false");
+
+			c("cmp ecx, 4");
+			c("jnz __false");
+
+			c("cmp byte [str_buf], 't'");
+			c("jnz __false");
+			c("cmp byte [str_buf + 1], 'r'");
+			c("jnz __false");
+			c("cmp byte [str_buf + 2], 'u'");
+			c("jnz __false");
+			c("cmp byte [str_buf + 3], 'e'");
+			c("jnz __false");
+
+			c("mov eax, 1");
+			c("ret");
+
+			l("__false");
+			c("xor eax, eax");
 			c("ret");
 			ln();
 		}

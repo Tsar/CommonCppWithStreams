@@ -9,6 +9,12 @@ int main() {
     is >> a;
     is >> b >> c;
 
+    bool x, y;
+    is >> x >> y;
+    os << x << y;
+    is >> x >> y;
+    os << x << y;
+
     os << a << b << c;
 
     is = InputBinaryFileStream("test00_output.txt");
