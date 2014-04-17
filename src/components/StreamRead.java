@@ -46,8 +46,21 @@ public class StreamRead implements CodeProvider {
 		w.c("mov eax, " + w.varAddr(streamDef));
 		w.c("call get_R_descriptor_into_ebp_and_mode_into_esi");
 
-		// TODO
-
-		w.c("call close_by_descriptor_in_ebp");
+		for (VarDef vd : vars) {
+			w.push("edx");
+			switch (vd.getType()) {
+				case INT:
+					w.c("call read_int_to_eax");
+					break;
+				case BOOL:
+					w.c("call read_bool_to_eax");
+					break;
+				default:
+					assert(false);
+					break;
+			}
+			w.pop("edx");
+			w.c("mov " + w.varAddr(vd) + ", eax");
+		}
 	}
 }

@@ -51,18 +51,15 @@ public class StreamWrite implements CodeProvider {
 			w.push("edx");
 			switch (expr.getType()) {
 				case INT:
-					w.c("call prepare_int_eax_to_write");
+					w.c("call write_int_from_eax");
 					break;
 				case BOOL:
-					w.c("call prepare_bool_eax_to_write");
+					w.c("call write_bool_from_eax");
 					break;
 				default:
 					assert(false);
 					break;
 			}
-			w.c("mov ebx, ebp");
-			w.c("mov eax, 4", "number of 'write' syscall");
-		    w.c("int 80h");
 			w.c("call write_" + ((i == exprs.size() - 1) ? "endl" : "space") + "_if_text_mode");
 			w.pop("edx");
 		}

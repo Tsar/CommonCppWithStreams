@@ -53,12 +53,12 @@ public class AsmWriter {
 	}
 
 	public void writeEndingAndClose() {
-		/* prepare_int_eax_to_write */
-		l("_binary_prepare_int_eax_to_write");
+		/* write_int_from_eax */
+		l("_binary_write_int_from_eax");
 		c("mov dword [str_buf], eax");
 		c("mov ecx, str_buf");
 		c("mov edx, 4");
-		c("ret");
+		c("jmp syscall_write");
 
 		l("_minus_to_buffer_and_continue");
 		c("mov byte [str_buf], '-'");
@@ -67,9 +67,9 @@ public class AsmWriter {
 		c("neg edi");
 		c("jmp _continue_writing_int");
 
-		l("prepare_int_eax_to_write");
+		l("write_int_from_eax");
 		c("test esi, esi", "what mode (text or binary)");
-		c("jnz _binary_prepare_int_eax_to_write");
+		c("jnz _binary_write_int_from_eax");
 
 		push("esi");
 		c("mov edi, eax");
@@ -101,30 +101,37 @@ public class AsmWriter {
 		c("mov ecx, str_buf");
 		c("mov edx, esi");
 		pop("esi");
-		c("ret");
+		c("jmp syscall_write");
 		ln();
 
-		/* prepare_bool_eax_to_write */
-		l("_binary_prepare_bool_eax_to_write");
+		/* write_bool_from_eax */
+		l("_binary_write_bool_from_eax");
 		c("mov byte [str_buf], al");
 		c("mov ecx, str_buf");
 		c("mov edx, 1");
-		c("ret");
+		c("jmp syscall_write");
 
-		l("prepare_bool_eax_to_write");
+		l("write_bool_from_eax");
 		c("test esi, esi", "what mode (text or binary)");
-		c("jnz _binary_prepare_bool_eax_to_write");
+		c("jnz _binary_write_bool_from_eax");
 
 		c("test eax, eax");
 		c("jz _false_to_eax");
 		c("mov ecx, str_true");
 		c("mov edx, 4");
-		c("ret");
+		c("jmp syscall_write");
 		l("_false_to_eax");
 		c("mov ecx, str_false");
 		c("mov edx, 5");
-		c("ret");
+		c("jmp syscall_write");
 		ln();
+		
+		/* syscall to write (final action of all write operations) */
+		l("syscall_write");
+		c("mov ebx, ebp");
+		c("mov eax, 4", "number of 'write' syscall");
+	    c("int 80h");
+	    c("ret");
 
 		/* write_space */
 		l("write_space_if_text_mode");
@@ -132,9 +139,7 @@ public class AsmWriter {
 		c("jnz _just_ret", "if binary mode");
 		c("mov ecx, str_space");
 		c("mov edx, 1");
-		c("mov eax, 4", "number of 'write' syscall");
-	    c("int 80h");
-		c("ret");
+		c("jmp syscall_write");
 		ln();
 
 		/* write_endl */
@@ -143,9 +148,7 @@ public class AsmWriter {
 		c("jnz _just_ret", "if binary mode");
 		c("mov ecx, str_endl");
 		c("mov edx, 1");
-		c("mov eax, 4", "number of 'write' syscall");
-	    c("int 80h");
-		c("ret");
+		c("jmp syscall_write");
 		ln();
 
 		/* open for writing */
