@@ -18,5 +18,8 @@ int f(int x) {
 }
 
 int main() {
-    return f(x) + x;
+    OStream os = OutputStream();
+    x = f(x) + x;
+    os << x;
+    return x;
 }

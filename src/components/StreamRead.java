@@ -13,6 +13,7 @@ import base.ErrorsCollector;
 import base.SymbolTable;
 import base.Type;
 import base.TypeChecker;
+import base.AsmWriter.AsmFunction;
 
 public class StreamRead implements CodeProvider {
 	private VarDef streamDef;
@@ -50,9 +51,11 @@ public class StreamRead implements CodeProvider {
 			w.push("edx");
 			switch (vd.getType()) {
 				case INT:
+					w.setUsed(AsmFunction.READ_INT);
 					w.c("call read_int_to_eax");
 					break;
 				case BOOL:
+					w.setUsed(AsmFunction.READ_BOOL);
 					w.c("call read_bool_to_eax");
 					break;
 				default:

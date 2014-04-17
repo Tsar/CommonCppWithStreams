@@ -8,6 +8,7 @@ import gen.CommonCppWithStreamsLexer;
 import org.antlr.runtime.tree.Tree;
 
 import base.AsmWriter;
+import base.AsmWriter.AsmFunction;
 import base.CodeProvider;
 import base.ErrorsCollector;
 import base.SymbolTable;
@@ -51,9 +52,11 @@ public class StreamWrite implements CodeProvider {
 			w.push("edx");
 			switch (expr.getType()) {
 				case INT:
+					w.setUsed(AsmFunction.WRITE_INT);
 					w.c("call write_int_from_eax");
 					break;
 				case BOOL:
+					w.setUsed(AsmFunction.WRITE_BOOL);
 					w.c("call write_bool_from_eax");
 					break;
 				default:

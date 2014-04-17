@@ -1,15 +1,19 @@
 package base;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import components.Block;
 import components.VarDef;
 
 public class AsmWriter {
+	public enum AsmFunction {
+		READ_INT,
+		READ_BOOL,
+		WRITE_INT,
+		WRITE_BOOL
+	}
+
 	private PrintWriter pw;
 	private boolean optimizePushPop;
 
@@ -21,6 +25,8 @@ public class AsmWriter {
 	private List<String> fileNames;
 
 	private List<String> pendingPushPopList;  // for optimizing
+
+	private Set<AsmFunction> usedAsmFunctions;
 
 	public AsmWriter(PrintWriter pw, boolean optimizePushPop) {
 		this.pw = pw;
@@ -34,6 +40,11 @@ public class AsmWriter {
 		blockList = new ArrayList<Block>();
 		loopList = new ArrayList<UIdHolder>();
 		fileNames = new ArrayList<String>();
+		usedAsmFunctions = new HashSet<AsmFunction>();
+	}
+
+	public void setUsed(AsmFunction asmFunction) {
+		usedAsmFunctions.add(asmFunction);
 	}
 
 	public void writeBeginning() {
@@ -53,202 +64,214 @@ public class AsmWriter {
 	}
 
 	public void writeEndingAndClose() {
-		/* write_int_from_eax */
-		l("_binary_write_int_from_eax");
-		c("mov dword [str_buf], eax");
-		c("mov ecx, str_buf");
-		c("mov edx, 4");
-		c("jmp syscall_write");
+		if (usedAsmFunctions.contains(AsmFunction.WRITE_INT)) {
+			/* write_int_from_eax */
+			l("_binary_write_int_from_eax");
+			c("mov dword [str_buf], eax");
+			c("mov ecx, str_buf");
+			c("mov edx, 4");
+			c("jmp syscall_write");
+	
+			l("_minus_to_buffer_and_continue");
+			c("mov byte [str_buf], '-'");
+			c("inc esi");
+			c("neg eax");
+			c("neg edi");
+			c("jmp _continue_writing_int");
+	
+			l("write_int_from_eax");
+			c("test esi, esi", "what mode (text or binary)");
+			c("jnz _binary_write_int_from_eax");
+	
+			push("esi");
+			c("mov edi, eax");
+			c("mov ebx, 10");
+			c("mov esi, 0");
+			c("test eax, eax");
+			c("js _minus_to_buffer_and_continue");
+	
+			l("_continue_writing_int");
+			c("xor edx, edx");
+			c("div ebx");
+			c("inc esi");
+			c("test eax, eax");
+			c("jnz _continue_writing_int");
+	
+			c("mov eax, edi");
+			c("lea edi, [esi + str_buf - 1]");
+	
+			l("_continue_writing_int_2");
+			c("xor edx, edx");
+			c("div ebx");
+			c("add dl, '0'");
+			c("mov byte [edi], dl");
+			c("dec edi");
+			c("test eax, eax");
+			c("jnz _continue_writing_int_2");
+	
+			l("_finish_writing_int");
+			c("mov ecx, str_buf");
+			c("mov edx, esi");
+			pop("esi");
+			c("jmp syscall_write");
+			ln();
+		}
 
-		l("_minus_to_buffer_and_continue");
-		c("mov byte [str_buf], '-'");
-		c("inc esi");
-		c("neg eax");
-		c("neg edi");
-		c("jmp _continue_writing_int");
+		if (usedAsmFunctions.contains(AsmFunction.WRITE_BOOL)) {
+			/* write_bool_from_eax */
+			l("_binary_write_bool_from_eax");
+			c("mov byte [str_buf], al");
+			c("mov ecx, str_buf");
+			c("mov edx, 1");
+			c("jmp syscall_write");
+	
+			l("write_bool_from_eax");
+			c("test esi, esi", "what mode (text or binary)");
+			c("jnz _binary_write_bool_from_eax");
+	
+			c("test eax, eax");
+			c("jz _false_to_eax");
+			c("mov ecx, str_true");
+			c("mov edx, 4");
+			c("jmp syscall_write");
+			l("_false_to_eax");
+			c("mov ecx, str_false");
+			c("mov edx, 5");
+			c("jmp syscall_write");
+			ln();
+		}
 
-		l("write_int_from_eax");
-		c("test esi, esi", "what mode (text or binary)");
-		c("jnz _binary_write_int_from_eax");
+		if (usedAsmFunctions.contains(AsmFunction.WRITE_INT) || usedAsmFunctions.contains(AsmFunction.WRITE_BOOL)) {
+			/* syscall to write (final action of all write operations) */
+			l("syscall_write");
+			c("mov ebx, ebp");
+			c("mov eax, 4", "number of 'write' syscall");
+		    c("int 80h");
+		    c("ret");
 
-		push("esi");
-		c("mov edi, eax");
-		c("mov ebx, 10");
-		c("mov esi, 0");
-		c("test eax, eax");
-		c("js _minus_to_buffer_and_continue");
+			/* write_space */
+			l("write_space_if_text_mode");
+			c("test esi, esi");
+			c("jnz _just_ret", "if binary mode");
+			c("mov ecx, str_space");
+			c("mov edx, 1");
+			c("jmp syscall_write");
+			ln();
+	
+			/* write_endl */
+			l("write_endl_if_text_mode");
+			c("test esi, esi");
+			c("jnz _just_ret", "if binary mode");
+			c("mov ecx, str_endl");
+			c("mov edx, 1");
+			c("jmp syscall_write");
+			ln();
 
-		l("_continue_writing_int");
-		c("xor edx, edx");
-		c("div ebx");
-		c("inc esi");
-		c("test eax, eax");
-		c("jnz _continue_writing_int");
+			/* open for writing */
+			l("get_W_descriptor_into_ebp_and_mode_into_esi");
+			c("mov ebp, 0", "descriptor of console");
+			c("mov esi, 0", "text mode");
+			c("cmp al, 2");
+			c("jz _W_descriptor_is_set");
+	
+			c("cmp al, 6");
+			c("jnz _W_descriptor_try_next");
+	
+			c("mov esi, 1", "binary mode");
+			c("jmp _W_descriptor_open_file");
+	
+			l("_W_descriptor_try_next");
+			c("cmp al, 4");
+			c("jnz _W_descriptor_is_set", "writing to console, if not 2, 4 or 6");
+	
+			l("_W_descriptor_open_file");
+			push("edx");
+			c("shr eax, 8");
+			c("mov ebx, 256");
+			c("mul ebx");
+			c("lea ebx, [eax + filename_0]");
+			c("mov ecx, 101", "O_CREAT | O_WRONLY");
+			c("mov edx, 644", "access mode");
+			c("mov eax, 5", "number of 'open' syscall");
+			c("int 80h");
+			c("mov ebp, eax");
+	
+			c("mov ebx, eax");
+			c("mov ecx, 0");
+			c("mov edx, 2", "SEEK_END");
+			c("mov eax, 19", "number of 'lseek' syscall");
+			c("int 80h");
+			pop("edx");
+	
+			l("_W_descriptor_is_set");
+			c("ret");
 
-		c("mov eax, edi");
-		c("lea edi, [esi + str_buf - 1]");
+			/* close */
+			l("close_by_descriptor_in_ebp");
+			c("test ebp, ebp");
+			c("jz _just_ret");
 
-		l("_continue_writing_int_2");
-		c("xor edx, edx");
-		c("div ebx");
-		c("add dl, '0'");
-		c("mov byte [edi], dl");
-		c("dec edi");
-		c("test eax, eax");
-		c("jnz _continue_writing_int_2");
+			c("mov ebx, ebp");
+			c("mov eax, 6", "number of 'close' syscall");
+			c("int 80h");
 
-		l("_finish_writing_int");
-		c("mov ecx, str_buf");
-		c("mov edx, esi");
-		pop("esi");
-		c("jmp syscall_write");
-		ln();
+			l("_just_ret");
+			c("ret");
+			ln();
+		}
 
-		/* write_bool_from_eax */
-		l("_binary_write_bool_from_eax");
-		c("mov byte [str_buf], al");
-		c("mov ecx, str_buf");
-		c("mov edx, 1");
-		c("jmp syscall_write");
-
-		l("write_bool_from_eax");
-		c("test esi, esi", "what mode (text or binary)");
-		c("jnz _binary_write_bool_from_eax");
-
-		c("test eax, eax");
-		c("jz _false_to_eax");
-		c("mov ecx, str_true");
-		c("mov edx, 4");
-		c("jmp syscall_write");
-		l("_false_to_eax");
-		c("mov ecx, str_false");
-		c("mov edx, 5");
-		c("jmp syscall_write");
-		ln();
-		
-		/* syscall to write (final action of all write operations) */
-		l("syscall_write");
-		c("mov ebx, ebp");
-		c("mov eax, 4", "number of 'write' syscall");
-	    c("int 80h");
-	    c("ret");
-
-		/* write_space */
-		l("write_space_if_text_mode");
-		c("test esi, esi");
-		c("jnz _just_ret", "if binary mode");
-		c("mov ecx, str_space");
-		c("mov edx, 1");
-		c("jmp syscall_write");
-		ln();
-
-		/* write_endl */
-		l("write_endl_if_text_mode");
-		c("test esi, esi");
-		c("jnz _just_ret", "if binary mode");
-		c("mov ecx, str_endl");
-		c("mov edx, 1");
-		c("jmp syscall_write");
-		ln();
-
-		/* open for writing */
-		l("get_W_descriptor_into_ebp_and_mode_into_esi");
-		c("mov ebp, 0", "descriptor of console");
-		c("mov esi, 0", "text mode");
-		c("cmp al, 2");
-		c("jz _W_descriptor_is_set");
-
-		c("cmp al, 6");
-		c("jnz _W_descriptor_try_next");
-
-		c("mov esi, 1", "binary mode");
-		c("jmp _W_descriptor_open_file");
-
-		l("_W_descriptor_try_next");
-		c("cmp al, 4");
-		c("jnz _W_descriptor_is_set", "writing to console, if not 2, 4 or 6");
-
-		l("_W_descriptor_open_file");
-		push("edx");
-		c("shr eax, 8");
-		c("mov ebx, 256");
-		c("mul ebx");
-		c("lea ebx, [eax + filename_0]");
-		c("mov ecx, 101", "O_CREAT | O_WRONLY");
-		c("mov edx, 644", "access mode");
-		c("mov eax, 5", "number of 'open' syscall");
-		c("int 80h");
-		c("mov ebp, eax");
-
-		c("mov ebx, eax");
-		c("mov ecx, 0");
-		c("mov edx, 2", "SEEK_END");
-		c("mov eax, 19", "number of 'lseek' syscall");
-		c("int 80h");
-		pop("edx");
-
-		l("_W_descriptor_is_set");
-		c("ret");
-
-		/* open for reading */
-		l("get_R_descriptor_into_ebp_and_mode_into_esi");
-		c("mov ebp, 0", "descriptor of console");
-		c("mov esi, 0", "text mode");
-		c("cmp al, 1");
-		c("jz _R_descriptor_is_set");
-
-		c("cmp al, 5");
-		c("jnz _R_descriptor_try_next");
-
-		c("mov esi, 1", "binary mode");
-		c("jmp _R_descriptor_open_file");
-
-		l("_R_descriptor_try_next");
-		c("cmp al, 3");
-		c("jnz _R_descriptor_is_set", "reading from console, if not 1, 3 or 5");
-
-		l("_R_descriptor_open_file");
-		push("edx");
-		c("shr eax, 8");
-		c("mov ebx, 256");
-		c("mul ebx");
-		c("lea ebx, [eax + filename_0]");
-		c("mov ecx, 0", "O_RDONLY");
-		c("mov edx, 0");
-		c("mov eax, 5", "number of 'open' syscall");
-		c("int 80h");
-		c("mov ebp, eax");
-		pop("edx");
-
-		c("cmp ebp, -1", "checking descriptor");
-		c("jz _R_open_file_failed");
-
-		l("_R_descriptor_is_set");
-		c("ret");
-
-		l("_R_open_file_failed");
-		//c("int3");
-		c("ud2");
-
-		/* close */
-		l("close_by_descriptor_in_ebp");
-		c("test ebp, ebp");
-		c("jz _just_ret");
-
-		c("mov ebx, ebp");
-		c("mov eax, 6", "number of 'close' syscall");
-		c("int 80h");
-
-		l("_just_ret");
-		c("ret");
-		ln();
+		if (usedAsmFunctions.contains(AsmFunction.READ_INT) || usedAsmFunctions.contains(AsmFunction.READ_BOOL)) {
+			/* open for reading */
+			l("get_R_descriptor_into_ebp_and_mode_into_esi");
+			c("mov ebp, 0", "descriptor of console");
+			c("mov esi, 0", "text mode");
+			c("cmp al, 1");
+			c("jz _R_descriptor_is_set");
+	
+			c("cmp al, 5");
+			c("jnz _R_descriptor_try_next");
+	
+			c("mov esi, 1", "binary mode");
+			c("jmp _R_descriptor_open_file");
+	
+			l("_R_descriptor_try_next");
+			c("cmp al, 3");
+			c("jnz _R_descriptor_is_set", "reading from console, if not 1, 3 or 5");
+	
+			l("_R_descriptor_open_file");
+			push("edx");
+			c("shr eax, 8");
+			c("mov ebx, 256");
+			c("mul ebx");
+			c("lea ebx, [eax + filename_0]");
+			c("mov ecx, 0", "O_RDONLY");
+			c("mov edx, 0");
+			c("mov eax, 5", "number of 'open' syscall");
+			c("int 80h");
+			c("mov ebp, eax");
+			pop("edx");
+	
+			c("cmp ebp, -1", "checking descriptor");
+			c("jz _R_open_file_failed");
+	
+			l("_R_descriptor_is_set");
+			c("ret");
+	
+			l("_R_open_file_failed");
+			//c("int3");
+			c("ud2");
+		}
 
 		c("section .rodata");
 		ln();
-		pw.println("str_true  db \"true\"");
-		pw.println("str_false db \"false\"");
-		pw.println("str_space db \" \"");
-		pw.println("str_endl  db 10");
+		if (usedAsmFunctions.contains(AsmFunction.WRITE_BOOL)) {
+			pw.println("str_true  db \"true\"");
+			pw.println("str_false db \"false\"");
+		}
+		if (usedAsmFunctions.contains(AsmFunction.WRITE_INT) || usedAsmFunctions.contains(AsmFunction.WRITE_BOOL)) {
+			pw.println("str_space db \" \"");
+			pw.println("str_endl  db 10");
+		}
 		ln();
 		if (fileNames.size() > 0) {
 			for (int i = 0; i < fileNames.size(); ++i) {
@@ -263,10 +286,13 @@ public class AsmWriter {
 		}
 		ln();
 
-		c("section .data");
-		ln();
-		pw.println("str_buf db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
-		ln();
+		if (usedAsmFunctions.contains(AsmFunction.WRITE_INT) || usedAsmFunctions.contains(AsmFunction.WRITE_BOOL) ||
+			usedAsmFunctions.contains(AsmFunction.READ_INT) || usedAsmFunctions.contains(AsmFunction.READ_BOOL)) {
+			c("section .data");
+			ln();
+			pw.println("str_buf db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
+			ln();
+		}
 
 		c("end");
 		close();
