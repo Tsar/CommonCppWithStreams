@@ -142,7 +142,7 @@ public class AsmWriter {
 		}
 
 		if (usedAsmFunctions.contains(AsmFunction.WRITE_INT) || usedAsmFunctions.contains(AsmFunction.WRITE_BOOL)) {
-			/* syscall to write (final action of all write operations) */
+			/* write syscall (final action of all write operations) */
 			l("syscall_write");
 			c("mov ebx, ebp");
 			c("mov eax, 4", "number of 'write' syscall");
@@ -220,26 +220,179 @@ public class AsmWriter {
 			ln();
 		}
 
+		if (usedAsmFunctions.contains(AsmFunction.READ_INT)) {
+			/* read_int_to_eax */
+			l("_binary_read_int_to_eax");
+			c("mov ecx, str_buf");
+			c("mov ebx, ebp", "setup descriptor");
+			c("mov edx, 4", "4 bytes");
+			c("mov eax, 3", "number of 'read' syscall");
+		    c("int 80h");
+		    c("test eax, eax");
+			c("jz _binary_read_return_0", "end of file");
+			c("js _binary_read_return_0", "read error");
+		    c("mov dword eax, [str_buf]");
+			c("ret");
+
+			l("_binary_read_return_0");
+			c("xor eax, eax");
+			c("ret");
+
+			l("_set_negative");
+			c("inc edi");
+			c("dec ecx");
+			c("mov edx, 1", "negative flag");
+			c("jmp _continue_read_int");
+
+			l("read_int_to_eax");
+			c("test esi, esi", "what mode (text or binary)");
+			c("jnz _binary_read_int_to_eax");
+
+			c("call read_token_to_str_buf");
+			c("test ecx, ecx");
+			c("jz _zero");
+
+			c("mov edi, str_buf");
+			c("mov edx, 0", "negative flag");
+			c("cmp byte [edi], '-'");
+			c("jz _set_negative");
+
+			l("_continue_read_int");
+			c("xor eax, eax");
+			c("xor ebx, ebx");
+
+			l("_continue_read_int_cycle");
+			c("lea eax, [eax + eax * 4]");
+			c("shl eax, 1");
+			c("mov byte bl, [edi]");
+			c("lea eax, [eax + ebx - '0']");
+			c("inc edi");
+			c("dec ecx");
+			c("test ecx, ecx");
+			c("jnz _continue_read_int_cycle");
+
+			c("test edx, edx", "check if negative");
+			c("jz _read_int_end");
+			c("neg eax");
+
+			l("_read_int_end");
+			c("ret");
+
+			l("_zero");
+			c("xor eax, eax");
+			c("ret");
+		}
+
+		if (usedAsmFunctions.contains(AsmFunction.READ_BOOL)) {
+			/* read_bool_to_eax */
+			l("_binary_read_bool_to_eax");
+			c("mov ecx, str_buf");
+			c("call syscall_read");
+			c("test eax, eax");
+			c("jz _binary_read_return_false", "end of file");
+			c("js _binary_read_return_false", "read error");
+			c("xor eax, eax");
+			c("mov byte al, [str_buf]");
+			c("ret");
+
+			l("_binary_read_return_false");
+			c("xor eax, eax");
+			c("ret");
+
+			l("read_bool_to_eax");
+			c("test esi, esi", "what mode (text or binary)");
+			c("jnz _binary_read_bool_to_eax");
+	
+			// TODO: read bool as text
+			c("ret");
+			ln();
+		}
+
 		if (usedAsmFunctions.contains(AsmFunction.READ_INT) || usedAsmFunctions.contains(AsmFunction.READ_BOOL)) {
+			/* read syscall */
+			l("syscall_read");
+			c("mov ebx, ebp", "setup descriptor");
+			c("mov edx, 1", "1 byte");
+			c("mov eax, 3", "number of 'read' syscall");
+		    c("int 80h");
+		    c("ret");
+
+		    /* read_token_to_str_buf */
+		    l("read_token_to_str_buf");
+		    c("mov ecx, str_buf");
+
+		    l("_skip_whitespace");
+		    c("call syscall_read");
+		    c("test eax, eax");
+		    c("jz _read_token_done", "end of file, token will have length 0");
+		    c("js _read_token_done", "read error (maybe file does not exist)");
+		    c("xor eax, eax");
+			c("mov byte al, [ecx]");
+		    c("cmp al, ' '", "check if space");
+		    c("jz _skip_whitespace");
+		    c("cmp al, 10", "check if endl");
+		    c("jz _skip_whitespace");
+		    c("cmp al, 9", "check if tab");
+		    c("jz _skip_whitespace");
+
+		    c("xor edi, edi");
+
+		    l("_read_character");
+		    c("xor eax, eax");
+		    c("mov byte al, [ecx]");
+			c("cmp al, ' '", "check if space");
+		    c("jz _read_token_done");
+		    c("cmp al, 10", "check if endl");
+		    c("jz _read_token_done");
+		    c("cmp al, 9", "check if tab");
+		    c("jz _read_token_done");
+		    c("inc ecx");
+		    c("inc edi");
+		    c("cmp edi, 16", "max token length = buffer size = 16");
+		    c("jz _read_token_done");
+		    c("call syscall_read");
+		    c("test eax, eax");
+		    c("jz _read_token_done", "cause end of file");
+		    c("jmp _read_character");
+
+		    l("_read_token_done");
+		    c("sub ecx, str_buf", "now length of token will be in ecx");
+		    c("ret");
+
 			/* open for reading */
 			l("get_R_descriptor_into_ebp_and_mode_into_esi");
 			c("mov ebp, 0", "descriptor of console");
 			c("mov esi, 0", "text mode");
 			c("cmp al, 1");
 			c("jz _R_descriptor_is_set");
-	
+
+			c("cmp al, 9");
+			c("jnz _R_descriptor_try_7");
+
+			c("mov esi, 1", "binary mode");
+
+			l("_R_descriptor_try_7");
+			c("cmp al, 7");
+			c("jnz _R_descriptor_try_5");
+
+			c("mov ebp, eax");
+			c("shr ebp, 8");
+			c("ret");
+
+			l("_R_descriptor_try_5");
 			c("cmp al, 5");
-			c("jnz _R_descriptor_try_next");
+			c("jnz _R_descriptor_try_3");
 	
 			c("mov esi, 1", "binary mode");
 			c("jmp _R_descriptor_open_file");
 	
-			l("_R_descriptor_try_next");
+			l("_R_descriptor_try_3");
 			c("cmp al, 3");
 			c("jnz _R_descriptor_is_set", "reading from console, if not 1, 3 or 5");
 	
 			l("_R_descriptor_open_file");
 			push("edx");
+			push("eax");
 			c("shr eax, 8");
 			c("mov ebx, 256");
 			c("mul ebx");
@@ -249,11 +402,17 @@ public class AsmWriter {
 			c("mov eax, 5", "number of 'open' syscall");
 			c("int 80h");
 			c("mov ebp, eax");
+			pop("eax");
 			pop("edx");
 	
 			c("cmp ebp, -1", "checking descriptor");
 			c("jz _R_open_file_failed");
-	
+
+			c("mov ebx, ebp");
+			c("shl ebx, 8");
+			c("and eax, 255");
+			c("lea eax, [eax + ebx + 4]", "eax = (descriptor << 8) + old_al + 4");
+
 			l("_R_descriptor_is_set");
 			c("ret");
 	
@@ -286,8 +445,8 @@ public class AsmWriter {
 		}
 		ln();
 
-		if (usedAsmFunctions.contains(AsmFunction.WRITE_INT) || usedAsmFunctions.contains(AsmFunction.WRITE_BOOL) ||
-			usedAsmFunctions.contains(AsmFunction.READ_INT) || usedAsmFunctions.contains(AsmFunction.READ_BOOL)) {
+		if (usedAsmFunctions.contains(AsmFunction.READ_INT) || usedAsmFunctions.contains(AsmFunction.READ_BOOL) ||
+			usedAsmFunctions.contains(AsmFunction.WRITE_INT) || usedAsmFunctions.contains(AsmFunction.WRITE_BOOL)) {
 			c("section .data");
 			ln();
 			pw.println("str_buf db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
