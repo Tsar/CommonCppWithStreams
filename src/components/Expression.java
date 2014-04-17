@@ -167,9 +167,11 @@ public class Expression implements CodeProvider {
 				varName = tree.getText();
 				boolean isBeingAssigned = (tree.getParent().getText().equals("=") && tree.getParent().getChild(0) == tree);
 				varDef = st.referenceVariableAndGetVarDef(varName, !isBeingAssigned, tree.getLine());
-				type = varDef.getType();
-				if (isBeingAssigned) {
-					st.setVariableInitialized(varName);
+				if (varDef != null) {
+					type = varDef.getType();
+					if (isBeingAssigned) {
+						st.setVariableInitialized(varName);
+					}
 				}
 			} else if (tree.getType() == CommonCppWithStreamsLexer.STREAM_FUNC) {
 				if (tree.getText().equals("InputStream")) {

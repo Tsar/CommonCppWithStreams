@@ -26,7 +26,7 @@ public class StreamWrite implements CodeProvider {
 		String name = tree.getChild(0).getText();
 		int lineNumber = tree.getChild(0).getLine();
 		streamDef = st.referenceVariableAndGetVarDef(name, true, lineNumber);
-		if (streamDef.getType() != Type.OSTREAM) {
+		if (streamDef != null && streamDef.getType() != Type.OSTREAM) {
 			ec.check(false, lineNumber, "Variable '" + name + "' is not an output stream");
 			return;
 		}

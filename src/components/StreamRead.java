@@ -26,7 +26,7 @@ public class StreamRead implements CodeProvider {
 		String name = tree.getChild(0).getText();
 		int lineNumber = tree.getChild(0).getLine();
 		streamDef = st.referenceVariableAndGetVarDef(name, true, lineNumber);
-		if (streamDef.getType() != Type.ISTREAM) {
+		if (streamDef != null && streamDef.getType() != Type.ISTREAM) {
 			ec.check(false, lineNumber, "Variable '" + name + "' is not an input stream");
 			return;
 		}
@@ -35,9 +35,11 @@ public class StreamRead implements CodeProvider {
 		for (int i = 0; i < tree.getChild(0).getChildCount(); ++i) {
 			lineNumber = tree.getChild(0).getChild(i).getLine();
 			VarDef varDef = st.referenceVariableAndGetVarDef(tree.getChild(0).getChild(i).getText(), false, lineNumber);
-			ec.check(TypeChecker.isIntOrBool(varDef), lineNumber, "Can not read anything except for int or bool");
-			st.setVariableInitialized(varDef.getName());
-			vars.add(varDef);
+			if (varDef != null) {
+				ec.check(TypeChecker.isIntOrBool(varDef), lineNumber, "Can not read anything except for int or bool");
+				st.setVariableInitialized(varDef.getName());
+				vars.add(varDef);
+			}
 		}
 	}
 
