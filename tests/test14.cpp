@@ -10,7 +10,7 @@ bool func() {
 
 int main() {
     IStream is = InputFileStream("number.txt");
-    //is = InputStream();
+    is = InputStream();
     OStream os = OutputStream();
 
     int a, b;

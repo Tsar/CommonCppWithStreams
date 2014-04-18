@@ -2,11 +2,11 @@ int u = 92;
 
 int main() {
     OStream s = OutputStream();
-
+/*
     s << 2 <<< 2;
     s << 9999 >>> 4;
     int i = 0;
-    for (i = 0; i != 20; ++i) {
+    for (i = 0; i < 20; ++i) {
         int a, b, c;
         if (i == 5)
             continue;
@@ -24,6 +24,8 @@ int main() {
         }
         int y = 9;
     }
+    
+    s << 2 == 2;
 
     while (i == i)
     {
@@ -64,7 +66,7 @@ int main() {
             break;
         j++;
     }
-
+*/
     int x = 2;
     do {
         bool opq = false;
@@ -73,7 +75,7 @@ int main() {
         if (x == 3)
             continue;
         bool opq2 = 10;
-    } while (x == 3);
+    } while (x == 4);
 
     return 32 + u;
 }

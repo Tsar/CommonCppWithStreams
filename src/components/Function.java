@@ -37,6 +37,8 @@ public class Function implements CodeProvider {
 		argsDef = new ArgumentsDef(tree.getChild(2), ec, st);
 		block = new Block(tree.getChild(3), ec, st, true);
 		st.endBlock();
+
+		ec.check(!name.equals("main") || argsDef.count() == 0, tree.getLine(), "function 'main' should not have any arguments");
 	}
 
 	public String getName() {
