@@ -20,7 +20,7 @@ public class If implements CodeProvider {
 
 		cond = new Expression(tree.getChild(0), ec, st);
 		st1 = new Statement(tree.getChild(1), ec, st);
-		st2 = (tree.getChildCount() == 3) ? new Statement(tree.getChild(1), ec, st) : null;
+		st2 = (tree.getChildCount() == 3) ? new Statement(tree.getChild(2), ec, st) : null;
 	}
 
 	public void writeAsmCode(AsmWriter w) {
